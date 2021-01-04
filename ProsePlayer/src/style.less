@@ -1,0 +1,148 @@
+﻿@import './defines.less';
+
+* { margin: 0; padding: 0; border: 0; outline: none; }
+div, ul, p, h1, h2, h3, blockquote, pre {
+  position: relative; float: left; box-sizing: border-box; width: 100%;
+  height: auto; overflow-y: auto;
+}
+html { 
+  background-color: @clrBg; font-size: @fntBaseSize; font-family: @fntBaseFamily;
+  border: 0; margin: 0; height: 100%; overflow-y: scroll;
+}
+body {
+  position: relative; width: 100%; height: 100%;
+  box-sizing: border-box; background-color: @clrBg; color: @clrText;
+}
+#app { 
+  min-height: 100%; position: absolute;
+}
+.topFixed {
+  height: @topHeight + 1; position: fixed; top: 0; z-index: 2;
+  background-color: white; border-bottom: 1px dotted grey;
+  //border-bottom: 2px dotted orange;
+}
+.centrer {
+  min-height: 100%; top: 0; padding-top: @topHeight;
+  width: @midWidth; float: none; display: flex; margin: 0 auto;
+}
+.paraList { flex-grow: 1; flex-shrink: 1; order: 0; padding: 20px 0 80px 0; }
+.anno-pad { flex-grow: 0; flex-shrink: 0; order: 1; width: @midWidth - @textWidth; }
+.fixed-centrer-outer { position: fixed; height: 100%; top: 0; }
+.fixed-centrer { height: 100%; width: @midWidth; float: none; margin: 0 auto; }
+.annotation { width: @midWidth - @textWidth; position: absolute; right: 0; height: 100%;  }
+
+
+.noApp {
+  width: 300px; float: none; margin: 50px auto 0 auto;
+  text-align: center;
+}
+
+input, textarea {
+  // Fuck browsers
+  outline: none; border-radius: 0; border: 0; -webkit-appearance: none; -webkit-border-radius: 0px;
+  &:focus { outline: none; -webkit-box-shadow: none; box-shadow: none; }
+  font-family: inherit; background-color: inherit;
+}
+
+.para {
+  display: flex; align-items: stretch; font-size: 18px; padding-bottom: 10px; z-index: 1;
+  overflow-y: hidden;
+  .segmHandle {
+    position: absolute; left: 0; top: 10px; height: 5px; width: 30px; border-left: 15px solid transparent;
+    cursor: pointer;
+    &.indicated { border-left: 15px solid #eacda5; }
+  }
+  .segmStripe {
+    position: absolute; left: 30px; right: 0; top: 10px; height: 5px; width: auto;
+    background-color: @clrActiveBg; visibility: hidden;
+    &.visible { visibility: visible; }
+  }
+  .paraLeft {
+    width: 30px; flex: none none auto; order: 0; cursor: default;
+    .paraMarker {
+      display: block; box-sizing: border-box; position: absolute; height: 100%; width: 15px;
+    }
+  }
+  p {
+    flex: 1 none auto; order: 0; padding: 0 10px; cursor: text;
+    color: @clrTextLight; overflow-y: visible;
+  }
+  &:hover .paraLeft .paraMarker { background-color: #fef8f0; }
+  &.active .paraLeft .paraMarker { background-color: #faebd7; }
+  .segment { 
+    border-bottom: 1px solid transparent;
+    &.indicated { border-bottom: 1px solid @clrText; }
+    &.active { color: black; }
+    &.indicated.active { border-bottom: 1px solid transparent; }
+  }
+}
+
+.controlPanel {
+  width: @midWidth; height: @topHeight; margin: 0 auto; float: none;
+  overflow-y: hidden;
+  .loading {
+    display: none; position: absolute; top: 0; right: 0; width: auto;
+    background-color: #606060; color: white; padding: 2px 18px;
+    &.visible { display: block; }
+  }
+  i {
+    color: #606060; display: block; position: relative; float: left;
+    font-size: 40px; padding: 10px 6px 10px 6px; margin-left: 4px;
+    &:hover, &.active { color: #de8a16; }
+    &.active:hover { color: #a0a0a0; }
+    &.smaller { font-size: 28px; padding: 16px 6px 16px 6px; }
+  }
+  .time { position: absolute; width: auto; top: 7px; left: 170px; }
+  .autoPause {
+    position: absolute; width: auto; top: 30px; left: 170px; cursor: default;
+    border-bottom: 1px solid transparent;
+    &:hover { border-bottom: 1px dotted #de8a16; }
+    span {
+      display: inline-block; font-weight: bold; color: #707070;
+      &.on { color: #de8a16; }
+    }
+  }
+  .title { width: 680px; float: right; margin-top: 14px; font-size: 26px; }
+}
+
+
+.infoPanel {
+  position: absolute; width: @midWidth - @textWidth - 20px; top: @topHeight; right: 0; bottom: 0;
+  border-left: 1px dotted grey; padding: 10px;
+  .pinnedEntries {
+    border-bottom: 1px dotted grey; padding-bottom: 5px; margin-bottom: 10px;
+  }
+  .entry {
+    margin-bottom: 10px;
+    .head { 
+      overflow: hidden;
+      .pin { 
+        width: 16px; height: 16px; display: none; position: absolute; right: 3px; top: 5px; cursor: pointer; overflow: visible;
+        svg { width: 100%; height: 100%; }
+      }
+    }
+    .headword { display: inline-block; width: auto; float: none; font-size: @fntBaseSize * 1.3; font-weight: bold; }
+    &.pinned {
+      .pin { display: block; }
+      svg * { fill: #a0a0a0; }
+    }
+    &:hover {
+      background-color: @clrActiveBg;
+      .pin { display: block; }
+      .save { display: block; }
+      svg * { fill: #303030; }
+    }
+    .senses {
+      list-style: disc; padding-left: 20px;
+      li { margin-bottom: 5px; }
+      .otherLangs { color: #808080; font-style: italic; }
+    }
+  }
+}
+
+.infoPanel .ifu {
+  h2 { margin: 0 0 5px 0; }
+  p { margin-bottom: 5px; }
+  .shortcut { font-family: monospace; background-color: #e0e0e0; padding: 0 5px; border-radius: 3px;  }
+}
+
