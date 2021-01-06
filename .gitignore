@@ -15,6 +15,7 @@ bin
 obj
 yarn.lock
 *.csproj.user
+*.njsproj.user
 .vs
 
 media

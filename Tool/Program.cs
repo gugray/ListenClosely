@@ -143,7 +143,7 @@ namespace Tool
             // Transcribe text with Google, if file does not exist yet
             if (!File.Exists(transJson))
             {
-                GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey-ChDict-MT-25e641c400ef.json");
+                GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
                 var trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
                 trans.Title = title;
                 trans.SaveJson(transJson);
@@ -176,7 +176,6 @@ namespace Tool
             //Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt");
             //dict2.FillDict(mOrig);
             mOrig.SaveJson("_work/" + ep + "-segs.json");
-            mOrig.SaveJson("Player/public/media/" + ep + "-segs.json");
             mOrig.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
         }
 
@@ -197,7 +196,7 @@ namespace Tool
             //doOrigAlignRus("RTPB", (decimal)-0.08, "Лев Толстой: После бала");
             //doOrigAlignRus("RCG", (decimal)-0.12, "Антон Чехов: Гриша");
             //doOrigAlignRus("RTD", (decimal)-0.12, "Лев Толстой: Детство");
-            doOrigAlignRus("RTO", (decimal)0.35, "Лев Толстой: Война и мир");
+            doOrigAlignRus("SAMPLE", (decimal)0.35, "Чехов: Анна на шее");
         }
     }
 }
