@@ -18,6 +18,9 @@ https://console.cloud.google.com/apis/credentials <br>
 
 ## Processing a file
 
+To prepare, open the Properties of the `Tool` project in Visual Studio (right-click in Solution Explorer),
+and under Debug set the solution root as the working directory.
+
 * Convert mp3 file to other formats: `Scripts\from-mp3.bat SAMPLE`
 * Prepare cleaned-up plain text file of text, one line per paragraph. This will live as `_work\SAMPLE.txt`
 * In the Tool project, edit line in Main() to match current conversion: `doOrigAlignRus("SAMPLE", (decimal)0.35, "Чехов: Анна на шее");`
