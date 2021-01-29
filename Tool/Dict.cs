@@ -173,6 +173,11 @@ namespace Tool
             return dict;
         }
 
+        public void InfuseCustomeDictionary(string fn)
+        {
+
+        }
+
         bool isMWHit(Segment segm, string mwHead)
         {
             string[] expr = mwHead.Split(' ');

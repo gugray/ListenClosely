@@ -172,6 +172,7 @@ namespace Tool
             // MANUAL STEP HERE: Run rulem.py on ep-plain.txt
             mOrig.AddLemmasRu("_work/" + ep + "-lem.txt");
             Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
+            if (File.Exists("_materials/ru-custom.txt")) 
             dict.FillDict(mOrig);
             //Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt");
             //dict2.FillDict(mOrig);
@@ -191,12 +192,13 @@ namespace Tool
             //doRus("RTO");
 
             // Audio B: transcribe online, then infuse timestamp data into original text via alignment
+            doOrigAlignRus("RTO", (decimal)0.00, "Лев Толстой: Война и мир");
             //doOrigAlignRus("RCS", (decimal)0.35, "Чехов: Студент");
             //doOrigAlignRus("RCANS", 0, "Чехов: Анна на шее");
             //doOrigAlignRus("RTPB", (decimal)-0.08, "Лев Толстой: После бала");
             //doOrigAlignRus("RCG", (decimal)-0.12, "Антон Чехов: Гриша");
             //doOrigAlignRus("RTD", (decimal)-0.12, "Лев Толстой: Детство");
-            doOrigAlignRus("SAMPLE", (decimal)0.35, "Чехов: Анна на шее");
+            //doOrigAlignRus("SAMPLE", (decimal)0.35, "Чехов: Анна на шее");
         }
     }
 }
