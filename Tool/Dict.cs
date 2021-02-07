@@ -11,6 +11,7 @@ namespace Tool
         class Meaning
         {
             public string SrcDef;
+            public string Src;
             public List<string> OtherLangs = new List<string>();
         }
 
@@ -84,9 +85,13 @@ namespace Tool
                     string[] parts = line.Split('\t');
                     if (parts.Length < 5) continue;
                     string head = parts[2];
-                    rusToId[head] = int.Parse(parts[0]);
-                    string alt = head.Replace("ё", "е");
-                    if (alt != head) alts[alt] = head;
+                    try
+                    {
+                        rusToId[head] = int.Parse(parts[0]);
+                        string alt = head.Replace("ё", "е");
+                        if (alt != head) alts[alt] = head;
+                    }
+                    catch (Exception ex1) {}
                 }
             }
             using (StreamReader sr = new StreamReader(fnTrans))
@@ -120,6 +125,131 @@ namespace Tool
             return dict;
         }
 
+        public void FromCustRus(string fnCustDictPath)
+        {
+            string line;
+            using (StreamReader sr = new StreamReader(fnCustDictPath))
+            {
+                string head = null;
+                string idiomBody = null;
+                Boolean overwriteTranslationBlock = false;
+                Boolean isIdiomatic = false;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    line = line.Trim();
+
+                    // skip the comment line
+                    if (line.StartsWith("#")) continue;
+
+                    // separator
+                    if (line.Length == 0)
+                    {
+                        head = null;
+                        idiomBody = null;
+                        continue;
+                    }
+
+                    // dict. entries to the current head
+                    if(head != null)
+                    {
+                        if (isIdiomatic)
+                        {
+                            // add the idiom line
+                            headToSenses[idiomBody].Meanings.Add(new Meaning{SrcDef = line, Src="_cust" });
+                        }
+                        else
+                        {
+                            // ann the dictionary translation line
+                            // especial handling for lemma replaceents
+                            if (line.StartsWith("<="))
+                            {
+                                // clone the meanings from other entry (e.g.: the word X - same as Y)
+                                line = line.Substring(2).Trim();
+
+                                List<Meaning> meanings = new List<Meaning>();
+                                meanings.Add(new Meaning { SrcDef = "= " + line, Src = "_cust" });
+
+                                if (headToSenses.ContainsKey(line))
+                                {
+                                    foreach (Meaning m in headToSenses[line].Meanings)
+                                    {
+                                        meanings.Add(new Meaning { SrcDef = m.SrcDef, Src = "_cust" });
+                                    }
+                                }
+
+                                if (!this.headToSenses.ContainsKey(head))
+                                {
+                                    // missing word: add a new Entry
+                                    headToSenses.Add(head, new Entry { DisplayHead = head, Meanings = meanings });
+                                }
+                                else
+                                {
+                                    this.headToSenses[head].Meanings.AddRange(meanings);
+                                }
+
+                            }
+                            else
+                            {
+                                if (!this.headToSenses.ContainsKey(head))
+                                {
+                                    // missing word: add a new Entry
+                                    headToSenses.Add(head, new Entry { DisplayHead = head, Meanings = new List<Meaning>() });
+                                }
+                                headToSenses[head].Meanings.Add(new Meaning { SrcDef = line, Src = "_cust" });
+                            }
+                        }
+                        continue;
+                    }
+
+                    // work for head part
+
+                    head = line;
+                    overwriteTranslationBlock = head.StartsWith("!");
+                    if (overwriteTranslationBlock)
+                    {
+                        head = head.Substring(1);
+                        if (this.headToSenses.ContainsKey(head))
+                            this.headToSenses.Remove(head);
+                    }
+                    string alt = head.Replace("ё", "е");
+                    if (alt != head) alts[alt] = head;
+
+                    // work for idiomas: if more a one word
+                    isIdiomatic = head.StartsWith("%");
+                    if(isIdiomatic)
+                    {
+                        head = head.Substring(1);
+                        string[] parsed = head.Split('%');
+                        string idiomHead = parsed[0];
+                        idiomBody = idiomHead;
+                        if (parsed.Length > 1)
+                        {
+                            idiomBody = parsed[1];
+                        }
+
+                        if (!wdToMultiHeads.ContainsKey(idiomHead)) 
+                        {
+                            wdToMultiHeads.Add(idiomHead, new List<string>());
+                        }
+                        wdToMultiHeads[idiomHead].Add(idiomBody);
+                        if(!headToSenses.ContainsKey(idiomBody))
+                        {
+                            headToSenses.Add(idiomBody, new Entry { DisplayHead = idiomBody, Meanings = new List<Meaning>() });
+                        }
+                    }
+                    else
+                    {
+                        idiomBody = null;
+                    }
+
+                }
+            }
+        }
+
+        /**
+         * Not in use
+         */
+        /*
         public static Dict FromRuWiktionary(string fnDict)
         {
             Dict dict = new Dict();
@@ -172,12 +302,12 @@ namespace Tool
             }
             return dict;
         }
+        */
 
-        public void InfuseCustomeDictionary(string fn)
-        {
-
-        }
-
+        /**
+         * Detect collocations
+         * @mwHead as collocation
+         */
         bool isMWHit(Segment segm, string mwHead)
         {
             string[] expr = mwHead.Split(' ');
@@ -187,13 +317,21 @@ namespace Tool
             while (segmIx < segm.Words.Count && exprIx < expr.Length)
             {
                 string exprWd = expr[exprIx];
-                string wdText = segm.Words[segmIx].Lemma;
-                string wdLo = wdText.ToLowerInvariant();
+                string wdText = segm.Words[segmIx].Text;
+                string wdLemma = segm.Words[segmIx].Lemma;
+                string wdTextLo = wdText.ToLowerInvariant();
+                string wdLemmaLo = wdLemma.ToLowerInvariant();
+
+                if (wdText == "цветочной")
+                {
+                    var i = 1;
+                }
+
                 bool gotWord = false;
-                gotWord |= exprWd == wdText;
-                gotWord |= alts.ContainsKey(wdText) && exprWd == alts[wdText];
-                gotWord |= exprWd == wdLo;
-                gotWord |= alts.ContainsKey(wdLo) && exprWd == alts[wdLo];
+                gotWord |= exprWd == wdText || exprWd == wdLemma;
+                gotWord |= (alts.ContainsKey(wdText) && exprWd == alts[wdText]) || (alts.ContainsKey(wdLemma) && exprWd == alts[wdLemma]);
+                gotWord |= exprWd == wdTextLo || exprWd == wdLemmaLo;
+                gotWord |= (alts.ContainsKey(wdTextLo) && exprWd == alts[wdTextLo]) || (alts.ContainsKey(wdLemmaLo) && exprWd == alts[wdLemmaLo]);
                 if (gotWord)
                 {
                     if (segmIx == lastMatchSegmIx + 1) hadNeighbors = true;
@@ -205,7 +343,7 @@ namespace Tool
             return exprIx == expr.Length && hadNeighbors;
         }
 
-        public void FillDict(Material material)
+        public void FillDict(Material material, Boolean usingLemma)
         {
             List<DictEntry> entries = material.DictEntries;
             Dictionary<string, int> headToIx = new Dictionary<string, int>();
@@ -213,8 +351,7 @@ namespace Tool
             {
                 foreach (var word in segm.Words)
                 {
-                    //string wdText = word.Text;
-                    string wdText = word.Lemma;
+                    string wdText = usingLemma ? word.Lemma : word.Text;
                     string wdLo = wdText.ToLowerInvariant();
                     // Russian normalization
                     wdText = wdText.Replace("ё", "е");
@@ -231,82 +368,164 @@ namespace Tool
                         if (headToSenses.ContainsKey(wdText))
                         {
                             var hit = headToSenses[wdText];
-                            DictEntry entry = new DictEntry { Head = wdText, DisplayHead = hit.DisplayHead };
-                            foreach (var sense in hit.Meanings)
+                            var head = wdText;
+
+                            // avoid duplicates (e.g. by second call, usingLemma=false)
+                            // this check is relevant for the second call of FillDict only
+                            Boolean willSkip = false;
+                            if (!usingLemma)
                             {
-                                var ds = new DictSense { SrcDef = sense.SrcDef };
-                                foreach (var ol in sense.OtherLangs)
+                                foreach (DictEntry e in entries)
                                 {
-                                    if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                    ds.OtherLangs += ol;
+                                    if (e.Head == head)
+                                    {
+                                        willSkip = true;
+                                        break;
+                                    }
                                 }
-                                entry.Senses.Add(ds);
                             }
-                            int ix = entries.Count;
-                            headToIx[wdText] = ix;
-                            entries.Add(entry);
-                            word.Entries.Add(ix);
+
+                            if (!willSkip)
+                            {
+                                DictEntry entry = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
+                                foreach (var sense in hit.Meanings)
+                                {
+                                    var ds = new DictSense { SrcDef = sense.SrcDef };
+                                    foreach (var ol in sense.OtherLangs)
+                                    {
+                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
+                                        ds.OtherLangs += ol;
+                                    }
+                                    entry.Senses.Add(ds);
+                                }
+                                int ix = entries.Count;
+                                headToIx[wdText] = ix;
+                                entries.Add(entry);
+                                word.Entries.Add(ix);
+                            }
+
                         }
                         // Text as alt
                         else if (alts.ContainsKey(wdText) && headToSenses.ContainsKey(alts[wdText]))
                         {
                             var hit = headToSenses[alts[wdText]];
-                            DictEntry entry = new DictEntry { Head = alts[wdText], DisplayHead = hit.DisplayHead };
-                            foreach (var sense in hit.Meanings)
+                            var head = alts[wdText];
+
+                            // avoid duplicates (e.g. by second call, usingLemma=false)
+                            // this check is relevant for the second call of FillDict only
+                            Boolean willSkip = false;
+                            if (!usingLemma)
                             {
-                                var ds = new DictSense { SrcDef = sense.SrcDef };
-                                foreach (var ol in sense.OtherLangs)
+                                foreach (DictEntry e in entries)
                                 {
-                                    if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                    ds.OtherLangs += ol;
+                                    if (e.Head == head)
+                                    {
+                                        willSkip = true;
+                                        break;
+                                    }
                                 }
-                                entry.Senses.Add(ds);
                             }
-                            int ix = entries.Count;
-                            headToIx[wdText] = ix;
-                            entries.Add(entry);
-                            word.Entries.Add(ix);
+
+                            if(!willSkip)
+                            {
+                                DictEntry entry = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
+                                foreach (var sense in hit.Meanings)
+                                {
+                                    var ds = new DictSense { SrcDef = sense.SrcDef };
+                                    foreach (var ol in sense.OtherLangs)
+                                    {
+                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
+                                        ds.OtherLangs += ol;
+                                    }
+                                    entry.Senses.Add(ds);
+                                }
+                                int ix = entries.Count;
+                                headToIx[wdText] = ix;
+                                entries.Add(entry);
+                                word.Entries.Add(ix);
+                            }
                         }
                         // Lower-case
                         else if (headToSenses.ContainsKey(wdLo))
                         {
                             var hit = headToSenses[wdLo];
-                            DictEntry entry = new DictEntry { Head = wdLo, DisplayHead = hit.DisplayHead };
-                            foreach (var sense in hit.Meanings)
+                            var head = wdLo;
+
+                            // avoid duplicates (e.g. by second call, usingLemma=false)
+                            // this check is relevant for the second call of FillDict only
+                            Boolean willSkip = false;
+                            if (!usingLemma)
                             {
-                                var ds = new DictSense { SrcDef = sense.SrcDef };
-                                foreach (var ol in sense.OtherLangs)
+                                foreach (DictEntry e in entries)
                                 {
-                                    if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                    ds.OtherLangs += ol;
+                                    if (e.Head == head)
+                                    {
+                                        willSkip = true;
+                                        break;
+                                    }
                                 }
-                                entry.Senses.Add(ds);
                             }
-                            int ix = entries.Count;
-                            headToIx[wdLo] = ix;
-                            entries.Add(entry);
-                            word.Entries.Add(ix);
+
+                            if(!willSkip)
+                            {
+                                DictEntry entry = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
+                                foreach (var sense in hit.Meanings)
+                                {
+                                    var ds = new DictSense { SrcDef = sense.SrcDef };
+                                    foreach (var ol in sense.OtherLangs)
+                                    {
+                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
+                                        ds.OtherLangs += ol;
+                                    }
+                                    entry.Senses.Add(ds);
+                                }
+                                int ix = entries.Count;
+                                headToIx[wdLo] = ix;
+                                entries.Add(entry);
+                                word.Entries.Add(ix);
+                            }
                         }
                         // Lower-case as alt
                         else if (alts.ContainsKey(wdLo) && headToSenses.ContainsKey(alts[wdLo]))
                         {
                             var hit = headToSenses[alts[wdLo]];
-                            DictEntry entry = new DictEntry { Head = alts[wdLo], DisplayHead = hit.DisplayHead };
-                            foreach (var sense in hit.Meanings)
+                            var head = alts[wdLo];
+
+                            // avoid duplicates (e.g. by second call, usingLemma=false)
+                            // this check is relevant for the second call of FillDict only
+                            Boolean willSkip = false;
+                            if (!usingLemma)
                             {
-                                var ds = new DictSense { SrcDef = sense.SrcDef };
-                                foreach (var ol in sense.OtherLangs)
+                                foreach (DictEntry e in entries)
                                 {
-                                    if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                    ds.OtherLangs += ol;
+                                    if (e.Head == head)
+                                    {
+                                        willSkip = true;
+                                        break;
+                                    }
                                 }
-                                entry.Senses.Add(ds);
                             }
-                            int ix = entries.Count;
-                            headToIx[wdLo] = ix;
-                            entries.Add(entry);
-                            word.Entries.Add(ix);
+
+                            if(!willSkip)
+                            {
+                                DictEntry entry = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
+                                foreach (var sense in hit.Meanings)
+                                {
+                                    var ds = new DictSense { SrcDef = sense.SrcDef };
+                                    foreach (var ol in sense.OtherLangs)
+                                    {
+                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
+                                        ds.OtherLangs += ol;
+                                    }
+                                    entry.Senses.Add(ds);
+                                }
+                                int ix = entries.Count;
+                                headToIx[wdLo] = ix;
+                                entries.Add(entry);
+                                word.Entries.Add(ix);
+                            }
                         }
+
                         // Hint of a multi-word head
                         string wdForMulti = null;
                         if (wdToMultiHeads.ContainsKey(wdText)) wdForMulti = wdText;
@@ -319,27 +538,47 @@ namespace Tool
                             {
                                 if (isMWHit(segm, mwHead))
                                 {
-                                    var hit = headToSenses[mwHead];
-                                    DictEntry entry = new DictEntry { Head = mwHead, DisplayHead = hit.DisplayHead };
-                                    foreach (var sense in hit.Meanings)
+                                    // avoid duplicates (e.g. by second call, usingLemma=false)
+                                    // this check is relevant for the second call of FillDict only
+                                    Boolean willSkip = false;
+                                    if (!usingLemma)
                                     {
-                                        var ds = new DictSense { SrcDef = sense.SrcDef };
-                                        foreach (var ol in sense.OtherLangs)
+                                        foreach (DictEntry e in entries)
                                         {
-                                            if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                            ds.OtherLangs += ol;
+                                            if(e.Head == mwHead)
+                                            {
+                                                willSkip = true;
+                                                break;
+                                            }
                                         }
-                                        entry.Senses.Add(ds);
                                     }
-                                    int ix = entries.Count;
-                                    entries.Add(entry);
-                                    word.Entries.Add(ix);
+
+                                    if(!willSkip)
+                                    {
+                                        var hit = headToSenses[mwHead];
+                                        DictEntry entry = new DictEntry { Head = mwHead, DisplayHead = hit.DisplayHead };
+                                        foreach (var sense in hit.Meanings)
+                                        {
+                                            var ds = new DictSense { SrcDef = sense.SrcDef };
+                                            foreach (var ol in sense.OtherLangs)
+                                            {
+                                                if (ds.OtherLangs != "") ds.OtherLangs += "; ";
+                                                ds.OtherLangs += ol;
+                                            }
+                                            entry.Senses.Add(ds);
+                                        }
+                                        int ix = entries.Count;
+                                        entries.Add(entry);
+                                        word.Entries.Add(ix);
+                                    }
                                 }
                             }
-                        }
-                    }
-                }
-            }
+                        } // if (wdForMulti != null)
+                    } // else
+                } // foreach (var word in segm.Words)
+            } // foreach (var segm in material.Segments)
         }
+
+
     }
 }

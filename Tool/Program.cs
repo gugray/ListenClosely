@@ -64,9 +64,9 @@ namespace Tool
             // Plain text is already done by hand
             mat.AddLemmasRu("_work/" + ep + "-lem.txt");
             Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
-            dict.FillDict(mat);
+            dict.FillDict(mat, true);
             mat.SaveJson("_work/" + ep + "-segs.json");
-            mat.SaveJson("Player/public/media/" + ep + "-segs.json");
+            mat.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
         }
 
         static void doEn(string ep, string[] langs)
@@ -82,9 +82,9 @@ namespace Tool
             var xmat = Material.LoadJson("_work/" + ep + "-pre-lem.json");
             xmat.AddLemmasEn("_work/" + ep + "-lem.txt");
             Dict dict = Dict.FromTSV1("_materials/translations.tsv", langs);
-            dict.FillDict(xmat);
+            dict.FillDict(xmat, true);
             xmat.SaveJson("_work/" + ep + "-segs.json");
-            xmat.SaveJson("Player/public/media/" + ep + "-segs.json");
+            xmat.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
         }
 
         static void getDeSurfs(Material mat, string fn)
@@ -172,10 +172,21 @@ namespace Tool
             // MANUAL STEP HERE: Run rulem.py on ep-plain.txt
             mOrig.AddLemmasRu("_work/" + ep + "-lem.txt");
             Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
-            if (File.Exists("_materials/ru-custom.txt")) 
-            dict.FillDict(mOrig);
-            //Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt");
+            if (File.Exists("_materials/ru-custom.txt"))
+            {
+                // extend the dictionary by additional customized dictionary
+                dict.FromCustRus("_materials/ru-custom.txt");
+            }
+
+            // compose the lemmas-based translations
+            dict.FillDict(mOrig, true);
+            // compose the text-based translations
+            dict.FillDict(mOrig, false);
+
+
+            // Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt");
             //dict2.FillDict(mOrig);
+
             mOrig.SaveJson("_work/" + ep + "-segs.json");
             mOrig.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
         }
@@ -192,7 +203,9 @@ namespace Tool
             //doRus("RTO");
 
             // Audio B: transcribe online, then infuse timestamp data into original text via alignment
-            doOrigAlignRus("RTO", (decimal)0.00, "Лев Толстой: Война и мир");
+
+            doOrigAlignRus("LTL_VIM", (decimal)0.00, "Лев Толстой: Война и мир");
+
             //doOrigAlignRus("RCS", (decimal)0.35, "Чехов: Студент");
             //doOrigAlignRus("RCANS", 0, "Чехов: Анна на шее");
             //doOrigAlignRus("RTPB", (decimal)-0.08, "Лев Толстой: После бала");

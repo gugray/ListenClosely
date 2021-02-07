@@ -1,22 +1,56 @@
-выходить
-rear, bring up
-nurse, restore to health
-go over, go all over, go through
-aufziehen, pflegen
-aufbringen
-hinausgehen
-
-приходить в нетерпение
-become impatient
-ungeduldig werden
-
-сбираться было
-!сбираться было
-be about to do someth.
-im Begriff sein etw. zu machen
-
-раздумать
-!раздумала
-!раздумал
-change one’s mind
-es sich anders überlegen, seine Absicht ändern
+# Format:
+# Lines starting by "#" will be ignored.
+# Empty lines will be used as separators.
+# The translation entry is compozed from:
+# - Line 1, the lemma in the format:   
+#   WORD or !WORD or %WORD%IDIOM
+# - Line 2 and next lines up to the empty line separator:
+#   the sequence of TRANSLATION_ENTRIES.
+#
+#   If the prefix "!" used in lemma, the _original_ translation block for the given WORD from the standard dictionary 
+#   will be _replaced_ by a new translation block based on the customer dictionary entry.
+#   Example (1)
+#       !выходить
+#       go over, go all over, go through
+#       hinausgehen
+#       выхаживать: nurse, restore to health
+#       выхаживать: aufziehen, pflegen
+#   This will overwrite the standard translation for the word "выходить" by the customized entries:
+#       go over, go all over, go through
+#       hinausgehen
+#       выхаживать: nurse, restore to health
+#       выхаживать: aufziehen, pflegen
+#   If no prefix used, the TRANSLATION_ENTRIES will be _add_ to the existing translation block (if any) or a new one will be created.
+#   Example (2) 
+#       раздумывать
+#       раздумывать, раздумать: change one’s mind
+#       раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern
+#   This will add the 2 new translation lines to the standard list of translations of the word "раздумывать":
+#       meditate, muse, ponder, consider, ruminate, brood, deliberate, hesitate    | < Entries from
+#       nachdenken, schwanken, unschlüssig sein, zaudern                           | < the standatd dictionary
+#       es sich anders überlegen, seine Absicht ändern                             | < for the word "раздумывать"
+#       раздумывать, раздумать: change one’s mind                                  | < New entries 
+#       раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern     | < from customer dictionary
+#
+#   Especial handling for the Line 2 format:
+#   If the Line 2 is done in format <=WORD_2, the translation block for value of WORD will 
+#   be created by mention that WORD is "the same" as WORD_2 and by list all translation entries of WORD_2.
+#   In this case, the _single_ Line 2 is expected.
+#   Example (3):
+#       сбираться
+#       <=собираться
+#   This will provide a new translations list for the word "сбираться":
+#       = собираться                                                                | < New auto-generated entry
+#       vor haben, beabsichtigen                                                    | < Entries from
+#       sich treffen, zusammenkommen                                                | < the standatd dictionary
+#       sich versammeln                                                             | < for the word "собираться"
+#       be going to, intend to                                                      |
+#
+#   If the form %WORD%IDIOM is used this will provide the idiom data. 
+#   The WORD is the first word for the idiom; the IDIOM is the full text of the idiom.
+#   Example (4):
+#       %приходить%приходить в нетерпение
+#       become impatient
+#       ungeduldig werden
+#   By click on the word "приходить" in the text, if it is the first word of the group "приходить в нетерпение", 
+#   the given translation entries will be presented.

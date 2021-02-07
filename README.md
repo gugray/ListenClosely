@@ -22,10 +22,12 @@ To prepare, open the Properties of the `Tool` project in Visual Studio (right-cl
 and under Debug set the solution root as the working directory.
 
 * Convert mp3 file to other formats: `Scripts\from-mp3.bat SAMPLE`
-* Prepare cleaned-up plain text file of text, one line per paragraph. This will live as `_work\SAMPLE.txt`
+* Prepare cleaned-up plain text file of text, one line per paragraph. This will live as `_work\SAMPLE-orig.txt`
 * In the Tool project, edit line in Main() to match current conversion: `doOrigAlignRus("SAMPLE", (decimal)0.35, "Чехов: Анна на шее");`
+* Edit the Method `doOrigAlignRus` for uncomment the `return`.
 * Run the Tool.
-* Edit `Scripts\rulem.py` to work on SAMPLE, and execute.
+* Edit `Scripts\rulem.py` to work on SAMPLE, and execute: python3 rulem.py
+* Edit the Method `doOrigAlignRus` for comment the `return`.
 * Run the Tool again. Second run skips transcription, and finishes annotation because `SAMPLE-lem.txt` is now available.
 
 ## Compiling the player
