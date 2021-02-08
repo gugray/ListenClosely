@@ -322,11 +322,6 @@ namespace Tool
                 string wdTextLo = wdText.ToLowerInvariant();
                 string wdLemmaLo = wdLemma.ToLowerInvariant();
 
-                if (wdText == "цветочной")
-                {
-                    var i = 1;
-                }
-
                 bool gotWord = false;
                 gotWord |= exprWd == wdText || exprWd == wdLemma;
                 gotWord |= (alts.ContainsKey(wdText) && exprWd == alts[wdText]) || (alts.ContainsKey(wdLemma) && exprWd == alts[wdLemma]);
