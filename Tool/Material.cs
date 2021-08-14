@@ -76,6 +76,8 @@ namespace Tool
         public List<Word> Words = new List<Word>();
         [JsonProperty("paraIx")]
         public int ParaIx = -1;
+        [JsonProperty("isTitleLine")]
+        public bool isTitleLine = false;
     }
 
     class Material
