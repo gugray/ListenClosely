@@ -183,16 +183,26 @@ namespace Tool
          * shift                the value to shift the segments timestamps
          * customDictFileName   the file name  of custom dictionary (nullable)
          * title                the work title, which will be displayed on the page
-         * breakWork            to be set true until the -lem file is still not done by rulem.py
+         * breakWork            to be set true until the -lem file is still not done by rulem.py\
+         * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
-        static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, string customDictFileName, string title, int shiftTitleLines, Boolean breakWork)
+        static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, string customDictFileName, 
+            string title, int shiftTitleLines, Boolean breakWork, bool useMS = false)
         {
             string transJson = "_work/" + ep + "-goog.json";
-            // Transcribe text with Google, if file does not exist yet
+            // If transcription is missing, get it now
             if (!File.Exists(transJson))
             {
-                GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
-                var trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                Material trans;
+                if (!useMS)
+                {
+                    // Transcribe text with Google, if file does not exist yet
+                    GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
+                    trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                }
+                // Parse MS transcription
+                else trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
+                // Set title, serialize
                 trans.Title = title;
                 trans.SaveJson(transJson);
             }
@@ -268,6 +278,11 @@ namespace Tool
             String abbreviation;
             String title;
             int shiftTitleLines;
+
+            abbreviation = "BAR01";
+            title = "А. С. Пушкин. Барышня-крестьянка";
+            shiftTitleLines = 2;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, customDictFileName, title, shiftTitleLines, breakWork, true);
 
             // abbreviation = "ATCH_GFR";
             // title = "А. П. Чехов. Глупый француз. Читает Владимир Иванчин";

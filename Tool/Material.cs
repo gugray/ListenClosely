@@ -89,6 +89,44 @@ namespace Tool
         [JsonProperty("dictEntries")]
         public List<DictEntry> DictEntries = new List<DictEntry>();
 
+        public static Material FromMS(string fn)
+        {
+            Material material = new Material();
+            string rawJsonStr = File.ReadAllText(fn);
+            dynamic rawJson = JsonConvert.DeserializeObject(rawJsonStr);
+            dynamic phrases = rawJson.recognizedPhrases;
+            for (int i = 0; i < phrases.Count; ++i)
+            {
+                Segment segment = new Segment();
+                int bestIx = -1;
+                float bestConfidence = 0;
+                for (int j = 0; j < phrases[i].nBest.Count; ++j)
+                {
+                    if (phrases[i].nBest[j].confidence > bestConfidence)
+                    {
+                        bestIx = j;
+                        bestConfidence = phrases[i].nBest[j].confidence;
+                    }
+                }
+                if (bestIx == -1) continue;
+                dynamic words = phrases[i].nBest[bestIx].words;
+                for (int j = 0; j < words.Count; ++j)
+                {
+                    dynamic jsonWord = words[j];
+                    Word word = new Word
+                    {
+                        Text = jsonWord.word,
+                        StartSec = jsonWord.offsetInTicks / 10000000,
+                        LengthSec = jsonWord.durationInTicks / 10000000,
+                    };
+                    segment.Words.Add(word);
+                }
+                segment.StartSec = segment.Words[0].StartSec;
+                material.Segments.Add(segment);
+            }
+            return material;
+        }
+
         /// <summary>
         /// Parses material from SRT file
         /// </summary>
