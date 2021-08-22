@@ -208,19 +208,32 @@ namespace Tool
          * shift                the value to shift the segments timestamps
          * tempoCorrection      the value for tempo correction (0 if not required)
          * customDictFileName   the file name  of custom dictionary (nullable)
-         * title                the work title, which will be displayed on the page (0 if not required)
+         * title                the work title, which will be displayed on the page
          * shiftTitleLines      the first X lines which will be marked as title lines of the text
-         * shiftTitleLines
-         * breakWork            to be set true until the -lem file is still not done by rulem.py
+         * breakWork            to be set true until the -lem file is still not done by rulem.py\
+         * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
-        static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, double tempoCorrection, string customDictFileName, string title, int shiftTitleLines, Boolean breakWork)
+        static void doOrigAlignRus(Boolean useWords = false, string ep, decimal shift, double tempoCorrection = 0.0, ring customDictFileName, 
+            string title, int shiftTitleLines = 0, Boolean breakWork, bool useMS = false)
         {
             string transJson = "_work/" + ep + "-goog.json";
-            // Transcribe text with Google, if file does not exist yet
+            // If transcription is missing, get it now
             if (!File.Exists(transJson))
             {
-                GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
-                var trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                Material trans;
+                if (!useMS)
+                {
+                    // Transcribe text with Google engine
+                    GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
+                    trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                }
+                // Parse MS transcription
+                else 
+                {
+                	// Transcribe text with Microsoft engine
+                	trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
+                }
+                // Set title, serialize
                 trans.Title = title;
                 trans.SaveJson(transJson);
             }
@@ -291,154 +304,157 @@ namespace Tool
             String customDictFileName = "ru-custom.txt";
 
             Boolean breakWork = false;  // for 1st start, set true; for 2nd start, set false
-            Boolean useWords = false; // set normylly false, else, the forms of words will be used additionally to lemmas dor collect the translations
-
+            Boolean useWords = false;   // set normally false, else, the forms of words will be used additionally to lemmas dor collect the translations
+			Boolean useMs = false;      // set true for use MS Speech2Text API, else false for use the Google engine
             double shift = 0.00;
 
             String abbreviation;
             String title;
             int shiftTitleLines;
-            double tempoCorrection;
 
+            abbreviation = "BAR01";
+            title = "А. С. Пушкин. Барышня-крестьянка";
+            shiftTitleLines = 2;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, customDictFileName, title, shiftTitleLines, breakWork, useMs);
 
             // abbreviation = "ATCH_ANS_1";
             // title = "А. П. Чехов. Анна на шее. Часть первая (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_ANS_2";
             // title = "А. П. Чехов. Анна на шее. Часть вторая (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_ANS_3";
             // title = "А. П. Чехов. Анна на шее. Часть третья (3). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_ANS_4";
             // title = "А. П. Чехов. Анна на шее. Часть четвертая (4). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_GFR";
             // title = "А. П. Чехов. Глупый француз. Читает Владимир Иванчин";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "LTL_RTD";
             // title = "Лев Толстой. Детство. Читает Анна Шибарова";
             // shiftTitleLines = 4;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "LTL_VIM";
             // title = "Лев Толстой: Война и мир. Читает Анна Шибарова";
             // shiftTitleLines = 4;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "ATCH_STU_1";
             // title = "А. П. Чехов. Студент. Часть первая (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_STU_2";
             // title = "А. П. Чехов. Студент. Часть вторая (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "APT_MET_1";
             // title = "А. С. Пушкин. Метель. Часть первая (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_2";
             // title = "А. С. Пушкин. Метель. Часть вторая (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_3";
             // title = "А. С. Пушкин. Метель. Часть третья (3). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_4";
             // title = "А. С. Пушкин. Метель. Часть четвертая (4). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_5";
             // title = "А. С. Пушкин. Метель. Часть пятая (5). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
-            abbreviation = "APT_BKR_1";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть первая (1). Читает Владислава Гехтман";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
-            
-            abbreviation = "APT_BKR_2";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть вторая (2). Читает Владислава Гехтман";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
-            
-            abbreviation = "APT_BKR_3";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть третья (3). Читает Владислава Гехтман";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
-            
-            abbreviation = "APT_BKR_4";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть четвертая (4). Читает Владислава Гехтман";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
-            
-            abbreviation = "APT_BKR_5";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть пятая (5). Читает Владислава Гехтман";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // abbreviation = "APT_BKR_1";
+            // title = "А. С. Пушкин. Барышня-крестьянка. Часть первая (1). Читает Владислава Гехтман";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            //
+            // abbreviation = "APT_BKR_2";
+            // title = "А. С. Пушкин. Барышня-крестьянка. Часть вторая (2). Читает Владислава Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            //
+            // abbreviation = "APT_BKR_3";
+            // title = "А. С. Пушкин. Барышня-крестьянка. Часть третья (3). Читает Владислава Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            //
+            // abbreviation = "APT_BKR_4";
+            // title = "А. С. Пушкин. Барышня-крестьянка. Часть четвертая (4). Читает Владислава Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            //
+            // abbreviation = "APT_BKR_5";
+            // title = "А. С. Пушкин. Барышня-крестьянка. Часть пятая (5). Читает Владислава Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "MLE_PAR";
             // title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_DMJ";
             // title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_EZH";
             // title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // 
             // abbreviation = "APT_SSN";
             // title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Владислава Гехтман";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork);
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
 
 
         }
