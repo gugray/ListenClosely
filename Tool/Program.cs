@@ -210,11 +210,11 @@ namespace Tool
          * customDictFileName   the file name  of custom dictionary (nullable)
          * title                the work title, which will be displayed on the page
          * shiftTitleLines      the first X lines which will be marked as title lines of the text
-         * breakWork            to be set true until the -lem file is still not done by rulem.py\
+         * breakWork            to be set true until the -lem file is still not done by rulem.py
          * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
-        static void doOrigAlignRus(Boolean useWords = false, string ep, decimal shift, double tempoCorrection = 0.0, ring customDictFileName, 
-            string title, int shiftTitleLines = 0, Boolean breakWork, bool useMS = false)
+        static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, double tempoCorrection, string customDictFileName, 
+            string title, int shiftTitleLines, Boolean breakWork, bool useMS = false)
         {
             string transJson = "_work/" + ep + "-goog.json";
             // If transcription is missing, get it now
@@ -306,7 +306,8 @@ namespace Tool
             Boolean breakWork = false;  // for 1st start, set true; for 2nd start, set false
             Boolean useWords = false;   // set normally false, else, the forms of words will be used additionally to lemmas dor collect the translations
 			Boolean useMs = false;      // set true for use MS Speech2Text API, else false for use the Google engine
-            double shift = 0.00;
+            double shift = 0.0;
+            double tempoCorrection = 0.0;
 
             String abbreviation;
             String title;
@@ -315,7 +316,7 @@ namespace Tool
             abbreviation = "BAR01";
             title = "А. С. Пушкин. Барышня-крестьянка";
             shiftTitleLines = 2;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
 
             // abbreviation = "ATCH_ANS_1";
             // title = "А. П. Чехов. Анна на шее. Часть первая (1). Читает Анна Шибарова";
