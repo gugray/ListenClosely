@@ -69,11 +69,12 @@ namespace Tool
             var config = new RecognitionConfig
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
-                SampleRateHertz = 16000,
+                // SampleRateHertz = 16000,
                 LanguageCode = langCode,
                 EnableAutomaticPunctuation = true,
                 EnableWordTimeOffsets = true,
                 ProfanityFilter = false,
+                // AudioChannelCount = 2,
             };
             var op = speech.LongRunningRecognize(config, audio);
             op = op.PollUntilCompleted();
@@ -115,7 +116,75 @@ namespace Tool
                     mat.Segments.Add(segm);
                 }
             }
-            return mat;
+
+            decimal start = 0;
+            decimal length = 0;
+
+            // additional fix for segments having LengthSec <= 0
+           for (int i = 0; i < mat.Segments.Count; i++)
+           {
+               Segment segm = mat.Segments[i];
+               Segment prevSegm = null;
+               Segment nextSegm = null;
+               if(i > 0)
+               {
+                    prevSegm = mat.Segments[i - 1];
+               }
+               if(i < mat.Segments.Count - 1)
+               {
+                    nextSegm = mat.Segments[i + 1];
+               }
+
+                // for (int j = 0; j < segm.Words.Count; j++)
+                // {
+                //     Word word = segm.Words[j];
+                //     Word prevWord = null;
+                //     Word nextvWord = null;
+                //     if(j > 0)
+                //     {
+                //         prevWord = segm.Words[j - 1];
+                //     }
+                //     else if(prevSegm != null && prevSegm.Words.Count > 0)
+                //     {
+                //         prevWord = prevSegm.Words[prevSegm.Words.Count - 1];
+                //     }
+                // 
+                //     if(j < segm.Words.Count - 1)
+                //     {
+                //         nextvWord = segm.Words[j + 1];
+                //     }
+                //     else if(nextSegm != null && nextSegm.Words.Count > 0)
+                //     {
+                //         nextvWord = nextSegm.Words[0];
+                //     }
+                // 
+                // 
+                //     Boolean hasWrongWordStartSec = prevWord != null && prevWord.StartSec > 0 && prevWord.LengthSec > 0 && word.StartSec <= prevWord.StartSec;
+                //     if (hasWrongWordStartSec)
+                //     {
+                //         word.StartSec = prevWord.StartSec + prevWord.LengthSec;
+                //     }
+                // }
+
+               // Boolean hasWrongSegStartSec = (prevSegm != null && segm.StartSec <= prevSegm.StartSec) || (nextSegm != null && segm.StartSec >= nextSegm.StartSec);
+               // if(hasWrongSegStartSec)
+               // {
+               //      if(prevSegm != null && prevSegm.LengthSec > 0)
+               //      {
+               //          if(nextSegm != null)
+               //          {
+               //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
+               //              segm.LengthSec = nextSegm.StartSec - segm.StartSec;
+               //          }
+               //          else
+               //          {
+               //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
+               //          }
+               //      }
+               // }
+           }
+
+           return mat;
         }
     }
 }
