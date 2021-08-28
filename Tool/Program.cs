@@ -214,7 +214,7 @@ namespace Tool
          * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
         static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, double tempoCorrection, string customDictFileName, 
-            string title, int shiftTitleLines, Boolean breakWork, bool useMS = false)
+            string title, int shiftTitleLines, Boolean breakWork, bool useMS)
         {
             string transJson = "_work/" + ep + "-goog.json";
             // If transcription is missing, get it now
@@ -227,10 +227,14 @@ namespace Tool
                     GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
                     trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
                 }
-                // Parse MS transcription
                 else 
                 {
-                	// Transcribe text with Microsoft engine
+                    if(!File.Exists("_work/" + ep + "-conv-ms.json"))
+                    {
+                        // TODO Prepare the MS transcription
+
+                    }
+                    // Parse MS transcription
                 	trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
                 }
                 // Set title, serialize
@@ -312,11 +316,6 @@ namespace Tool
             String abbreviation;
             String title;
             int shiftTitleLines;
-
-            abbreviation = "BAR01";
-            title = "А. С. Пушкин. Барышня-крестьянка";
-            shiftTitleLines = 2;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
 
             // abbreviation = "ATCH_ANS_1";
             // title = "А. П. Чехов. Анна на шее. Часть первая (1). Читает Анна Шибарова";
@@ -402,11 +401,12 @@ namespace Tool
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
-            // abbreviation = "APT_BKR_1";
-            // title = "А. С. Пушкин. Барышня-крестьянка. Часть первая (1). Читает Владислава Гехтман";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            abbreviation = "APT_BKR_1";
+            title = "А. С. Пушкин. Барышня-крестьянка. Часть первая (1). Читает Владислава Гехтман";
+            shiftTitleLines = 2;
+            tempoCorrection = 0.0;
+            useMs = true;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "APT_BKR_2";
             // title = "А. С. Пушкин. Барышня-крестьянка. Часть вторая (2). Читает Владислава Гехтман";
