@@ -1,0 +1,630 @@
+# Format:
+# Lines starting by "#" will be ignored.
+# Empty lines will be used as separators.
+# The translation entry is compozed from:
+# - Line 1, the lemma in the format:   
+#   WORD or !WORD or %WORD%IDIOM
+# - Line 2 and next lines up to the empty line separator:
+#   the sequence of TRANSLATION_ENTRIES.
+#
+#   If the prefix "!" used in lemma, the _original_ translation block for the given WORD from the standard dictionary 
+#   will be _replaced_ by a new translation block based on the customer dictionary entry.
+#   Example (1)
+#       !выходить
+#       go over, go all over, go through
+#       hinausgehen
+#       выхаживать: nurse, restore to health
+#       выхаживать: aufziehen, pflegen
+#   This will overwrite the standard translation for the word "выходить" by the customized entries:
+#       go over, go all over, go through
+#       hinausgehen
+#       выхаживать: nurse, restore to health
+#       выхаживать: aufziehen, pflegen
+#   If no prefix used, the TRANSLATION_ENTRIES will be _add_ to the existing translation block (if any) or a new one will be created.
+#   Example (2) 
+#       раздумывать
+#       раздумывать, раздумать: change one’s mind
+#       раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern
+#   This will add the 2 new translation lines to the standard list of translations of the word "раздумывать":
+#       meditate, muse, ponder, consider, ruminate, brood, deliberate, hesitate    | < Entries from
+#       nachdenken, schwanken, unschlüssig sein, zaudern                           | < the standatd dictionary
+#       es sich anders überlegen, seine Absicht ändern                             | < for the word "раздумывать"
+#       раздумывать, раздумать: change one’s mind                                  | < New entries 
+#       раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern     | < from customer dictionary
+#
+#   Especial handling for the Line 2 format:
+#   If the Line 2 is done in format <=WORD_2, the translation block for value of WORD will 
+#   be created by mention that WORD is "the same" as WORD_2 and by list all translation entries of WORD_2.
+#   In this case, the _single_ Line 2 is expected.
+#   Example (3):
+#       сбираться
+#       <=собираться
+#   This will provide a new translations list for the word "сбираться":
+#       = собираться                                                                | < New auto-generated entry
+#       vor haben, beabsichtigen                                                    | < Entries from
+#       sich treffen, zusammenkommen                                                | < the standatd dictionary
+#       sich versammeln                                                             | < for the word "собираться"
+#       be going to, intend to                                                      |
+#
+#   If the form %WORD%IDIOM is used this will provide the idiom data. 
+#   The WORD is the first word for the idiom; the IDIOM is the full text of the idiom.
+#   Example (4):
+#       %приходить%приходить в нетерпение
+#       become impatient
+#       ungeduldig werden
+#   By click on the word "приходить" in the text, if it is the first word of the group "приходить в нетерпение", 
+#   the given translation entries will be presented.
+
+# + Толстой. Война и мир
+
+!выходить
+go over, go all over, go through
+hinausgehen
+выхаживать: nurse, restore to health
+выхаживать: aufziehen, pflegen
+
+!выноси́ть
+bear
+ertragen, aushalten 
+
+%приходить%приходить в нетерпение
+become impatient
+ungeduldig werden
+
+было
+verb + было: be about to do someth.
+verb + было: im Begriff sein etw. zu machen
+
+цветочный
+Adjective of "цветок". Blumen, Blüten-
+цветочная [комната]: Wintergarten
+
+заслышаться
+be heard
+man hörte
+
+кадка
+Blumenkübel
+
+раздумывать
+раздумывать, раздумать: change one’s mind
+раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern
+
+%только%только что
+just, a moment ago
+gerade, soeben
+
+движение
+Impuls
+
+шапка-невидимка
+Tarnkappe
+
+сбираться
+vor haben, beabsichtigen
+sich treffen, zusammenkommen
+sich versammeln
+be going to, intend to
+
+%ничто%ничего ничего
+nothing, nought
+nichts
+
+%ничего%ничего ничего
+nothing, nought
+nichts
+
+# + Чехов. Глупый француз
+
+пашот
+poached egg 
+pochiertes Ei
+
+!чем
+than
+als
+
+%что%что за
+what kind
+was für
+
+челаэк
+= человек. Anrede an einen Kellner oder Diener (veraltet)
+
+есть
+eat
+essen
+
+половой
+waiter (old)
+Kellner (veraltet)
+
+поставить
+serve
+servieren
+
+перед
+vor
+in front of 
+
+неестественно
+unnatural
+
+селянка
+Seljanka (soup)
+Seljanka (Suppe)
+
+!к
+zu, an, gegenüber, gegen, um, bis zu
+towards, to
+
+%к%к чёрту
+zum Teufel
+
+!ведь
+in fact, after all, you know
+indeed, isn‘t it
+doch, ja
+
+%судить%cудя по
+judging by/from
+nach, ausgehend von 
+
+!иметь
+have
+haben, besitzen
+
+!таращить
+anglotzen
+
+о
+Oh!
+
+!чудной
+odd, strange
+seltsam, merkwürdig
+
+%между%между тем
+meanwhile
+währenddessen
+
+%то%то есть
+that is
+das heißt
+und zwar
+nämlich
+
+# + Толстой. Детство
+образок
+holy picture
+Heiligenbild
+
+ваточный
+out of cotton wool 
+aus Watte 
+
+!красный
+red
+rot
+
+!кисточка
+brush, tassel
+Pinsel, Quaste
+
+прицеливаться
+aim at...
+zielen, visieren
+
+%в%в то время как
+when, while
+während
+
+%такой%таким образом
+in such a way
+auf diese Weise
+
+%расположение%расположение духа
+mood
+Stimmungslage
+
+%стать%стать (=начать) что-л. делать
+came to
+begann zu 
+
+течь
+run
+fließen, fluten
+
+обильно
+heavely, largely
+
+!доброта
+kindness, goodness
+Güte
+
+%потому%потому что
+because
+weil
+
+!помнить
+sich erinnern
+to remember
+
+тронуть
+touch
+anfassen, berühren, ergreifen, bewegen
+
+совестно
+ashamed
+
+щипцы
+tongs
+Zange
+
+лоток
+Ablage
+
+лоточек
+<=лоток
+
+!чинно
+orderly
+würdefoll, ordentlich
+
+прокрадываться
+steal into, sneak through
+vorpirschen, schleichen 
+
+спокойно-величавый
+calm, majestic 
+ruhig, majestätisch
+
+!голубой
+blue
+Hellblau, Blau, Himmelblau
+
+полузакрытый
+half-close
+halbgeschlossen
+
+один-одинешенек
+single and alone
+ganz allein 
+
+никто-то
+nobody, no-one 
+niemand
+
+!подходить
+fit, suit, come
+herantreten, kommen, sich nähern, heranrücken
+passen, geeignet sein
+
+ландкарта
+map
+Landkarte
+
+некрашеный
+undyed
+
+!занятый
+busy, occupied
+beschäftigt, belegt, besetzt
+
+!липовый
+linden-, sham, faked, forged
+Linden-
+
+!головка
+head, leadership
+Kopf
+
+!переходить
+get across, get over, cross, get, pass on, pass, turn, go over
+überqueren, übergehen
+
+знать
+know
+wissen
+
+!том 
+volume
+Band
+
+!развеселиться
+become cheerful
+fröhlich werden
+
+# Пушкин. Метель. Ч. 1
+поминутно
+every minute
+
+бостон
+Boston (Kartenspiel)
+
+следственно
+folglich
+consequently
+
+любезный
+(old) sweetheart
+(alt) Liebste
+
+мочь
+(verb) can
+(Verb) können
+
+!тронуть
+touch
+anfassen / berühren (auch innerlich), ergreifen, (innerlich) bewegen
+
+Девушка
+(old) maid
+(alt) Zimmermädchen
+
+!заговор
+conspiracy
+Verschwörung
+
+!верста
+verst, milestone
+Werst (alt)  = 1,067 km
+
+подземелие
+<=подземелье
+
+%чуть%чуть не
+almost
+fast
+
+девический
+girly
+Mädchen-
+
+!выть
+howl
+heulen
+
+!дуть
+blow, swill, souse, go at it, rush it
+(auf)blasen / pusten, aufblähen, aufplustern
+wehen (sausen, huschen, ziehen, zischen - Wind, Wolken etc.)
+mit Eifer tun, pausenlos tun, mit Eifer spielen
+saufen / schnell und in Mengen trinken (wegzischen)
+
+возжи
+reins
+Zügel
+
+!забиться
+begin to beat
+schlagen
+
+!поиграть
+play
+(eine Zeit lang) spielen
+
+# Пушкин. Метель. Ч. 2
+%разъезд%быть в разъезде
+be travelling
+unterwegs sein
+
+!являться
+come
+erscheinen, kommen, auftauchen, sich einfinden
+sich erweisen, sein, darstellen
+
+!корнет
+cornet
+Kornett (Offizier)
+
+%охота%с охотою
+readily 
+gerne
+
+капитан-исправник
+(old) district chief of police
+(alt) Polizeihauptmann
+
+закладывать
+einspannen
+
+взвидеть
+<=увидеть
+
+пересеченный
+intersected
+durchzogen
+
+!чуть
+nearly
+a little
+scarcely
+ein bisschen (kaum), ein wenig (etwas)
+
+приставать
+<=уставать
+
+недалече
+<=недалеко
+
+сие
+<=это
+
+недвижимый
+motionless
+bewegungslos
+
+каки
+<=какой
+
+обуваться
+put shoes on
+sich Schule anziehen
+
+али
+<=или
+
+рассвенет
+<=рассветать
+
+приготовляться
+make ready
+
+знакомый
+known
+bekannt
+
+# Пушкин. Метель. Ч. 2
+%дело%в самом деле
+tatsächlich
+
+подходить
+come
+
+землемер
+Landmesser
+
+полдюжины
+half-dozen
+halbes Dutzend
+
+влюблен
+verliebt
+be in love
+
+%подобный%и тому подобное
+and so on
+
+положить
+entscheiden
+
+счастие
+happiness, luck, good fortune
+
+полусумасшедший
+half−crazy
+halb verrückt
+
+горячка
+Fieber
+
+%мера%по крайней мере
+at any rate
+
+бранный
+military
+
+обвешать
+cover with
+
+русский
+Russian
+russisch
+
+# Пушкин. Метель. Ч. 3-4
+%мочь%может быть
+perhaps
+vielleicht
+
+искатель
+suitor
+
+георгий
+order of St. George
+orden des Heiligen Georg
+
+
+%пора%до сих пор
+still
+bisher
+
+приуготовлять
+<=приготовлять
+
+!кончать
+finish, end
+fertig sein, beenden, aufhören, abschließen
+absolvieren
+
+гранпасьянс
+patience (card game)
+Patience (Kartenspiel)
+
+незапный
+<=внезапный
+
+приуготовлять
+prepare
+
+# Пушкин. Метель. Ч. 5
+
+свидеться
+sich sehen
+
+%милость%сделать милость
+(old) I beg you
+(alt) Gnade gewähren
+
+быть
+verb in past + "было" to do someth. nearly 
+Verb in verg. + "было" etw. fast gemacht haben
+
+вздуматься
+take it into one’s head
+
+сторона
+(old) part of the country
+(alt) Gegend
+
+помиловать
+помилуй (alt) please
+помилуй (alt) ich bitte dich
+
+лавочка
+Bank
+
+%слава%слава богу
+thank heaven
+Gott sei dank
+
+батюшка
+pater, pere
+
+непростительный
+unforgivable
+
+кибитка
+Kibitka (Fuhrwerk mit Dach)
+
+# Пушкин. Стихи
+
+кажись
+Ich glaube, es ist... es müsste...
+I think, it is...
+
+прощай
+leb wohl
+goodbye
+
+то-то
+etwas
+something
+
+парка
+Parca
+
+!правило
+rule, regulations, principle, maxim, straightener
+Regel, Grundsatz
+
+веселье
+cheer, fun
+Freude, Heiterkeit 
+
+докучный
+irksome, boring
+langweilig
+
+спаться
+can sleep
