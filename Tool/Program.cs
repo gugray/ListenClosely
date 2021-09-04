@@ -216,27 +216,34 @@ namespace Tool
         static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, double tempoCorrection, string customDictFileName, 
             string title, int shiftTitleLines, Boolean breakWork, bool useMS)
         {
-            string transJson = "_work/" + ep + "-goog.json";
-            // If transcription is missing, get it now
-            if (!File.Exists(transJson))
+            string transJson;
+            Material trans = null;
+            // Using Google?
+            if (!useMS)
             {
-                Material trans;
-                if (!useMS)
+                transJson = "_work/" + ep + "-goog.json";
+                // If transcription is missing, get it now
+                if (!File.Exists(transJson))
                 {
                     // Transcribe text with Google engine
                     GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
                     trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                    // Set title, serialize
+                    trans.Title = title;
+                    trans.SaveJson(transJson);
                 }
-                else 
-                {
-                    if(!File.Exists("_work/" + ep + "-conv-ms.json"))
-                    {
-                        // TODO Prepare the MS transcription
-
-                    }
-                    // Parse MS transcription
-                	trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
-                }
+            }
+            // Using MS?
+            else
+            {
+                transJson = "_work/" + ep + "-ms.json";
+                // -conv-ms.json is the direct output of the MS service
+                // It is nout our own Material class serialized
+                trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
+            }
+            // We have a new transcription: save it
+            if (trans != null)
+            {
                 // Set title, serialize
                 trans.Title = title;
                 trans.SaveJson(transJson);
@@ -401,9 +408,9 @@ namespace Tool
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
-            abbreviation = "APT_BKR_1";
-            title = "А. С. Пушкин. Барышня-крестьянка. Часть первая (1). Читает Владислава Гехтман";
-            shiftTitleLines = 2;
+            abbreviation = "APT_BKR_2";
+            title = "А. С. Пушкин. Барышня-крестьянка (2)";
+            shiftTitleLines = 0;
             tempoCorrection = 0.0;
             useMs = true;
             doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
