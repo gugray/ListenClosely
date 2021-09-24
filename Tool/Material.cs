@@ -122,6 +122,9 @@ namespace Tool
                     segment.Words.Add(word);
                 }
                 segment.StartSec = segment.Words[0].StartSec;
+                segment.LengthSec = segment.Words[segment.Words.Count - 1].StartSec +
+                    segment.Words[segment.Words.Count - 1].LengthSec -
+                    segment.StartSec;
                 material.Segments.Add(segment);
             }
             return material;
