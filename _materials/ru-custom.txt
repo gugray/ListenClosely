@@ -219,9 +219,11 @@ zielen, visieren
 when, while
 während
 
-%такой%таким образом
-in such a way
-auf diese Weise
+образ
+таким образом in such a way
+таким образом auf diese Weise
+каким образом how, in what way?
+каким образом auf welche Weise
 
 %расположение%расположение духа
 mood
@@ -509,8 +511,9 @@ halb verrückt
 горячка
 Fieber
 
-%мера%по крайней мере
-at any rate
+мера
+по крайней мере at any rate, at least
+по крайней мере wenigstens
 
 бранный
 military
@@ -523,9 +526,9 @@ Russian
 russisch
 
 # Пушкин. Метель. Ч. 3-4
-%мочь%может быть
-perhaps
-vielleicht
+мочь
+может быть perhaps
+может быть vielleicht
 
 искатель
 suitor
@@ -628,3 +631,281 @@ langweilig
 
 спаться
 can sleep
+
+# Пушкин. Барышня-крестьянка. Ч. 1
+
+выйти в отставку
+retire from service
+den Dienst quittieren 
+
+!пора
+time
+Zeit
+it‘s time
+es ist Zeit
+
+проказничать
+play pranks
+
+разоряться
+ruin oneself, curse, swear
+verarmen, all sein Geld / Hab und Gut verlieren, an den Bettelstab kommen, ins Elend in Armut geraten, ruiniert / zugrunde/zu Grunde gerichtet sein
+
+доводить до сведения
+bring to one’s notice
+zur Kenntnis bringen
+
+зоил
+Zoilos
+
+покамест
+so far
+
+нечувствительность
+insensibility
+Gefühlslosigkeit, Indolenz
+
+любовная связь
+love affair
+Liebesaffäre
+
+живать
+<=жить
+
+почерпать
+<=черпать
+
+главное
+the main thing
+das Wichtigste
+
+ум
+сходить с ума: verrückt werden
+сходить с ума: go mad
+
+%производить%производить впечатление
+make an impression
+Eindruck machen
+
+%приводить%приводить в отчаяние
+despaire
+zur Verzweiflung bringen
+
+%умирать%умирать со скуки
+be bored to death
+sich zu Tode langweilen
+
+%пойти%пойти в гости
+go to a party
+zu Besuch gehen
+
+пускай
+let 
+
+%порядок%по порядку
+in the right order
+der Reihe nach
+
+сроду
+in one’s life
+
+влюбиться
+fall in love
+sich verlieben
+
+сказывать
+say, tell
+
+%беда%не беда
+never mind!
+nicht so schlimm
+
+прозевать
+miss chance
+verpassen
+
+# Пушкин. Барышня-крестьянка. Ч. 2
+
+!план
+plan, scheme, map, target
+Plan, Plan (Projekt), Vorhaben, Vorsatz, Absicht
+Gebiet, Bereich
+Ebene
+Sicht
+Format, Aufnahme
+
+примерять
+try on
+anprobieren
+
+пред
+<=перед
+
+%заря%ни свет ни заря
+ни свет ни заря
+very early
+sehr früh am Morgen
+
+государь
+Zar
+
+легавый
+gundog
+Bluthund
+
+баить
+<=говорить
+
+поселянка
+<=крестьянка
+
+отпрыгивать
+jump aside
+
+научить
+teach
+
+знакомая
+woman friend
+
+поправиться
+сorrect
+korrigieren
+
+прибить
+<=побить
+
+божиться
+swear by God
+bei Gott schwören
+
+набелиться
+Schminkweiß verwenden
+
+заниматься
+<=начиналась
+
+
+# Пушкин. Барышня-крестьянка. Ч. 3
+
+дружески
+friendly
+
+образ
+
+разочарованность
+ressentiment
+
+малый
+Bursche
+
+соблазниться
+become tempted by
+
+оседлывать
+tack up a horse
+
+горло
+во все горло at full throat
+во все горло aus vollem Halse
+
+состояние
+быть в состоянии be able to
+быть в состоянии imstande sein 
+
+укореняться
+take root
+
+ухо
+не верить своим ушам not to believe one’s ears
+не верить своим ушам seinen Ohren nicht trauen
+
+опомниться
+recollect oneself
+zu sich kommen
+
+
+# Пушкин. Барышня-крестьянка. Ч. 4
+
+взойти
+rise, ascend 
+
+зверинец
+menagerie
+Gehege, Zwinger, Käfig
+
+усыпать
+bestrew
+überschütten, bestreuen, besäen
+
+внутренно
+<=внутренне
+
+право
+иметь право have a right
+иметь право das Recht haben
+
+случай
+во всяком случае in any case
+во всяком случае auf jeden Fall
+
+закоренелый
+eingefleischt, abgebrüht
+
+потупить
+потупить глаза lower one’s eyes
+потупить глаза den Blick sinken
+
+помирить
+reconcile with
+versöhnen
+
+разумеется
+of course
+
+умилостивлять
+mollifly, please
+gnädig stimmen
+
+душа
+от души from one’s heart
+от души von ganzem Herzen
+
+каракули
+skratchy writing
+Gekritzel
+
+# Пушкин. Барышня-крестьянка. Ч. 5
+
+сумасбродство
+extravagance
+
+переговориться
+<=договориться
+
+удостоить
+honor, favor,
+würdigen
+
+почтительно 
+respectfully
+
+куда
+хоть куда terrific, excellent
+
+%стерпеться%стерпится слюбится
+a love comes with habit
+
+причина
+по причине on account of
+по причине aus dem Grund
+
+слог
+style
+Stil
+
+спрыгивать
+jump down
+
+подымать
+<=поднимать
