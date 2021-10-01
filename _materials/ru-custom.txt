@@ -230,8 +230,12 @@ mood
 Stimmungslage
 
 %стать%стать (=начать) что-л. делать
-came to
-begann zu 
+begin to
+beginnen zu..., anfangen zu...
+
+%становиться
+стать (=начать) что-л. делать begin to
+стать (=начать) что-л. делать beginnen zu..., anfangen zu...
 
 течь
 run
@@ -341,6 +345,10 @@ fröhlich werden
 поминутно
 every minute
 
+!выносить
+pass, carry, tolerate, take away
+hinausbringen, durchstehen, aushalten
+
 бостон
 Boston (Kartenspiel)
 
@@ -352,9 +360,11 @@ consequently
 (old) sweetheart
 (alt) Liebste
 
-мочь
+!мочь
 (verb) can
 (Verb) können
+может быть perhaps
+может быть vielleicht
 
 !тронуть
 touch
@@ -526,9 +536,6 @@ Russian
 russisch
 
 # Пушкин. Метель. Ч. 3-4
-мочь
-может быть perhaps
-может быть vielleicht
 
 искатель
 suitor
