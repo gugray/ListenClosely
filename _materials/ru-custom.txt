@@ -57,11 +57,13 @@
 
 # + Толстой. Война и мир
 
-!выходить
+выходить
 go over, go all over, go through
 hinausgehen
-выхаживать: nurse, restore to health
-выхаживать: aufziehen, pflegen
+
+выхаживать
+nurse, restore to health
+aufziehen, pflegen
 
 !выноси́ть
 bear
@@ -90,9 +92,9 @@ Blumenkübel
 раздумывать, раздумать: change one’s mind
 раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern
 
-%только%только что
-just, a moment ago
-gerade, soeben
+%только
+только что just, a moment ago
+только что gerade, soeben
 
 движение
 Impuls
@@ -248,9 +250,9 @@ heavely, largely
 kindness, goodness
 Güte
 
-%потому%потому что
-because
-weil
+#%потому%потому что
+#because
+#weil
 
 !помнить
 sich erinnern
@@ -490,6 +492,7 @@ bekannt
 # Пушкин. Метель. Ч. 2
 %дело%в самом деле
 tatsächlich
+really
 
 подходить
 come
@@ -682,9 +685,11 @@ Liebesaffäre
 почерпать
 <=черпать
 
-главное
-the main thing
-das Wichtigste
+!главное
+main, key, major, chiefly, above all
+the main thing, the chief thing
+Haupt-
+das Wichtigste, vor allem
 
 ум
 сходить с ума: verrückt werden
@@ -853,8 +858,10 @@ bestrew
 иметь право das Recht haben
 
 случай
-во всяком случае in any case
 во всяком случае auf jeden Fall
+во всяком случае in any case
+по случаю for, on account (of)
+по случаю wegen
 
 закоренелый
 eingefleischt, abgebrüht
@@ -916,3 +923,176 @@ jump down
 
 подымать
 <=поднимать
+
+
+# Чехов. Студент. Ч. 5
+
+точно
+as though, like
+
+!подуть
+blow, swill, souse, go at it, rush it
+eine Zeit lang / etwas wehen / ziehen / blasen / pusten
+zu wehen / ziehen / blasen / pusten beginnen
+
+дьячок
+sacristan
+
+закоченеть
+be pinched with cold
+
+пустынно
+deserted
+
+вдовий
+widow's
+
+пятница
+Cтрастная пятница Holy Friday
+Cтрастная пятница Karfreitag
+
+сходить
+get off
+verschwinden
+
+вечеря
+Тайная Вечеря the Last Supper
+Тайная Вечеря das Letzte Abendmahl
+
+истомиться
+<=томиться
+
+замученный
+exhausted
+erschöpft
+
+предчувствовать
+feel
+
+разводить
+разводить огонь make a fire
+разводить огонь Feuer anmachen
+
+должно 
+должно быть probably
+должно быть wahrscheinlich
+
+погодя
+after a while
+etwas später
+
+настоящее
+present
+Gegenwart
+
+дух
+перевести дух take breath
+перевести дух Atem holen
+
+
+немного
+few, bit, some
+etwas, ein bisschen
+
+
+# Чехов. Аннап на шее. Ч. 1
+
+молодые
+young marrieds 
+Brautpaar
+
+тронуться
+start, move
+
+полный
+well fleshed
+
+бакены
+side whiskers
+Koteletten
+
+повод
+matter, reason
+Anlass
+
+калоша
+Galosche
+
+становиться
+get, turn to, plant oneself
+
+
+# Чехов. Аннап на шее. Ч. 2
+
+казенный
+state-owned
+staatseigen
+
+!класть
+lay, put, place
+legen, stecken, tun, hintun, unterbringen, deponieren
+stapeln (Holz)
+verbrauchen, verwenden
+mauern, eine Mauer errichten, einen Ofen setzen
+einen Abdruck machen
+auftragen (Farbe usw., Essen auf den Tisch), aufbringen, auflegen
+
+равный
+все равно in doesn’t matter
+все равно egal
+
+натянуто 
+натянуто улыбаться
+smile nervously
+
+# Чехов. Аннап на шее. Ч. 3
+
+озабоченно
+preoccupied
+
+посоветоваться
+ask advice
+
+научать
+teach
+
+окидывать
+окидывать взглядом glance over
+
+картавить
+be unable to pronounce r and l properly 
+einen r-Laut nicht korrekt als Zungenspitzen-r sprechen können, einen l-Laut nicht korrekt als hartes l sprechen können, ein Zäpfchen-R / uvulares r sprechen
+
+подходить
+come closer
+
+сунуть
+give
+
+# Чехов. Аннап на шее. Ч. 4
+
+!рад
+glad
+froh
+
+!потухать
+go out, die out
+erlöschen, abglimmen
+
+светать
+day is breaking
+
+уверенный
+sure
+überzeugt
+
+!болван
+blockhead, clot, dim-wit, block, dummy
+Idiot
+Holzklotz, Hauklotz
+
+участие
+принимать участие take part in
+принимать участие teilnehmen an
+
+
