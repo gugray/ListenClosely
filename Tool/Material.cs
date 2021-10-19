@@ -77,7 +77,11 @@ namespace Tool
         [JsonProperty("paraIx")]
         public int ParaIx = -1;
         [JsonProperty("isTitleLine")]
-        public bool isTitleLine = false;
+        public bool IsTitleLine = false;
+        [JsonProperty("isVerse")]
+        public bool IsVerse = false;
+        [JsonProperty("isEmptyLine")]
+        public bool IsEmptyLine = false;
     }
 
     class Material
@@ -212,15 +216,15 @@ namespace Tool
                     ++ix;
                     List<Word> lemmas = new List<Word>();
                     buildAlfaWords(line, lemmas);
-                    if (lemmas.Count != segm.Words.Count) throw new Exception("Barf.");
+                    if (lemmas.Count != segm.Words.Count) throw new Exception("Count of lemmas (" + lemmas.Count + ") is different as count of words (" + segm.Words.Count + ")");
                     for (int i = 0; i < lemmas.Count; ++i)
                     {
                         if (lemmas[i].Lead != segm.Words[i].Lead)
-                            throw new Exception("Barf.");
+                            throw new Exception("The current lemma lead '" + lemmas[i].Lead + "' if not the same as the current word lead '" + segm.Words[i].Lead  + "'");
                         if (lemmas[i].Text == "" && segm.Words[i].Text != "")
-                            throw new Exception("Barf.");
+                            throw new Exception("The current lemma text is empty but the current word text is '" + segm.Words[i].Text + "'");
                         if (lemmas[i].Text != "" && segm.Words[i].Text == "")
-                            throw new Exception("Barf.");
+                            throw new Exception("The current lemma text is '" + lemmas[i].Text + "' but the current word text is empty");
                         segm.Words[i].Lemma = lemmas[i].Text;
                     }
                 }
@@ -249,7 +253,7 @@ namespace Tool
                         if (word.Trail != "") ++i;
                     }
                     if (i != lems.Length)
-                        throw new Exception("Barf.");
+                        throw new Exception("Count of words (" + i + ") is different as count of lemmas (" + lems.Length + ")");
                 }
             }
         }
@@ -272,26 +276,46 @@ namespace Tool
             segs.Add(prev + para.Substring(start));
         }
 
-        public static Material FromPlainText(string fn, bool segmentSents)
+        public static Material FromPlainText(string abbreviation, bool segmentSents)
         {
             string line;
             var paras = new List<string>();
+            var addParas = new List<int>();
+            int addParaIx = -1;
+
+            String fn = "_work/" + abbreviation + "-orig.txt";
+
             using (StreamReader sr = new StreamReader(fn))
             {
                 while ((line = sr.ReadLine()) != null)
                 {
                     line = line.Replace("<…>", "").Trim();
                     while (line.IndexOf("  ") != -1) line = line.Replace("  ", " ");
-                    if (line != "") paras.Add(line.Trim());
+                    // Here, we detect an especial string <BR> 
+                    // on the _start_ of a _not_empty_ line and only _one_ time in the line. 
+                    // This will interpreted as: before this line, an _empty_ line 
+                    // must be later generated (in the finalized segments file). 
+                    // It is required for layout of verses.
+                    // The index of found line numbers will be stored into an additional work file.
+                    bool hasAddParMark = false;
+                    if(line.StartsWith("<BR>") || line.StartsWith("<br>"))
+                    {
+                        hasAddParMark = true;
+                        while (line.IndexOf("<BR>") != -1) line = line.Replace("<br>", "");
+                        while (line.IndexOf("<br>") != -1) line = line.Replace("<br>", "");
+                    }
+                    if (line != "")
+                    {
+                        addParaIx++;
+                        paras.Add(line.Trim());
+                        if(hasAddParMark) addParas.Add(addParaIx);
+                    }
                 }
             }
             var sents = new List<string>();
             var paraStarts = new List<int>();
             foreach (var para in paras)
             {
-                // DBG
-                //if (para.Contains("улыбаясь. — "))
-                //    line = "";
                 paraStarts.Add(sents.Count);
                 if (segmentSents) sentSplit(para, sents);
                 else sents.Add(para);
@@ -307,6 +331,22 @@ namespace Tool
                 seg.ParaIx = paraIx;
                 res.Segments.Add(seg);
             }
+
+            // the index of additional lines is not empty -> write the 'addpar' work file
+            String addFn = "_work/" + abbreviation + "-addpar.txt";
+            // delete file if exists
+            File.Delete(addFn);
+            if (addParas.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < addParas.Count; i++)
+                {
+                    if (i > 0) sb.Append(',');
+                    sb.Append(addParas[i]);
+                }
+                File.WriteAllText(addFn, sb.ToString(), Encoding.UTF8);
+            }
+
             return res;
         }
 

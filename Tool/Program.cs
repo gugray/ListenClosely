@@ -110,7 +110,7 @@ namespace Tool
         {
             string ln1, ln2;
             var surfToLem = new Dictionary<string, string> ();
-            using (var srSurfs =new StreamReader(fnSurfs))
+            using (var srSurfs = new StreamReader(fnSurfs))
             using (var srVerbLems = new StreamReader(fnVerbLems))
             {
                 while ((ln1 = srSurfs.ReadLine()) != null)
@@ -163,48 +163,126 @@ namespace Tool
         }
 
         /**
-         * This method will take first N lines and mark they as a separate paragraph. 
-         * To be used for mark the title lines in the verses.
+         * This method will add an empty segment on the given position
          * 
          */
-        static void shiftTitleSegments(Material mat, int shiftTitleLines)
+        static void shiftSegments(Material mat, int position, bool markAsTitle)
         {
-            if(shiftTitleLines == 0)
+            if (position == 0)
             {
                 return;
             }
 
-            mat.Segments.Add(new Segment());
-            int i = mat.Segments.Count - 1;
-            for (; i > shiftTitleLines; i--)
+            // less as 2 segments - no sense to add a line
+            int i = mat.Segments.Count;
+            if(i < 2)
             {
-                mat.Segments[i] = mat.Segments[i - 1];
-                ++mat.Segments[i].ParaIx;
+                return;
             }
-            // enter a new ampty segment
-            mat.Segments[i] = new Segment();
-            mat.Segments[i].LengthSec = 0;
-            mat.Segments[i].StartSec = mat.Segments[i - 1].StartSec + mat.Segments[i - 1].LengthSec;
-            mat.Segments[i].ParaIx = i;
 
+            // requested line position >= the end position
+            if(position >= mat.Segments[i - 1].ParaIx)
+            {
+                return;
+            }
+
+            i = mat.Segments.Count - 1;
+            for (; i > 0; i--)
+            {
+                if(mat.Segments[i].ParaIx == position)
+                {
+                    break;
+                }
+            }
+            mat.Segments.Insert(i, new Segment());
+
+            // clean the segment on the current position for have no data
+            // zero duration
+            mat.Segments[i].LengthSec = 0;
+            // start point the same as end point of previous segment
+            mat.Segments[i].StartSec = mat.Segments[i - 1].StartSec + mat.Segments[i - 1].LengthSec;
+            // the paragraph idx 
+            mat.Segments[i].ParaIx = mat.Segments[i - 1].ParaIx + 1;
+            mat.Segments[i].IsEmptyLine = true;
+            // list of words must contain one empty word
             mat.Segments[i].Words.Add(new Word());
             mat.Segments[i].Words[0].Text = "";
             mat.Segments[i].Words[0].Lemma = "";
             mat.Segments[i].Words[0].Lead = "";
             mat.Segments[i].Words[0].Trail = "";
-            mat.Segments[i].Words[0].StartSec = mat.Segments[i].StartSec;
+            // zero duration
             mat.Segments[i].Words[0].LengthSec = 0;
+            // start point the same as start point of this segment
+            mat.Segments[i].Words[0].StartSec = mat.Segments[i].StartSec;
 
-            i = 0;
-            for(; i< shiftTitleLines; i++)
+            i++;
+            for (; i < mat.Segments.Count; i++)
             {
-                mat.Segments[i].isTitleLine = true;
+                ++mat.Segments[i].ParaIx;
+            }
+
+            // also, mark the title lines
+            if (markAsTitle)
+            {
+                i = 0;
+                for (; i < position; i++)
+                {
+                    mat.Segments[i].IsTitleLine = true;
+                }
+            }
+        }
+
+        /**
+         * This method will take first N lines and mark they as a separate paragraph. 
+         * To be used for mark the title lines in the verses.
+         */
+        static void shiftTitleSegments(Material mat, int shiftTitleLines)
+        {
+            shiftSegments(mat, shiftTitleLines, true);
+        }
+
+
+        /**
+         *  This method will search for the 'addpar' file and parfe the content a a list of numbers, 
+         *  then, for each number, it will add an empoty segment
+         */
+        static void shiftAdditionalParas(Material mat, string abbreviation, int shiftTitleLines)
+        {
+            String addFn = "_work/" + abbreviation + "-addpar.txt";
+            if (!File.Exists(addFn))
+            {
+                return;
+            }
+            string line = File.ReadAllText(addFn);
+            if(line.Trim().Length == 0) return;
+            
+            string[] parts = line.Split(',');
+            if (parts.Length == 0) return;
+
+            List<int> addPars = new List<int>();
+            for(int i = 0; i < parts.Length; i++)
+            {
+                try
+                {
+                    addPars.Add(int.Parse(parts[i]));
+                }
+                catch (Exception ex1) { }
+            }
+            if (addPars.Count == 0) return;
+
+            // add empty segments
+            for (int i = 0; i < addPars.Count; i++)
+            {
+                int addPar = addPars[i];
+                if (shiftTitleLines > 0) addPar++;
+                addPar += i;
+                shiftSegments(mat, addPar, false);
             }
         }
 
         /**
          * useWords             if true, search translation not only for the lemma but also for the original word
-         * ep                   abbreviated name of the work data
+         * abbreviation         abbreviated name of the work data
          * shift                the value to shift the segments timestamps
          * tempoCorrection      the value for tempo correction (0 if not required)
          * customDictFileName   the file name  of custom dictionary (nullable)
@@ -213,7 +291,7 @@ namespace Tool
          * breakWork            to be set true until the -lem file is still not done by rulem.py
          * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
-        static void doOrigAlignRus(Boolean useWords, string ep, decimal shift, double tempoCorrection, string customDictFileName, 
+        static void doOrigAlignRus(Boolean useWords, string abbreviation, decimal shift, double tempoCorrection, string customDictFileName, 
             string title, int shiftTitleLines, Boolean breakWork, bool useMS)
         {
             string transJson;
@@ -221,13 +299,13 @@ namespace Tool
             // Using Google?
             if (!useMS)
             {
-                transJson = "_work/" + ep + "-goog.json";
+                transJson = "_work/" + abbreviation + "-goog.json";
                 // If transcription is missing, get it now
                 if (!File.Exists(transJson))
                 {
                     // Transcribe text with Google engine
                     GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
-                    trans = gt.Transcribe("_audio/" + ep + ".flac", "ru");
+                    trans = gt.Transcribe("_audio/" + abbreviation + ".flac", "ru");
                     // Set title, serialize
                     trans.Title = title;
                     trans.SaveJson(transJson);
@@ -236,10 +314,10 @@ namespace Tool
             // Using MS?
             else
             {
-                transJson = "_work/" + ep + "-ms.json";
+                transJson = "_work/" + abbreviation + "-ms.json";
                 // -conv-ms.json is the direct output of the MS service
                 // It is nout our own Material class serialized
-                trans = Material.FromMS("_work/" + ep + "-conv-ms.json");
+                trans = Material.FromMS("_work/" + abbreviation + "-conv-ms.json");
             }
             // We have a new transcription: save it
             if (trans != null)
@@ -254,10 +332,10 @@ namespace Tool
             mTrans.Title = title;
 
             // Read original text, and segment paragraphs
-            var mOrig = Material.FromPlainText("_work/" + ep + "-orig.txt", true);
+            var mOrig = Material.FromPlainText(abbreviation, true);
             mOrig.Title = title;
             // Save as plain text, for lemmatization
-            mOrig.SavePlain("_work/" + ep + "-plain.txt");
+            mOrig.SavePlain("_work/" + abbreviation + "-plain.txt");
 
             // Align, and infuse timestamps
             TimeFuser fs = new TimeFuser(mTrans, mOrig);
@@ -274,7 +352,7 @@ namespace Tool
             // Shift all segment timestamps... Don't ask why
             shiftSegments(mOrig, shift);
 
-            mOrig.AddLemmasRu("_work/" + ep + "-lem.txt");
+            mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
             Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
@@ -296,10 +374,13 @@ namespace Tool
             // Workaround for mark the title lines if required
             shiftTitleSegments(mOrig, shiftTitleLines);
 
+            // Workaround for mark the empty lines between the strophes of verses if required
+            shiftAdditionalParas(mOrig, abbreviation, shiftTitleLines);
+
             changeSegmentsForTempo(mOrig, tempoCorrection);
 
-            mOrig.SaveJson("_work/" + ep + "-segs.json");
-            mOrig.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
+            mOrig.SaveJson("_work/" + abbreviation + "-segs.json");
+            mOrig.SaveJson("ProsePlayer/public/media/" + abbreviation + "-segs.json");
         }
 
         static void Main(string[] args)
@@ -315,6 +396,7 @@ namespace Tool
             String customDictFileName = "ru-custom.txt";
 
             Boolean breakWork = false;  // for 1st start, set true; for 2nd start, set false
+
             Boolean useWords = false;   // set normally false, else, the forms of words will be used additionally to lemmas dor collect the translations
 			Boolean useMs = false;      // set true for use MS Speech2Text API, else false for use the Google engine
             double shift = 0.0;
@@ -322,28 +404,76 @@ namespace Tool
 
             String abbreviation;
             String title;
-            int shiftTitleLines;
+            int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
 
+            // abbreviation = "MLE_GOV";
+            // title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_PNT";
+            // title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_VOD";
+            // title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_FAT_1";
+            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (1). Читает Евгений Шибаров";
+            // shiftTitleLines = 3;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_FAT_2";
+            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (2). Читает Евгений Шибаров";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_FAT_3";
+            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (3). Читает Евгений Шибаров";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_FAT_4";
+            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (4). Читает Евгений Шибаров";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_FAT_5";
+            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (5). Читает Евгений Шибаров";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
             // abbreviation = "ATCH_ANS_1";
-            // title = "А. П. Чехов. Анна на шее. Часть первая (1). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Анна на шее (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_ANS_2";
-            // title = "А. П. Чехов. Анна на шее. Часть вторая (2). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Анна на шее (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            // 
+            //
             // abbreviation = "ATCH_ANS_3";
-            // title = "А. П. Чехов. Анна на шее. Часть третья (3). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Анна на шее (3). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            // 
+            //
             // abbreviation = "ATCH_ANS_4";
-            // title = "А. П. Чехов. Анна на шее. Часть четвертая (4). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Анна на шее (4). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
@@ -367,83 +497,82 @@ namespace Tool
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "ATCH_STU_1";
-            // title = "А. П. Чехов. Студент. Часть первая (1). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Студент (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "ATCH_STU_2";
-            // title = "А. П. Чехов. Студент. Часть вторая (2). Читает Анна Шибарова";
+            // title = "А. П. Чехов. Студент (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
             // abbreviation = "APT_MET_1";
-            // title = "А. С. Пушкин. Метель. Часть первая (1). Читает Анна Шибарова";
+            // title = "А. С. Пушкин. Метель (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_2";
-            // title = "А. С. Пушкин. Метель. Часть вторая (2). Читает Анна Шибарова";
+            // title = "А. С. Пушкин. Метель (2). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_3";
-            // title = "А. С. Пушкин. Метель. Часть третья (3). Читает Анна Шибарова";
+            // title = "А. С. Пушкин. Метель (3). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_4";
-            // title = "А. С. Пушкин. Метель. Часть четвертая (4). Читает Анна Шибарова";
+            // title = "А. С. Пушкин. Метель (4). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_MET_5";
-            // title = "А. С. Пушкин. Метель. Часть пятая (5). Читает Анна Шибарова";
+            // title = "А. С. Пушкин. Метель (5). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             //
-            abbreviation = "APT_BKR_2";
-            title = "А. С. Пушкин. Барышня-крестьянка (2)";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            useMs = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_2";
-            // title = "А. С. Пушкин. Барышня-крестьянка. Часть вторая (2). Читает Владислава Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_3";
-            // title = "А. С. Пушкин. Барышня-крестьянка. Часть третья (3). Читает Владислава Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_4";
-            // title = "А. С. Пушкин. Барышня-крестьянка. Часть четвертая (4). Читает Владислава Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_5";
-            // title = "А. С. Пушкин. Барышня-крестьянка. Часть пятая (5). Читает Владислава Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
-            //
-            // abbreviation = "MLE_PAR";
-            // title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
+            // abbreviation = "APT_BKR_1";
+            // title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "APT_BKR_2";
+            // title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "APT_BKR_3";
+            // title = "А. С. Пушкин. Барышня-крестьянка (3). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "APT_BKR_4";
+            // title = "А. С. Пушкин. Барышня-крестьянка (4). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            // 
+            // abbreviation = "APT_BKR_5";
+            // title = "А. С. Пушкин. Барышня-крестьянка (5). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
+            //
+            abbreviation = "MLE_PAR";
+            title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
+            shiftTitleLines = 2;
+            tempoCorrection = 0.0;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
             // 
             // abbreviation = "APT_DMJ";
             // title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
@@ -459,7 +588,7 @@ namespace Tool
             // 
             // 
             // abbreviation = "APT_SSN";
-            // title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Владислава Гехтман";
+            // title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, breakWork, useMs);
