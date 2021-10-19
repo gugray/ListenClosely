@@ -58,8 +58,10 @@
 # + Толстой. Война и мир
 
 выходить
-go over, go all over, go through
+exit, go out, step out 
 hinausgehen
+выходить замуж (за кого-л.) marry
+выходить замуж (за кого-л.) heiraten
 
 выхаживать
 nurse, restore to health
@@ -250,9 +252,9 @@ heavely, largely
 kindness, goodness
 Güte
 
-#%потому%потому что
-#because
-#weil
+%потому%потому что
+because
+weil
 
 !помнить
 sich erinnern
@@ -307,6 +309,7 @@ niemand
 fit, suit, come
 herantreten, kommen, sich nähern, heranrücken
 passen, geeignet sein
+come closer
 
 ландкарта
 map
@@ -494,8 +497,6 @@ bekannt
 tatsächlich
 really
 
-подходить
-come
 
 землемер
 Landmesser
@@ -995,7 +996,7 @@ few, bit, some
 etwas, ein bisschen
 
 
-# Чехов. Аннап на шее. Ч. 1
+# Чехов. Анна на шее. Ч. 1
 
 молодые
 young marrieds 
@@ -1022,7 +1023,7 @@ Galosche
 get, turn to, plant oneself
 
 
-# Чехов. Аннап на шее. Ч. 2
+# Чехов. Анна на шее. Ч. 2
 
 казенный
 state-owned
@@ -1038,14 +1039,14 @@ einen Abdruck machen
 auftragen (Farbe usw., Essen auf den Tisch), aufbringen, auflegen
 
 равный
-все равно in doesn’t matter
+все равно it doesn’t matter
 все равно egal
 
 натянуто 
 натянуто улыбаться
 smile nervously
 
-# Чехов. Аннап на шее. Ч. 3
+# Чехов. Анна на шее. Ч. 3
 
 озабоченно
 preoccupied
@@ -1061,15 +1062,11 @@ teach
 
 картавить
 be unable to pronounce r and l properly 
-einen r-Laut nicht korrekt als Zungenspitzen-r sprechen können, einen l-Laut nicht korrekt als hartes l sprechen können, ein Zäpfchen-R / uvulares r sprechen
-
-подходить
-come closer
 
 сунуть
 give
 
-# Чехов. Аннап на шее. Ч. 4
+# Чехов. Анна на шее. Ч. 4
 
 !рад
 glad
