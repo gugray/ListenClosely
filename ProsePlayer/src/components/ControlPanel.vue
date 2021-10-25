@@ -6,7 +6,6 @@
     <i class="fa smaller fa-undo"  @click="onClick('repeat')"></i>
     <i class="fa smaller fa-step-forward"  @click="onClick('next')"></i>
     <div class="time">{{ timeStr }}</div>
-    <div class="autoPause" @click="onClick('autoPause')">auto pause: <span :class="autoPauseClass">{{ autoPauseLabel }}</span></div>
     <div class="title">{{ title }}</div>
   </div>
 </template>
@@ -23,7 +22,6 @@
     props: {
       title: String,
       loading: Boolean,
-      autoPause: Boolean,
       playing: Boolean,
       currPos: Number,
       totalSec: Number,
@@ -39,14 +37,6 @@
       },
       timeStr: function () {
         return fmtTime(this.currPos, false, 0) + " / " + fmtTime(this.totalSec, false, 0);
-      },
-      autoPauseClass: function () {
-        if (this.autoPause) return "on";
-        else return "";
-      },
-      autoPauseLabel: function () {
-        if (this.autoPause) return "on";
-        else return "off";
       },
     },
     methods: {

@@ -4,20 +4,6 @@
       <h2>Short help</h2>
       <p>
         Click left of the text to play from a given sentence. Click on a word in the text to show dictionary entries.
-        Next to each dictionary entry, the pin icon makes it sticky, so it appears again by itself whenever you play
-        the same sentence.
-      </p>
-      <p>
-        <span class="shortcut">Space</span> plays or pauses.
-      </p>
-      <p>
-        <span class="shortcut">Up</span> jumps to previous sentence.
-      </p>
-      <p>
-        <span class="shortcut">Down</span> jumps to next sentence.
-      </p>
-      <p>
-        <span class="shortcut">Left</span> repeats current sentence.
       </p>
     </div>
     <div v-if="showNoEntries" class="ifu">

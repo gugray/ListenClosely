@@ -12,7 +12,7 @@
     </template>
     <template v-if="mode == 'listen'">
       <div class="topFixed">
-        <ControlPanel :loading="audioLoading" :autoPause="autoPause" :playing="playing" v-on:action="onControlPanel"
+        <ControlPanel :loading="audioLoading" :playing="playing" v-on:action="onControlPanel"
                       :currPos="currPos" :totalSec="totalSec" :title="title" />
       </div>
       <div class="centrer">
@@ -53,7 +53,6 @@
         startSecForEntries: -1,
         entryIxsToShow: [],
         pinnedEntries: [],
-        autoPause: true,
         playing: false,
         currPos: 0,
         totalSec: 0,
@@ -107,14 +106,6 @@
         if (inCurrSeg) return;
         // Just entered next segment?
         if (nextSeg != null && currPos >= nextSeg.startSec && currPos <= nextSeg.startSec + nextSeg.lengthSec) {
-          // We in autoPause? And less than 100msec into new segment?
-          // Then pause, and don't update active segment.
-          var secIntoNext = currPos - nextSeg.startSec;
-          //console.log("SecIntoNext: " + secIntoNext);
-          if (this.autoPause && secIntoNext < 0.1 && player.isPlaying()) {
-            player.pause();
-            return;
-          }
           // OK, update active segment
           if (this.active.segIx + 1 < this.paras[this.active.paraIx].length)
             this.setActive(this.active.paraIx, this.active.segIx + 1);
@@ -180,10 +171,6 @@
         else if (action == "next") this.onNext();
         else if (action == "repeat") this.onRepeat();
         else if (action == "playPause") this.onPlayPause();
-        else if (action == "autoPause") {
-          this.autoPause = !this.autoPause;
-          setAutoPause(this.autoPause);
-        }
       },
       onShowEntries: function (segStartSec, ixs) {
         this.startSecForEntries = segStartSec;
@@ -203,7 +190,6 @@
         if (cmd == null) return;
         e.preventDefault();
         if (cmd == "Space") this.onPlayPause();
-        else if (cmd == "CtrlSpace") this.autoPause = !this.autoPause;
         else if (cmd == "Left") this.onRepeat();
         else if (cmd == "Down") this.onNext();
         else if (cmd == "Up") this.onPrev();
@@ -224,8 +210,6 @@
       var mode = "listen";
       var app = this;
 
-      // Stored settings
-      app.autoPause = getAutoPause();
       // Query param stuff (for via static)
       const urlParams = new URLSearchParams(window.location.search);
       episode = urlParams.get('ep');
@@ -287,7 +271,6 @@
   }
 
   var skeletonData = {
-    autoPause: true,
     episodes: [{
       "name": "E179X",
       "segments": [
@@ -298,18 +281,6 @@
       ]
     }]
   };
-
-  function getAutoPause() {
-    var appData = getEnsureData();
-    return appData.autoPause;
-  }
-
-  function setAutoPause(val) {
-    var appData = getEnsureData();
-    if (val == true) appData.autoPause = true;
-    else appData.autoPause = false;
-    saveData(appData);
-  }
 
   function getPinnedEntries(episode, startSec) {
     var res = [];
