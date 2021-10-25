@@ -12,7 +12,6 @@ namespace Tool
         {
             public string SrcDef;
             public string Src;
-            public List<string> OtherLangs = new List<string>();
         }
 
         class Entry
@@ -24,51 +23,6 @@ namespace Tool
         Dictionary<string, Entry> headToSenses = new Dictionary<string, Entry>();
         Dictionary<string, List<string>> wdToMultiHeads = new Dictionary<string, List<string>>();
         Dictionary<string, string> alts = new Dictionary<string, string>();
-
-        public static Dict FromTSV1(string fnDict, string[] langs)
-        {
-            Dict dict = new Dict();
-            string line;
-            int currConceptId = -1;
-            List<Meaning> currMeanings = null;
-            Meaning currMeaning = null;
-            string currHead = null;
-            using (StreamReader sr = new StreamReader(fnDict))
-            {
-                sr.ReadLine();
-                while ((line = sr.ReadLine()) != null)
-                {
-                    string[] parts = line.Split('\t');
-                    string p2 = parts[2];
-                    string head = p2.Substring(0, p2.IndexOf('/'));
-                    string def = p2.Substring(p2.IndexOf('/') + 1);
-                    int conceptId = int.Parse(parts[1]);
-                    if (conceptId != currConceptId)
-                    {
-                        currConceptId = conceptId;
-                        if (head == currHead)
-                        {
-                            currMeanings.Add(currMeaning);
-                            currMeaning = new Meaning { SrcDef = def };
-                        }
-                        else
-                        {
-                            if (currHead != null)
-                            {
-                                currMeanings.Add(currMeaning);
-                                dict.headToSenses[currHead] = new Entry { DisplayHead = currHead, Meanings = currMeanings };
-                            }
-                            currHead = head;
-                            currMeaning = new Meaning { SrcDef = def };
-                            currMeanings = new List<Meaning>();
-                        }
-                    }
-                    string lang = parts[4];
-                    if (Array.IndexOf(langs, lang) != -1) currMeaning.OtherLangs.Add(parts[5]);
-                }
-            }
-            return dict;
-        }
 
         public static Dict FromORus(string fnWords, string fnTrans)
         {
@@ -85,13 +39,9 @@ namespace Tool
                     string[] parts = line.Split('\t');
                     if (parts.Length < 5) continue;
                     string head = parts[2];
-                    try
-                    {
-                        rusToId[head] = int.Parse(parts[0]);
-                        string alt = head.Replace("ё", "е");
-                        if (alt != head) alts[alt] = head;
-                    }
-                    catch (Exception ex1) {}
+                    rusToId[head] = int.Parse(parts[0]);
+                    string alt = head.Replace("ё", "е");
+                    if (alt != head) alts[alt] = head;
                 }
             }
             using (StreamReader sr = new StreamReader(fnTrans))
@@ -108,7 +58,7 @@ namespace Tool
                     {
                         trans = new List<string>();
                         idToTrans[id] = trans;
-                    }
+                    } 
                     trans.Add(parts[4]);
                 }
             }
@@ -125,7 +75,7 @@ namespace Tool
             return dict;
         }
 
-        public void FromCustRus(string fnCustDictPath)
+        public void UpdateFromCustomList(string fnCustDictPath)
         {
             string line;
             using (StreamReader sr = new StreamReader(fnCustDictPath))
@@ -246,11 +196,86 @@ namespace Tool
             }
         }
 
-        /**
-         * Not in use
-         */
-        /*
-        public static Dict FromRuWiktionary(string fnDict)
+        public void UpdateFromRuWiktionary(string fnDict, bool russian, string[] langs)
+        {
+            string line;
+            List<string> entryLines = new List<string>();
+            using (var sr = new StreamReader(fnDict))
+            {
+                while ((line = sr.ReadLine()) != null)
+                {
+                    // Empty line separates entries
+                    if (line != "" || entryLines.Count == 0)
+                    {
+                        entryLines.Add(line);
+                        continue;
+                    }
+
+                    // Get wiktionary entry, create dictionary entry
+                    var we = WiktEntry.FromLinesRu(entryLines);
+                    // New entry begins
+                    entryLines.Clear();
+
+                    // Got translations?
+                    var translations = new List<string>();
+                    foreach (var trans in we.Translations)
+                    {
+                        if (trans.Length < 3) continue;
+                        string lc = trans.Substring(0, 2);
+                        if (Array.IndexOf(langs, lc) == -1) continue;
+                        translations.Add(trans);
+                    }
+                    if (!russian && translations.Count == 0) continue;
+
+                    string head = we.Lemma;
+                    Entry entry;
+                    if (headToSenses.ContainsKey(head)) entry = headToSenses[head];
+                    else
+                    {
+                        entry = new Entry { DisplayHead = head };
+                        headToSenses[head] = entry;
+                    }
+                    // Retrieve translations
+                    foreach (var trans in translations)
+                    {
+                        // Only care about requested languages
+                        string lc = trans.Substring(0, 2);
+                        int ix = trans.IndexOf('\t');
+                        ix = trans.IndexOf('\t', ix + 1);
+                        if (ix == -1) continue;
+                        string trg = trans.Substring(ix + 1);
+                        trg = "{" + lc + "} " + trg;
+                        if (entry.Meanings.Find(x => x.SrcDef == trg) != null) continue;
+                        entry.Meanings.Add(new Meaning { SrcDef = trg });
+                    }
+
+                    // Retrieve Russian glosses
+                    if (russian)
+                    {
+                        foreach (var mean in we.Meanings)
+                        {
+                            if (mean.Length < 3) continue;
+                            entry.Meanings.Add(new Meaning { SrcDef = mean.Substring(2) });
+                        }
+                    }
+
+                    // Multi-word head: file separately
+                    if (head.IndexOf(' ') != -1)
+                    {
+                        string[] wds = head.Split(' ');
+                        foreach (var wd in wds)
+                        {
+                            if (!wdToMultiHeads.ContainsKey(wd)) wdToMultiHeads[wd] = new List<string>();
+                            wdToMultiHeads[wd].Add(head);
+                        }
+                    }
+                    string alt = head.Replace("ё", "е");
+                    if (alt != head) alts[alt] = head;
+                }
+            }
+        }
+
+        public static Dict FromRuWiktionary(string fnDict, string[] langs)
         {
             Dict dict = new Dict();
             string line;
@@ -266,14 +291,19 @@ namespace Tool
                         string head = we.Lemma;
                         dict.headToSenses[head] = new Entry { DisplayHead = head };
                         if (we.Pron != "") dict.headToSenses[head].DisplayHead = we.Pron;
-                        foreach (var mean in we.Meanings)
-                        {
-                            if (mean.Length < 3) continue;
-                            dict.headToSenses[head].Meanings.Add(new Meaning { SrcDef = mean.Substring(2) });
-                        }
+                        // Retrieve Russian glosses
+                        //foreach (var mean in we.Meanings)
+                        //{
+                        //    if (mean.Length < 3) continue;
+                        //    dict.headToSenses[head].Meanings.Add(new Meaning { SrcDef = mean.Substring(2) });
+                        //}
+                        // Retrieve translations
                         foreach (var trans in we.Translations)
                         {
+                            // Only care about requested languages
                             string lc = trans.Substring(0, 2);
+                            if (Array.IndexOf(langs, lc) == -1) continue;
+
                             int ix = trans.IndexOf('\t');
                             ix = trans.IndexOf('\t', ix + 1);
                             if (ix == -1) continue;
@@ -302,7 +332,6 @@ namespace Tool
             }
             return dict;
         }
-        */
 
         /**
          * Detect collocations
@@ -386,11 +415,6 @@ namespace Tool
                                 foreach (var sense in hit.Meanings)
                                 {
                                     var ds = new DictSense { SrcDef = sense.SrcDef };
-                                    foreach (var ol in sense.OtherLangs)
-                                    {
-                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                        ds.OtherLangs += ol;
-                                    }
                                     entry.Senses.Add(ds);
                                 }
                                 int ix = entries.Count;
@@ -427,11 +451,6 @@ namespace Tool
                                 foreach (var sense in hit.Meanings)
                                 {
                                     var ds = new DictSense { SrcDef = sense.SrcDef };
-                                    foreach (var ol in sense.OtherLangs)
-                                    {
-                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                        ds.OtherLangs += ol;
-                                    }
                                     entry.Senses.Add(ds);
                                 }
                                 int ix = entries.Count;
@@ -467,11 +486,6 @@ namespace Tool
                                 foreach (var sense in hit.Meanings)
                                 {
                                     var ds = new DictSense { SrcDef = sense.SrcDef };
-                                    foreach (var ol in sense.OtherLangs)
-                                    {
-                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                        ds.OtherLangs += ol;
-                                    }
                                     entry.Senses.Add(ds);
                                 }
                                 int ix = entries.Count;
@@ -507,11 +521,6 @@ namespace Tool
                                 foreach (var sense in hit.Meanings)
                                 {
                                     var ds = new DictSense { SrcDef = sense.SrcDef };
-                                    foreach (var ol in sense.OtherLangs)
-                                    {
-                                        if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                        ds.OtherLangs += ol;
-                                    }
                                     entry.Senses.Add(ds);
                                 }
                                 int ix = entries.Count;
@@ -555,11 +564,6 @@ namespace Tool
                                         foreach (var sense in hit.Meanings)
                                         {
                                             var ds = new DictSense { SrcDef = sense.SrcDef };
-                                            foreach (var ol in sense.OtherLangs)
-                                            {
-                                                if (ds.OtherLangs != "") ds.OtherLangs += "; ";
-                                                ds.OtherLangs += ol;
-                                            }
                                             entry.Senses.Add(ds);
                                         }
                                         int ix = entries.Count;
