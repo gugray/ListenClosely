@@ -8,127 +8,7 @@ using Newtonsoft.Json;
 namespace Tool
 {
     class Program
-    { 
-        static void enTokenize(Material mat)
-        {
-            var re = new Regex("(.+)('s|'d|'ve|'m|'re|n't)$");
-            foreach (var segm in mat.Segments)
-            {
-                List<Word> words = new List<Word>(segm.Words.Count);
-                foreach (var wd in segm.Words)
-                {
-                    var m = re.Match(wd.Text);
-                    if (m.Success)
-                    {
-                        words.Add(new Word
-                        {
-                            Lead = wd.Lead,
-                            Text = m.Groups[1].Value,
-                        });
-                        words.Add(new Word
-                        {
-                            GlueLeft = true,
-                            Text = m.Groups[2].Value,
-                            Trail = wd.Trail,
-                        });
-                    }
-                    else words.Add(wd);
-                }
-                segm.Words = words;
-            }
-        }
-
-        static void getPlainTok(Material mat, string fn)
-        {
-            using (StreamWriter sw = new StreamWriter(fn))
-            {
-                sw.NewLine = "\n";
-                foreach (var segm in mat.Segments)
-                {
-                    string line = "";
-                    foreach (var wd in segm.Words)
-                    {
-                        if (wd.Lead != "") { if (line != "") line += ' '; line += wd.Lead; }
-                        if (wd.Text != "") { if (line != "") line += ' '; line += wd.Text; }
-                        if (wd.Trail != "") { if (line != "") line += ' '; line += wd.Trail; }
-                    }
-                    sw.WriteLine(line);
-                }
-            }
-        }
-
-        static void doRus(string ep)
-        {
-            CsvToSrt.ConvertFile("_work/" + ep + ".csv", "_work/" + ep + ".srt");
-            Material mat = Material.FromSRT("_work/" + ep + ".srt");
-            // Plain text is already done by hand
-            mat.AddLemmasRu("_work/" + ep + "-lem.txt");
-            Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
-            dict.FillDict(mat, true);
-            mat.SaveJson("_work/" + ep + "-segs.json");
-            mat.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
-        }
-
-        static void doEn(string ep, string[] langs)
-        {
-            //CsvToSrt.ConvertFile("_work/" + ep + ".csv", "_work/" + ep + ".srt");
-            //Material mat = Material.FromSRT("_work/" + ep + ".srt");
-            //enTokenize(mat); // This splits didn't and I'm and girl's etc.
-            //getPlainTok(mat, "_work/" + ep + "-tok.txt");
-            //mat.SaveJson("_work/" + ep + "-pre-lem.json");
-            //// Manual step here: Lemmatize via Python
-            //// >> ep-lem.txt
-
-            var xmat = Material.LoadJson("_work/" + ep + "-pre-lem.json");
-            xmat.AddLemmasEn("_work/" + ep + "-lem.txt");
-            Dict dict = Dict.FromTSV1("_materials/translations.tsv", langs);
-            dict.FillDict(xmat, true);
-            xmat.SaveJson("_work/" + ep + "-segs.json");
-            xmat.SaveJson("ProsePlayer/public/media/" + ep + "-segs.json");
-        }
-
-        static void getDeSurfs(Material mat, string fn)
-        {
-            var wdSetLo = new HashSet<string>();
-            foreach (var segm in mat.Segments)
-            {
-                foreach (var wd in segm.Words)
-                {
-                    string wdLo = wd.Text.ToLower();
-                    if (wdLo == "") continue;
-                    wdSetLo.Add(wdLo);
-                }
-            }
-            using (StreamWriter sw = new StreamWriter(fn))
-            {
-                sw.NewLine = "\n";
-                foreach (var x in wdSetLo) sw.WriteLine(x);
-            }
-        }
-
-        static void addGerVerbLemmas(Material mat, string fnSurfs, string fnVerbLems)
-        {
-            string ln1, ln2;
-            var surfToLem = new Dictionary<string, string> ();
-            using (var srSurfs = new StreamReader(fnSurfs))
-            using (var srVerbLems = new StreamReader(fnVerbLems))
-            {
-                while ((ln1 = srSurfs.ReadLine()) != null)
-                {
-                    ln2 = srVerbLems.ReadLine();
-                    surfToLem[ln1] = ln2;
-                }
-            }
-            foreach (var segm in mat.Segments)
-            {
-                foreach (var wd in segm.Words)
-                {
-                    if (!surfToLem.ContainsKey(wd.Text.ToLower())) continue;
-                    wd.Lemma = surfToLem[wd.Text.ToLower()];
-                }
-            }
-        }
-
+    {
         static void shiftSegments(Material mat, decimal ofs)
         {
             foreach (var segm in mat.Segments)
@@ -145,7 +25,7 @@ namespace Tool
          */
         static void changeSegmentsForTempo(Material mat, double tempoCorrection)
         {
-            if(tempoCorrection == 0.0)
+            if (tempoCorrection == 0.0)
             {
                 return;
             }
@@ -175,13 +55,13 @@ namespace Tool
 
             // less as 2 segments - no sense to add a line
             int i = mat.Segments.Count;
-            if(i < 2)
+            if (i < 2)
             {
                 return;
             }
 
             // requested line position >= the end position
-            if(position >= mat.Segments[i - 1].ParaIx)
+            if (position >= mat.Segments[i - 1].ParaIx)
             {
                 return;
             }
@@ -189,7 +69,7 @@ namespace Tool
             i = mat.Segments.Count - 1;
             for (; i > 0; i--)
             {
-                if(mat.Segments[i].ParaIx == position)
+                if (mat.Segments[i].ParaIx == position)
                 {
                     break;
                 }
@@ -243,7 +123,7 @@ namespace Tool
 
         static void markVerses(Material mat)
         {
-            foreach (Segment seg in  mat.Segments)
+            foreach (Segment seg in mat.Segments)
             {
                 if (!seg.IsTitleLine)
                 {
@@ -264,19 +144,17 @@ namespace Tool
                 return;
             }
             string line = File.ReadAllText(addFn);
-            if(line.Trim().Length == 0) return;
-            
+            if (line.Trim().Length == 0) return;
+
             string[] parts = line.Split(',');
             if (parts.Length == 0) return;
 
             List<int> addPars = new List<int>();
-            for(int i = 0; i < parts.Length; i++)
+            for (int i = 0; i < parts.Length; i++)
             {
-                try
-                {
+                int val;
+                if (int.TryParse(parts[i], out val))
                     addPars.Add(int.Parse(parts[i]));
-                }
-                catch (Exception ex1) { }
             }
             if (addPars.Count == 0) return;
 
@@ -302,7 +180,7 @@ namespace Tool
          * breakWork            to be set true until the -lem file is still not done by rulem.py
          * useMS                parse transcription by MS; otherwise, get Google transcription via API
          */
-        static void doOrigAlignRus(bool useWords, string abbreviation, decimal shift, double tempoCorrection, string customDictFileName, 
+        static void doOrigAlignRus(bool useWords, string abbreviation, decimal shift, double tempoCorrection, string customDictFileName,
             string title, int shiftTitleLines, bool verses, bool breakWork, bool useMS)
         {
             string transJson;
@@ -368,13 +246,13 @@ namespace Tool
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
                 // extend the dictionary by additional customized dictionary
-                dict.FromCustRus("_materials/" + customDictFileName);
+                dict.UpdateFromCustomList("_materials/" + customDictFileName);
             }
 
             // compose the lemmas-based translations
             dict.FillDict(mOrig, true);
             // compose the text-based translations - only if requested especially
-            if(useWords)
+            if (useWords)
             {
                 dict.FillDict(mOrig, false);
             }
@@ -388,7 +266,7 @@ namespace Tool
             // Workaround for mark the empty lines between the strophes of verses if required
             shiftAdditionalParas(mOrig, abbreviation, shiftTitleLines);
 
-            if(verses)
+            if (verses)
             {
                 markVerses(mOrig);
             }
@@ -401,20 +279,12 @@ namespace Tool
 
         static void Main(string[] args)
         {
-            // FLAC onversion with ffmpeg for Google:
-            // ffmpeg -i RTO.mp3 -af aformat=s16:16000 -ac 1 RTO.flac
-            // The English process
-            //doEn("FAJW", new string[] { "Hungarian", "German" });
-            // The Russian process
-            //doRus("RTO");
-            // Audio B: transcribe online, then infuse timestamp data into original text via alignment
-
             string customDictFileName = "ru-custom.txt";
 
             bool breakWork = false;  // for 1st start, set true; for 2nd start, set false
 
             bool useWords = false;   // set normally false, else, the forms of words will be used additionally to lemmas dor collect the translations
-			bool useMs = false;      // set true for use MS Speech2Text API, else false for use the Google engine
+            bool useMs = false;      // set true for use MS Speech2Text API, else false for use the Google engine
             double shift = 0.0;
             double tempoCorrection = 0.0;
 
@@ -423,26 +293,34 @@ namespace Tool
             int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
             bool verses = false;
 
-            abbreviation = "MLE_GOV";
-            title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
+            abbreviation = "APT_BKR_1";
+            title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
             shiftTitleLines = 2;
             tempoCorrection = 0.0;
-            verses = true;
+            verses = false;
             doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            abbreviation = "MLE_PNT";
-            title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            abbreviation = "MLE_VOD";
-            title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
-            shiftTitleLines = 1;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+
+            //abbreviation = "MLE_GOV";
+            //title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            //abbreviation = "MLE_PNT";
+            //title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            //abbreviation = "MLE_VOD";
+            //title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
+            //shiftTitleLines = 1;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             // 
             // abbreviation = "MLE_FAT_1";
             // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (1). Читает Евгений Шибаров";
@@ -612,33 +490,33 @@ namespace Tool
             // verses = false;
             // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             //
-            abbreviation = "MLE_PAR";
-            title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            abbreviation = "APT_DMJ";
-            title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            abbreviation = "APT_EZH";
-            title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            abbreviation = "APT_SSN";
-            title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //abbreviation = "MLE_PAR";
+            //title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            //abbreviation = "APT_DMJ";
+            //title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            //abbreviation = "APT_EZH";
+            //title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            //abbreviation = "APT_SSN";
+            //title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
+            //shiftTitleLines = 2;
+            //tempoCorrection = 0.0;
+            //verses = true;
+            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
 
         }
