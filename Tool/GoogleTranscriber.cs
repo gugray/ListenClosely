@@ -117,23 +117,20 @@ namespace Tool
                 }
             }
 
-            decimal start = 0;
-            decimal length = 0;
-
             // additional fix for segments having LengthSec <= 0
-           for (int i = 0; i < mat.Segments.Count; i++)
-           {
-               Segment segm = mat.Segments[i];
-               Segment prevSegm = null;
-               Segment nextSegm = null;
-               if(i > 0)
-               {
+            for (int i = 0; i < mat.Segments.Count; i++)
+            {
+                Segment segm = mat.Segments[i];
+                Segment prevSegm = null;
+                Segment nextSegm = null;
+                if (i > 0)
+                {
                     prevSegm = mat.Segments[i - 1];
-               }
-               if(i < mat.Segments.Count - 1)
-               {
+                }
+                if (i < mat.Segments.Count - 1)
+                {
                     nextSegm = mat.Segments[i + 1];
-               }
+                }
 
                 // for (int j = 0; j < segm.Words.Count; j++)
                 // {
@@ -166,25 +163,25 @@ namespace Tool
                 //     }
                 // }
 
-               // Boolean hasWrongSegStartSec = (prevSegm != null && segm.StartSec <= prevSegm.StartSec) || (nextSegm != null && segm.StartSec >= nextSegm.StartSec);
-               // if(hasWrongSegStartSec)
-               // {
-               //      if(prevSegm != null && prevSegm.LengthSec > 0)
-               //      {
-               //          if(nextSegm != null)
-               //          {
-               //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
-               //              segm.LengthSec = nextSegm.StartSec - segm.StartSec;
-               //          }
-               //          else
-               //          {
-               //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
-               //          }
-               //      }
-               // }
-           }
+                // Boolean hasWrongSegStartSec = (prevSegm != null && segm.StartSec <= prevSegm.StartSec) || (nextSegm != null && segm.StartSec >= nextSegm.StartSec);
+                // if(hasWrongSegStartSec)
+                // {
+                //      if(prevSegm != null && prevSegm.LengthSec > 0)
+                //      {
+                //          if(nextSegm != null)
+                //          {
+                //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
+                //              segm.LengthSec = nextSegm.StartSec - segm.StartSec;
+                //          }
+                //          else
+                //          {
+                //              segm.StartSec = prevSegm.StartSec + prevSegm.LengthSec;
+                //          }
+                //      }
+                // }
+            }
 
-           return mat;
+            return mat;
         }
     }
 }
