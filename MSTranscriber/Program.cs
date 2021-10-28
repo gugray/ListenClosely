@@ -5,8 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-// 43cefb870233460e8f3aa378600a7656
-
 namespace MSTranscriber
 {
     public class Program
