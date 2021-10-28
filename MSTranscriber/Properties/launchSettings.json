@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MSTranscriber": {
+      "commandName": "Project",
+      "workingDirectory": "Y:\\TingShuo\\ListenClosely"
+    }
+  }
+}

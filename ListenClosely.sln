@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{1C25
 	ProjectSection(SolutionItems) = preProject
 		Scripts\deverbs.py = Scripts\deverbs.py
 		Scripts\enlem.py = Scripts\enlem.py
+		Scripts\from-mp3.cmd = Scripts\from-mp3.cmd
 		Scripts\rulem.py = Scripts\rulem.py
 	EndProjectSection
 EndProject
@@ -20,26 +21,49 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
 		README.md = README.md
+		TranscriptionConfig.json = TranscriptionConfig.json
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSTranscriber", "MSTranscriber\MSTranscriber.csproj", "{66106E5B-0CB8-40E9-A09B-C795C991AE50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{423A53F7-4649-4404-8725-93940CD533E4}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{423A53F7-4649-4404-8725-93940CD533E4}.Debug|x64.ActiveCfg = Debug|x64
 		{423A53F7-4649-4404-8725-93940CD533E4}.Debug|x64.Build.0 = Debug|x64
+		{423A53F7-4649-4404-8725-93940CD533E4}.Release|Any CPU.ActiveCfg = Release|x64
 		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.ActiveCfg = Release|x64
 		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.Build.0 = Release|x64
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|x64.Build.0 = Debug|Any CPU
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.ActiveCfg = Release|x64
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.Build.0 = Release|x64
+		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Release|x64.ActiveCfg = Release|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Release|x64.Build.0 = Release|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|x64.Build.0 = Debug|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|x64.ActiveCfg = Release|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,9 @@
 @echo off
 setlocal
 
-rem SET "FFMPEG=ffmpeg.exe"
+SET "FFMPEG=ffmpeg.exe"
 rem SET "FFMPEG=..\_tools\ffmpeg-n4.4-79-gde1132a891-win64-gpl-4.4\bin\ffmpeg.exe"
-SET "FFMPEG=..\_tools\ffmpeg-2021-01-05-git-66deab3a26-full_build\bin\ffmpeg.exe"
+rem SET "FFMPEG=..\_tools\ffmpeg-2021-01-05-git-66deab3a26-full_build\bin\ffmpeg.exe"
 
 
 IF "%1"=="" ECHO Please set the audio file name && GOTO END
@@ -34,8 +34,11 @@ echo *** Convert to M4A
 :FLAC
 echo *** Convert to FLAC
 %FFMPEG% -i %INPUT_PATH%\%1.%EXT% -af aformat=s16:16000 %ATEMPO% -ac 1 -start_at_zero -copytb 1 %INPUT_PATH%\%1.flac  %OVERWRITE%
+:WAV
+echo *** Convert to WAV
+%FFMPEG% -i %INPUT_PATH%\%1.%EXT% -acodec pcm_s16le -ac 1 -ar 16000 %INPUT_PATH%\%1.wav %OVERWRITE%
 
-COPY %INPUT_PATH%\%1.flac %OUTPUT_PATH%
+
 COPY %INPUT_PATH%\%1.m4a %OUTPUT_PATH%
 COPY %INPUT_PATH%\%1.webm %OUTPUT_PATH%
 

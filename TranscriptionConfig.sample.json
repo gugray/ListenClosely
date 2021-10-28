@@ -1,0 +1,8 @@
+{
+  "SubscriptionKey": "<MS Speech API subscription key here>",
+  "Region": "northeurope",
+  "DeleteOldTranscriptions": true,
+  "WAVUrl": "https://zydeo.net/RTO.wav",
+  "Locale": "ru-RU",
+  "OutputFile": "_work/RTO-conv-ms.json"
+}
