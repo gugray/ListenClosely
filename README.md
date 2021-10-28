@@ -6,15 +6,35 @@ https://pypi.org/project/pymystem3/ <br>
 `pip install pymystem3`
 * **FFMPEG**: Command-line tool for audio conversion <br>
 https://ffmpeg.org/download.html
+* The [OpenRussian](https://de.openrussian.org/dictionary) dictionary downloaded as a CSV file.
+* Specifically, the following files are needed in `_materials\openrussian`:
+   * words.csv
+   * translations.csv
+
+### Transcribing with Google
+
+Prerequisite:
 * A Google service account key for access to the Speech API <br>
 https://console.cloud.google.com/apis/library/speech.googleapis.com <br>
 https://console.cloud.google.com/apis/credentials <br>
    * Place `ServiceAccountKey.json` into solution root
    * Edit values at top of GoogleTranscriber.cs (projectId and bucketName) to match what you set up in API console.
-* The [OpenRussian](https://de.openrussian.org/dictionary) dictionary downloaded as a CSV file.
-* Specifically, the following files are needed in `_materials\openrussian`:
-   * words.csv
-   * translations.csv
+
+The code in `Tool` itself takes care of uploading the FLAC file, initiating the transcription, polling for progress, and retrieving
+the transcribed text.
+
+### Transcribing with MS Speech-To-Text
+
+Prerequisite:
+* A subscription key for the speech-to-text service in Azure App Services<br>
+https://portal.azure.com/#blade/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/SpeechServices
+
+How to:
+* Transcription is performed by a dedicated tool in the repository, `MSTranscriber`.
+* Use from-mp3.cmd to creat a WAV file with the required parameters. Upload the file to a publicly available URL.
+* Create a `TranslationConfig.json` in the solution root (you can use the sample file).
+Enter your subscription key, and fill in the URL, language, and output file name
+* Build and run MSTranscriber. Working directory must be the solution root.
 
 ## Processing a file
 
