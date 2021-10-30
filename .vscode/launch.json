@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run MSTranscriber",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-MSTranscriber",
+            "program": "${workspaceFolder}/MSTranscriber/bin/Debug/netcoreapp3.1/MSTranscriber.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/MSTranscriber",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Run GoogleTranscriber",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-GoogleTranscriber",
+            "program": "${workspaceFolder}/GoogleTranscriber/bin/Debug/netcoreapp3.1/GoogleTranscriber.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/GoogleTranscriber",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+    ]
+}

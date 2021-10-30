@@ -192,12 +192,13 @@ namespace Tool
                 // If transcription is missing, get it now
                 if (!File.Exists(transJson))
                 {
-                    // Transcribe text with Google engine
-                    GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
-                    trans = gt.Transcribe("_audio/" + abbreviation + ".flac", "ru");
-                    // Set title, serialize
-                    trans.Title = title;
-                    trans.SaveJson(transJson);
+                    // TO-DO
+                    // // Transcribe text with Google engine
+                    // GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
+                    // trans = gt.Transcribe("_audio/" + abbreviation + ".flac", "ru");
+                    // // Set title, serialize
+                    // trans.Title = title;
+                    // trans.SaveJson(transJson);
                 }
             }
             // Using MS?
