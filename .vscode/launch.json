@@ -23,5 +23,16 @@
             "console": "integratedTerminal",
             "stopAtEntry": false
         },
+        {
+            "name": "Run Tool",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-Tool",
+            "program": "${workspaceFolder}/Tool/bin/Debug/netcoreapp3.1/Tool.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
     ]
 }

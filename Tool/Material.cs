@@ -10,20 +10,32 @@ namespace Tool
 {
     class DictEntry
     {
+        /// <summary>
+        /// Headword (lemma) to which entry belongs.
+        /// </summary>
         [JsonProperty("head")]
         public string Head;
+
+        /// <summary>
+        /// Headword to display (includes accent on stressed syllable).
+        /// </summary>
         [JsonProperty("displayHead")]
         public string DisplayHead;
+
+        /// <summary>
+        /// Senses (translations) to display as bulleted list.
+        /// </summary>
         [JsonProperty("senses")]
         public List<DictSense> Senses = new List<DictSense>();
     }
 
     class DictSense
     {
+        /// <summary>
+        /// Definition of source word.
+        /// </summary>
         [JsonProperty("srcDef")]
         public string SrcDef;
-        [JsonProperty("otherLangs")]
-        public string OtherLangs = "";
     }
 
     [DebuggerDisplay("{DebuggerDisplay,nq}")]

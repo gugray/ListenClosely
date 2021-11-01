@@ -7,8 +7,7 @@
     <ul class="senses">
       <template v-for="(sense, ix) in entry.senses">
         <li class="sense" :key="`sense-${ix}`">
-          {{ sense.srcDef }}<br />
-          <span class="otherLangs">{{ sense.otherLangs }}</span>
+          {{ sense.srcDef }}
         </li>
       </template>
     </ul>

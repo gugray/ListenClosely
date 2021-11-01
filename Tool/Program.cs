@@ -243,13 +243,13 @@ namespace Tool
             shiftSegments(mOrig, shift);
 
             mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
-            Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
+            Dict dict = Dict.FromOpenRussian("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
                 // extend the dictionary by additional customized dictionary
                 dict.UpdateFromCustomList("_materials/" + customDictFileName);
             }
-            //dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", true, new string[] { "it", "es", "fr" });
+            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr" });
 
             // compose the lemmas-based translations
             dict.FillDict(mOrig, true);
@@ -258,9 +258,6 @@ namespace Tool
             {
                 dict.FillDict(mOrig, false);
             }
-
-            //Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt", new string[] { "it", "es", "fr" });
-            //dict2.FillDict(mOrig, true);
 
             // Workaround for mark the title lines if required
             shiftTitleSegments(mOrig, shiftTitleLines);
@@ -295,12 +292,12 @@ namespace Tool
             int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
             bool verses = false;
 
-            //abbreviation = "APT_BKR_1";
-            //title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
-            //shiftTitleLines = 2;
-            //tempoCorrection = 0.0;
-            //verses = false;
-            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            abbreviation = "APT_BKR_1";
+            title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
+            shiftTitleLines = 0;
+            tempoCorrection = 0.0;
+            verses = false;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
             abbreviation = "APT_BKR_2";
             title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
