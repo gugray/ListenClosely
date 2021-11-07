@@ -244,12 +244,12 @@ namespace Tool
 
             mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
             Dict dict = Dict.FromOpenRussian("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
+            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr" });
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
-                // extend the dictionary by additional customized dictionary
+                // Extend/override the dictionary by additional customized dictionary
                 dict.UpdateFromCustomList("_materials/" + customDictFileName);
             }
-            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr" });
 
             // compose the lemmas-based translations
             dict.FillDict(mOrig, true);

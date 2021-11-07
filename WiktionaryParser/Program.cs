@@ -8,30 +8,77 @@ namespace WiktionaryParser
 {
     class Program
     {
-        static void dumpToEntries(string fnDump, string fnOut, dynamic parser)
+        const int pagesPerDir = 1000;
+
+        static void dumpToFiles(string fnDump, string baseDirFiles)
         {
-            Console.WriteLine("Parsing Wiktionary dump...");
-            int totalPageCount = 0;
-            int pagesWithEntry = 0;
-            int entryCount = 0;
+            Console.WriteLine("Extracting pages into files...");
+            int pageCount = 0;
+            string mapFileName = Path.Combine(baseDirFiles, "pagemap.txt");
+            if (!Directory.Exists(baseDirFiles)) Directory.CreateDirectory(baseDirFiles);
+            string currSubDir = null;
             using (var dpr = new DumpPageReader(fnDump))
-            using (var sw = new StreamWriter(fnOut))
+            using (var sw = new StreamWriter(mapFileName))
             {
-                sw.NewLine = "\n";
                 DumpPage page;
                 while ((page = dpr.GetNextPage()) != null)
                 {
-                    ++totalPageCount;
-                    List<WiktEntry> entries = parser.GetEntries(page.Title, page.Text);
-                    if (entries.Count != 0)
-                        ++pagesWithEntry;
-                    entryCount += entries.Count;
-                    foreach (var entry in entries) entry.WriteRu(sw);
-                    //// DBG
-                    //if (entryCount > 50000) break;
+                    if (pageCount % 500 == 0) Console.Write("\rExtracted " + pageCount + " pages");
+                    string subDirNameRel = (pageCount / pagesPerDir).ToString("0000");
+                    string subDirName = Path.Combine(baseDirFiles, subDirNameRel);
+                    if (currSubDir != subDirName)
+                    {
+                        currSubDir = subDirName;
+                        if (!Directory.Exists(currSubDir)) Directory.CreateDirectory(currSubDir);
+                    }
+                    string fileName = pageCount.ToString("0000000") + ".txt";
+                    string fileNameFull = Path.Combine(currSubDir, fileName);
+                    File.WriteAllText(fileNameFull, page.Text);
+                    sw.WriteLine(page.Title + "\t" + pageCount + "\t" + Path.Combine(subDirNameRel, fileName));
+                    ++pageCount;
                 }
             }
-            Console.WriteLine(totalPageCount + " pages / " + pagesWithEntry + " word pages in language / " + entryCount + " entries");
+            Console.WriteLine("\rFinished; total pages extracted: " + pageCount);
+        }
+
+        static int parsePage(string title, string fnPage, StreamWriter swOut, dynamic parser)
+        {
+            string text = File.ReadAllText(fnPage);
+            List<WiktEntry> entries = parser.GetEntries(title, text);
+            foreach (var entry in entries) entry.WriteRu(swOut);
+            return entries.Count;
+        }
+
+        static void pagesToEntries(string fnMap, string fnEntries, dynamic parser)
+        {
+            Console.WriteLine("Parsing Wiktionary pages...");
+            string pageBasePath = Path.GetDirectoryName(fnMap);
+            int totalPageCount = 0;
+            int pagesWithEntry = 0;
+            int entryCount = 0;
+            string msg;
+            using (var sr = new StreamReader(fnMap))
+            using (var sw = new StreamWriter(fnEntries))
+            {
+                sw.NewLine = "\n";
+                string mapLine;
+                while ((mapLine = sr.ReadLine()) != null)
+                {
+                    if (totalPageCount % 500 == 0)
+                    {
+                        msg = string.Format("\rParsed {0} pages; {1} with our language; {2} entries", totalPageCount, pagesWithEntry, entryCount);
+                        Console.Write(msg);
+                    }
+                    var parts = mapLine.Split("\t");
+                    string fnPage = Path.Combine(pageBasePath, parts[2]);
+                    int nEntries = parsePage(parts[0], fnPage, sw, parser);
+                    if (nEntries > 0) ++pagesWithEntry;
+                    entryCount += nEntries;
+                    ++totalPageCount;
+                }
+            }
+            msg = string.Format("\rDone! Parsed {0} pages; {1} with our language; {2} entries", totalPageCount, pagesWithEntry, entryCount);
+            Console.Write(msg);
         }
 
         static void entriesToDictDe(string fnEntries, string fnJson)
@@ -63,22 +110,6 @@ namespace WiktionaryParser
                 sw.NewLine = "\n";
                 var allEntriesStr = JsonConvert.SerializeObject(entries, Formatting.Indented);
                 sw.WriteLine(allEntriesStr);
-            }
-        }
-
-        static void getHead(string fnIn, string fnOut, int lineCount)
-        {
-            using (StreamReader sr = new StreamReader(fnIn))
-            using (StreamWriter sw = new StreamWriter(fnOut))
-            {
-                sw.NewLine = "\n";
-                string line;
-                int cnt = 0;
-                while (cnt < lineCount && (line = sr.ReadLine()) != null)
-                {
-                    sw.WriteLine(line);
-                    ++cnt;
-                }
             }
         }
 
@@ -244,16 +275,37 @@ namespace WiktionaryParser
             //dumpToEntries("_materials/dewiktionary-20200201-pages-articles.xml", "_work/_dewiktionary-01.txt", new MDParserDe());
             //entriesToDictDe("_work/_dewiktionary-01.txt", "_materials/dewiktionary.json");
 
-            //getHead("_materials/ruwiktionary-20200601-pages-articles.xml", "_materials/ruwiktionary-head.xml", 100000);
-            //dumpToEntries("_materials/ruwiktionary-20200601-pages-articles.xml", "_materials/_ruwiktionary-01.txt", new MDParserRu());
-            //getMarkupRu("_materials/_ruwiktionary-01.txt", "_materials/_ruwiktionary-02");
-            //cleanupRu("_materials/_ruwiktionary-01.txt", "_materials/_ruwiktionary-03.txt", "_materials/_ruwiktionary-03-plain.txt");
+            // dumpToFiles("_materials/ruwiktionary-source/ruwiktionary-20211101-pages-articles.xml", "_materials/ruwiktionary-pages");
+            // pagesToEntries("_materials/ruwiktionary-pages/pagemap.txt", "_materials/ruwiktionary-work/01.txt", new MDParserRu());
+            // getMarkupRu("_materials/ruwiktionary-work/01.txt", "_materials/ruwiktionary-work/02");
+            // cleanupRu("_materials/ruwiktionary-work/01.txt", "_materials/ruwiktionary-work/03.txt", "_materials/ruwiktionary-work/03-plain.txt");
             // Manual step: lemmatize multi-word heads
-            // mystem.exe -c ../_materials/_ruwiktionary-03-plain.txt ../_materials/_ruwiktionary-03-lem.txt
-            mergeLemsRu("_materials/_ruwiktionary-03.txt", "_materials/_ruwiktionary-03-plain.txt", "_materials/_ruwiktionary-03-lem.txt", "_materials/ruwiktionary.txt");
+            // mystem.exe -c ../_materials/ruwiktionary-work/03-plain.txt ../_materials/ruwiktionary-work/03-lem.txt
+            mergeLemsRu("_materials/ruwiktionary-work/03.txt", "_materials/ruwiktionary-work/03-plain.txt", "_materials/ruwiktionary-work/03-lem.txt", "_materials/ruwiktionary.txt");
+          
+            // Console.WriteLine("Press Enter to exit.");
+            // Console.ReadLine();
 
-            Console.WriteLine("Press Enter to exit.");
-            Console.ReadLine();
+            // DBG: Test conversion of one page
+            // string fnOut = "test-odin";
+            // string title = "один";
+            // string fnPage = "0495/0495167";
+            // string fnOut = "test-ottuda";
+            // string title = "оттуда";
+            // string fnPage = "0138/0138883";
+            // string fnOut = "test-nesti-ahineyu";
+            // string title = "нести ахинею";
+            // string fnPage = "0457/0457227";
+            // string fnOut = "test-ahineya";
+            // string title = "ахинея";
+            // string fnPage = "0000/0000060";
+            // using (var sw = new StreamWriter("_materials/ruwiktionary-work/" + fnOut + ".txt"))
+            // {
+            //     parsePage(title, "_materials/ruwiktionary-pages/" + fnPage + ".txt", sw, new MDParserRu());
+            // }
+            // getMarkupRu("_materials/ruwiktionary-work/" + fnOut + ".txt", "_materials/ruwiktionary-work/test-02");
+            // cleanupRu("_materials/ruwiktionary-work/" + fnOut + ".txt", "_materials/ruwiktionary-work/test-03.txt", "_materials/ruwiktionary-work/test-03-plain.txt");
+
         }
     }
 }

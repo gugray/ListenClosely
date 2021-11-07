@@ -14,7 +14,7 @@ namespace WiktionaryParser
         readonly Regex rePoS = new Regex(@"{{([^ \-\|]+)");
 
         // {{по-слогам|си|би́р|ка}}
-        readonly Regex reSylls = new Regex(@"по-слогам\|([^}]+)}}");
+        readonly Regex reSylls = new Regex(@"по[\- ]слогам\|([^}]+)}}");
 
         static Regex reCurly = new Regex(@"{{[^}]+}}");
 
@@ -49,7 +49,8 @@ namespace WiktionaryParser
             res.PoS = "";
             Match m = rePoS.Match(entry.PoS);
             if (m.Success) res.PoS = m.Groups[1].Value;
-            res.Pron = getPron(entry.PoS);
+            if (!string.IsNullOrEmpty(entry.Pron)) res.Pron = entry.Pron;
+            else res.Pron = getPronFromPoS(entry.PoS);
             if (res.Pron == "") res.Pron = entry.Lemma;
             res.Details = entry.PoS;
 
@@ -238,9 +239,9 @@ namespace WiktionaryParser
             return pruned != "";
         }
 
-        string getPron(string pos)
+        string getPronFromPoS(string pos)
         {
-            // TO-FIX: multiple words
+            // Multiple words should work too!
             // {{phrase|тип=ф|роль=наречия|слово1={{по-слогам|жо́|пой}}|лемма1=жопа|слово2={{по-слогам|ку́|шать}}|лемма2=кушать|слово3={{по-слогам|мо́ж|но}}|лемма3=можно|lang=ru}}
             string res = "";
             var mm = reSylls.Matches(pos);

@@ -34,5 +34,16 @@
             "console": "integratedTerminal",
             "stopAtEntry": false
         },
+        {
+            "name": "Run WiktionaryParser",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-WiktionaryParser",
+            "program": "${workspaceFolder}/WiktionaryParser/bin/Debug/netcoreapp3.1/WiktionaryParser.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
     ]
 }
