@@ -57,11 +57,17 @@
 
 # + Толстой. Война и мир
 
+почита'ть
+[de] lesen
+[de] erachten, ansehen
+
+!почи'тать
+
 !выходи'ть
-exit, go out, step out 
-hinausgehen
-выходить замуж (за кого-л.) marry
-выходить замуж (за кого-л.) heiraten
+[en] exit, go out, step out 
+[de] hinausgehen
+[en] выходить замуж (за кого-л.) marry
+[de] выходить замуж (за кого-л.) heiraten
 
 выхаживать
 nurse, restore to health
@@ -535,9 +541,9 @@ military
 обвешать
 cover with
 
-русский
-Russian
-russisch
+ру'сский
+[en] Russian
+[de] russisch
 
 # Пушкин. Метель. Ч. 3-4
 
@@ -655,8 +661,8 @@ Zeit
 it‘s time
 es ist Zeit
 
-проказничать
-play pranks
+прока'зничать
+[en] play pranks
 
 разоряться
 ruin oneself, curse, swear
@@ -740,12 +746,12 @@ verpassen
 # Пушкин. Барышня-крестьянка. Ч. 2
 
 !план
-plan, scheme, map, target
-Plan, Plan (Projekt), Vorhaben, Vorsatz, Absicht
-Gebiet, Bereich
-Ebene
-Sicht
-Format, Aufnahme
+[en] plan, scheme, map, target
+[de] Plan, Plan (Projekt), Vorhaben, Vorsatz, Absicht
+[de] Gebiet, Bereich
+[de] Ebene
+[de] Sicht
+[de] Format, Aufnahme
 
 примерять
 try on
