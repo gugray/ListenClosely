@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 
+// Openrussian: разоряться -> └ throw away
+
 namespace Tool
 {
     class Dict
@@ -77,6 +79,7 @@ namespace Tool
         /// </summary>
         public static Dict FromOpenRussian(string fnWords, string fnTrans)
         {
+            //TODO: └  ┘
             Dict dict = new Dict();
             Dictionary<string, List<OpenRussianWord>> headToORWords = new Dictionary<string, List<OpenRussianWord>>();
             Dictionary<string, string> alts = new Dictionary<string, string>();
@@ -109,6 +112,11 @@ namespace Tool
                 sr.ReadLine();
                 while ((line = sr.ReadLine()) != null)
                 {
+                    if (line.IndexOfAny(new[] {'└', '┘'}) != -1)
+                    {
+                        line = line.Replace("└", "");
+                        line = line.Replace("┘", "");
+                    }
                     string[] parts = line.Split('\t');
                     if (parts.Length < 5) continue;
                     Dictionary<int, List<string>> idToTrans;
