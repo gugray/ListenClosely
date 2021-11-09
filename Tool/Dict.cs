@@ -39,9 +39,16 @@ namespace Tool
                     string[] parts = line.Split('\t');
                     if (parts.Length < 5) continue;
                     string head = parts[2];
-                    rusToId[head] = int.Parse(parts[0]);
-                    string alt = head.Replace("ё", "е");
-                    if (alt != head) alts[alt] = head;
+                    try
+                    {
+                        rusToId[head] = int.Parse(parts[0]);
+                        string alt = head.Replace("ё", "е");
+                        if (alt != head) alts[alt] = head;
+                    }
+                    catch (Exception e) {
+                        // error by int.Parse(parts[0])
+                    }
+
                 }
             }
             using (StreamReader sr = new StreamReader(fnTrans))
