@@ -20,6 +20,7 @@ package-lock.json
 *.csproj.user
 *.njsproj.user
 .vs
+.DS_Store
 
 media
 

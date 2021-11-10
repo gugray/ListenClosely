@@ -210,12 +210,13 @@ namespace Tool
                 // If transcription is missing, get it now
                 if (!File.Exists(transJson))
                 {
-                    // Transcribe text with Google engine
-                    GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
-                    trans = gt.Transcribe("_audio/" + abbreviation + ".flac", "ru");
-                    // Set title, serialize
-                    trans.Title = title;
-                    trans.SaveJson(transJson);
+                    // TO-DO
+                    // // Transcribe text with Google engine
+                    // GoogleTranscriber gt = new GoogleTranscriber("ServiceAccountKey.json");
+                    // trans = gt.Transcribe("_audio/" + abbreviation + ".flac", "ru");
+                    // // Set title, serialize
+                    // trans.Title = title;
+                    // trans.SaveJson(transJson);
                 }
             }
             // Using MS?
@@ -260,13 +261,13 @@ namespace Tool
             shiftSegments(mOrig, shift);
 
             mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
-            Dict dict = Dict.FromORus("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
+            Dict dict = Dict.FromOpenRussian("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
+            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr" });
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
-                // extend the dictionary by additional customized dictionary
+                // Extend/override the dictionary by additional customized dictionary
                 dict.UpdateFromCustomList("_materials/" + customDictFileName);
             }
-            //dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", true, new string[] { "it", "es", "fr" });
 
             // compose the lemmas-based translations
             dict.FillDict(mOrig, true);
@@ -275,9 +276,6 @@ namespace Tool
             {
                 dict.FillDict(mOrig, false);
             }
-
-            //Dict dict2 = Dict.FromRuWiktionary("_materials/ruwiktionary.txt", new string[] { "it", "es", "fr" });
-            //dict2.FillDict(mOrig, true);
 
             // Workaround for mark the title lines if required
             shiftTitleSegments(mOrig, shiftTitleLines);
@@ -314,12 +312,12 @@ namespace Tool
             int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
             bool verses = false;
 
-            //abbreviation = "APT_BKR_1";
-            //title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
-            //shiftTitleLines = 2;
-            //tempoCorrection = 0.0;
-            //verses = false;
-            //doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            abbreviation = "APT_BKR_1";
+            title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
+            shiftTitleLines = 0;
+            tempoCorrection = 0.0;
+            verses = false;
+            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
             //abbreviation = "APT_BKR_2";
             //title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
