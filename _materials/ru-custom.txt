@@ -77,404 +77,404 @@
 # + Толстой. Война и мир
 
 выходи'ть
-exit, go out, step out 
-hinausgehen
-выходи'ть за'муж (за кого-л.) marry
-выходи'ть за'муж (за кого-л.) heiraten
+[en] exit, go out, step out 
+[de] hinausgehen
+[en] выходи'ть за'муж (за кого-л.) marry
+[de] выходи'ть за'муж (за кого-л.) heiraten
 
 выха'живать
-nurse, restore to health
-aufziehen, pflegen
+[en] nurse, restore to health
+[de] aufziehen, pflegen
 
 !выноси'ть
-bear
-ertragen, aushalten 
+[en] bear
+[de] ertragen, aushalten 
 
 %приходи'ть%приходи'ть в нетерпе'ние
-become impatient
-ungeduldig werden
+[en] become impatient
+[de] ungeduldig werden
 
 бы'ло
-verb + бы'ло: be about to do someth.
-verb + бы'ло: im Begriff sein etw. zu machen
+[en] verb + бы'ло: be about to do someth.
+[de] verb + бы'ло: im Begriff sein etw. zu machen
 
 цвето'чный
-Adjective of "цвето'к". Blumen, Blüten-
-цвето'чная [ко'мната]: Wintergarten
+[en] adjective of "цвето'к". Blumen, Blüten-
+[de] цвето'чная [ко'мната]: Wintergarten
 
 заслы'шаться
-be heard
-man hörte
+[en] be heard
+[de] man hörte
 
 ка'дка
-Blumenkübel
+[de] Blumenkübel
 
 разду'мывать
-разду'мывать, разду'мать: change one’s mind
-разду'мывать, разду'мать: es sich anders überlegen, seine Absicht ändern
+[en] разду'мывать, разду'мать: change one’s mind
+[de] разду'мывать, разду'мать: es sich anders überlegen, seine Absicht ändern
 
 %то'лько
-то'лько что just, a moment ago
-то'лько что gerade, soeben
+[en] то'лько что just, a moment ago
+[de] то'лько что gerade, soeben
 
 движе'ние
-Impuls
+[de] Impuls
 
 ша'пка-невиди'мка
-Tarnkappe
+[de] Tarnkappe
 
 сбира'ться
-vor haben, beabsichtigen
-sich treffen, zusammenkommen
-sich versammeln
-be going to, intend to
+[en] be going to, intend to
+[de] vor haben, beabsichtigen
+[de] sich treffen, zusammenkommen
+[de] sich versammeln
 
 %ничто'%ничего' ничего'
-nothing, nought
-nichts
+[en] nothing, nought
+[de] nichts
 
 %ничего'%ничего' ничего'
-nothing, nought
-nichts
+[en] nothing, nought
+[de] nichts
 
 # + Чехов. Глупый француз
 
 пашо'т
-poached egg 
-pochiertes Ei
+[en] poached egg 
+[de] pochiertes Ei
 
 !чем
-than
-als
+[en] than
+[de] als
 
 %что%что за
-what kind
-was für
+[en] what kind
+[de] was für
 
 челаэ'к
-= челове'к. Anrede an einen Kellner oder Diener (veraltet)
+[de] = челове'к. Anrede an einen Kellner oder Diener (veraltet)
 
 есть
-eat
-essen
+[en] eat
+[de] essen
 
 полово'й
-waiter (old)
-Kellner (veraltet)
+[en] waiter (old)
+[de] Kellner (veraltet)
 
 поста'вить
-serve
-servieren
+[en] serve
+[de] servieren
 
 пе'ред
-vor
-in front of 
+[en] in front of 
+[de] vor
 
 неесте'ственно
-unnatural
+[en] unnatural
 
 селя'нка
-Seljanka (soup)
-Seljanka (Suppe)
+[en] Seljanka (soup)
+[de] Seljanka (Suppe)
 
 !к
-zu, an, gegenüber, gegen, um, bis zu
-towards, to
+[en] towards, to
+[de] zu, an, gegenüber, gegen, um, bis zu
 
 %к%к чёрту
-zum Teufel
+[de] zum Teufel
 
 !ведь
-in fact, after all, you know
-indeed, isn‘t it
-doch, ja
+[en] in fact, after all, you know
+[en] indeed, isn‘t it
+[de] doch, ja
 
 %суди'ть%cу'дя по
-judging by/from
-nach, ausgehend von 
+[en] judging by/from
+[de] nach, ausgehend von 
 
 !име'ть
-have
-haben, besitzen
+[en] have
+[de] haben, besitzen
 
 !тара'щить
-anglotzen
+[de] anglotzen
 
 о
-Oh!
+[de] oh!
 
 !чудно'й
-odd, strange
-seltsam, merkwürdig
+[en] odd, strange
+[de] seltsam, merkwürdig
 
 %ме'жду%ме'жду те'м
-meanwhile
-währenddessen
+[en] meanwhile
+[de] währenddessen
 
 %то%то' есть
-that is
-das heißt
-und zwar
-nämlich
+[en] that is
+[de] das heißt
+[de] und zwar
+[de] nämlich
 
 # + Толстой. Детство
 образо'к
-holy picture
-Heiligenbild
+[en] holy picture
+[de] Heiligenbild
 
 ва'точный
-out of cotton wool 
-aus Watte 
+[en] out of cotton wool 
+[de] aus Watte 
 
 !кра'сный
-red
-rot
+[en] red
+[de] rot
 
 !кисточка
-brush, tassel
-Pinsel, Quaste
+[en] brush, tassel
+[de] Pinsel, Quaste
 
 прице'ливаться
-aim at...
-zielen, visieren
+[en] aim at...
+[de] zielen, visieren
 
 %в%в то вре'мя как
-when, while
-während
+[en] when, while
+[de] während
 
 о'браз
-таки'м о'бразом in such a way
-таки'м о'бразом auf diese Weise
-каки'м о'бразом how, in what way?
-каки'м о'бразом auf welche Weise
+[en] таки'м о'бразом in such a way
+[de] таки'м о'бразом auf diese Weise
+[en] каки'м о'бразом how, in what way?
+[de] каки'м о'бразом auf welche Weise
 
 %расположе'ние%расположе'ние ду'ха
-mood
-Stimmungslage
+[en] mood
+[de] Stimmungslage
 
 стать
-стать (=нача'ть) что-л. де'лать begin to
-стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
+[en] стать (=нача'ть) что-л. де'лать begin to
+[de] стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
 
 %станови'ться
-стать (=нача'ть) что-л. де'лать begin to
-стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
+[en] стать (=нача'ть) что-л. де'лать begin to
+[de] стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
 
 течь
-run
-fließen, fluten
+[en] run
+[de] fließen, fluten
 
 оби'льно
-heavely, largely
+[en] heavely, largely
 
 !доброта'
-kindness, goodness
-Güte
+[en] kindness, goodness
+[de] Güte
 
 %потому'%потому' что
-because
-weil
+[en] because
+[de] weil
 
 !по'мнить
-sich erinnern
-to remember
+[en] to remember
+[de] sich erinnern
 
 со'вестно
-ashamed
+[en] ashamed
 
 щипцы'
-tongs
-Zange
+[en] tongs
+[de] Zange
 
 лото'к
-Ablage
+[de] Ablage
 
 лото'чек
 <=лото'к
 
 !чи'нно
-orderly
-würdefoll, ordentlich
+[en] orderly
+[de] würdefoll, ordentlich
 
 прокра'дываться
-steal into, sneak through
-vorpirschen, schleichen 
+[en] steal into, sneak through
+[de] vorpirschen, schleichen 
 
 споко'йно-велича'вый
-calm, majestic 
-ruhig, majestätisch
+[en] calm, majestic 
+[de] ruhig, majestätisch
 
 !голубо'й
-blue
-Hellblau, Blau, Himmelblau
+[en] blue
+[de] Hellblau, Blau, Himmelblau
 
 полузакры'тый
-half-close
-halbgeschlossen
+[en] half-close
+[de] halbgeschlossen
 
 оди'н-одинёшенек
-single and alone
-ganz allein 
+[en] single and alone
+[de] ganz allein 
 
 никто'-то
-nobody, no-one 
-niemand
+[en] nobody, no-one 
+[de] niemand
 
 !подходи'ть
-fit, suit, come
-herantreten, kommen, sich nähern, heranrücken
-passen, geeignet sein
-come closer
+[en] fit, suit, come
+[en] come closer
+[de] herantreten, kommen, sich nähern, heranrücken
+[de] passen, geeignet sein
 
 ландка'рта
-map
-Landkarte
+[en] map
+[de] Landkarte
 
 некра'шеный
-undyed
+[en] undyed
 
 !за'нятый
-busy, occupied
-beschäftigt, belegt, besetzt
+[en] busy, occupied
+[de] beschäftigt, belegt, besetzt
 
 !ли'повый
-linden-, sham, faked, forged
-Linden-
+[en] linden-, sham, faked, forged
+[de] Linden-
 
 !голо'вка
-head, leadership
-Kopf
+[en] head, leadership
+[de] Kopf
 
 !переходи'ть
-get across, get over, cross, get, pass on, pass, turn, go over
-überqueren, übergehen
+[en] get across, get over, cross, get, pass on, pass, turn, go over
+[de] überqueren, übergehen
 
 знать
-know
-wissen
+[en] know
+[de] wissen
 
 !том 
-volume
-Band
+[en] volume
+[de] Band
 
 !развесели'ться
-become cheerful
-fröhlich werden
+[en] become cheerful
+[de] fröhlich werden
 
 # Пушкин. Метель. Ч. 1
 помину'тно
-every minute
+[en] every minute
 
 !выноси'ть
-pass, carry, tolerate, take away
-hinausbringen, durchstehen, aushalten
+[en] pass, carry, tolerate, take away
+[de] hinausbringen, durchstehen, aushalten
 
 босто'н
-Boston (Kartenspiel)
+[de] Boston (Kartenspiel)
 
 сле'дственно
 folglich
-consequently
+[en] consequently
 
 любе'зный
-(old) sweetheart
-(alt) Liebste
+[en] (old) sweetheart
+[de] (alt) Liebste
 
 !мочь
-(verb) can
+[en] (verb) can
 (Verb) können
-мо'жет быть perhaps
-мо'жет быть vielleicht
+[en] мо'жет быть perhaps
+[de] мо'жет быть vielleicht
 
 !тро'нуть
-touch
-anfassen / berühren (auch innerlich), ergreifen, (innerlich) bewegen
+[en] touch
+[de] anfassen / berühren (auch innerlich), ergreifen, (innerlich) bewegen
 
 де'вушка
-(old) maid
-(alt) Zimmermädchen
+[en] (old) maid
+[de] (alt) Zimmermädchen
 
 !за'говор
-conspiracy
-Verschwörung
+[en] conspiracy
+[de] Verschwörung
 
 !верста'
-verst, milestone
-Werst (alt)  = 1,067 km
+[en] verst, milestone
+[de] Werst (alt)  = 1,067 km
 
 подземе'лие
 <=подземе'лье
 
 %чуть%чуть не
-almost
-fast
+[en] almost
+[de] fast
 
 деви'ческий
-girly
-Mädchen-
+[en] girly
+[de] Mädchen-
 
 !выть
-howl
-heulen
+[en] howl
+[de] heulen
 
 !дуть
-blow, swill, souse, go at it, rush it
-(auf)blasen / pusten, aufblähen, aufplustern
-wehen (sausen, huschen, ziehen, zischen - Wind, Wolken etc.)
-mit Eifer tun, pausenlos tun, mit Eifer spielen
-saufen / schnell und in Mengen trinken (wegzischen)
+[en] blow, swill, souse, go at it, rush it
+[de] (auf)blasen / pusten, aufblähen, aufplustern
+[de] wehen (sausen, huschen, ziehen, zischen - Wind, Wolken etc.)
+[de] mit Eifer tun, pausenlos tun, mit Eifer spielen
+[de] saufen / schnell und in Mengen trinken (wegzischen)
 
 во'зжи
-reins
-Zügel
+[en] reins
+[de] Zügel
 
 !заби'ться
-begin to beat
-schlagen
+[en] begin to beat
+[de] schlagen
 
 !поигра'ть
-play
-(eine Zeit lang) spielen
+[en] play
+[de] (eine Zeit lang) spielen
 
 
 # Пушкин. Метель. Ч. 2
 
 %разъе'зд%быть в разъе'зде
-be travelling
-unterwegs sein
+[en] be travelling
+[de] unterwegs sein
 
 !явля'ться
-come
-erscheinen, kommen, auftauchen, sich einfinden
-sich erweisen, sein, darstellen
+[en] come
+[de] erscheinen, kommen, auftauchen, sich einfinden
+[de] sich erweisen, sein, darstellen
 
 !корне'т
-cornet
-Kornett (Offizier)
+[en] cornet
+[de] Kornett (Offizier)
 
 %охо'та%с охо'тою
-readily 
-gerne
+[en] readily 
+[de] gerne
 
 капита'н-испра'вник
-(old) district chief of police
-(alt) Polizeihauptmann
+[en] (old) district chief of police
+[de] (alt) Polizeihauptmann
 
 закла'дывать
-einspannen
+[de] einspannen
 
 взви'деть
 <=уви'деть
 
 пересечённый
-intersected
-durchzogen
+[en] intersected
+[de] durchzogen
 
 !чуть
-nearly
-a little
-scarcely
-ein bisschen (kaum), ein wenig (etwas)
+[en] nearly
+[en] a little
+[en] scarcely
+[de] ein bisschen (kaum), ein wenig (etwas)
 
 пристава'ть
 <=устава'ть
@@ -486,15 +486,15 @@ ein bisschen (kaum), ein wenig (etwas)
 <=э'то
 
 недви'жимый
-motionless
+[en] motionless
 bewegungslos
 
 каки'
 <=како'й
 
 обува'ться
-put shoes on
-sich Schule anziehen
+[en] put shoes on
+[de] sich Schule anziehen
 
 а'ли
 <=и'ли
@@ -503,81 +503,81 @@ sich Schule anziehen
 <=рассвета'ть
 
 приготовля'ться
-make ready
+[en] make ready
 
 знако'мый
-known
-bekannt
+[en] known
+[de] bekannt
 
 # Пушкин. Метель. Ч. 2
 %де'ло%в са'мом де'ле
-tatsächlich
-really
+[en] really
+[de] tatsächlich
 
 землеме'р
-Landmesser
+[de] Landmesser
 
 полдю'жины
-half-dozen
-halbes Dutzend
+[en] half-dozen
+[de] halbes Dutzend
 
 влюблён
-verliebt
-be in love
+[en] be in love
+[de] verliebt
 
 %подо'бный%и тому' подо'бное
-and so on
+[en] and so on
 
 положи'ть
-entscheiden
+[de] entscheiden
 
 сча'стие
-happiness, luck, good fortune
+[en] happiness, luck, good fortune
 
 полусумасше'дший
-half−crazy
-halb verrückt
+[en] half−crazy
+[de] halb verrückt
 
 горя'чка
-Fieber
+[de] Fieber
 
 ме'ра
-по кра'йней ме'ре at any rate, at least
-по кра'йней ме'ре wenigstens
+[en] по кра'йней ме'ре at any rate, at least
+[de] по кра'йней ме'ре wenigstens
 
 бра'нный
-military
+[en] military
 
 обве'шать
-cover with
+[en] cover with
 
 ру'сский
-Russian
-russisch
+[en] Russian
+[de] russisch
 
 # Пушкин. Метель. Ч. 3-4
 
 иска'тель
-suitor
+[en] suitor
 
 гео'ргий
-order of St. George
-orden des Heiligen Georg
+[en] order of St. George
+[de] orden des Heiligen Georg
 
 приуготовля'ть
 <=приготовля'ть
 
 приуготовля'ть
-prepare
+[en] prepare
 
 !конча'ть
-finish, end
-fertig sein, beenden, aufhören, abschließen
-absolvieren
+[en] finish, end
+[de] fertig sein, beenden, aufhören, abschließen
+[de] absolvieren
 
 гранпасья'нс
-patience (card game)
-Patience (Kartenspiel)
+[en] patience (card game)
+[de] Patience (Kartenspiel)
 
 неза'пный
 <=внеза'пный
@@ -585,113 +585,113 @@ Patience (Kartenspiel)
 # Пушкин. Метель. Ч. 5
 
 сви'деться
-sich sehen
+[de] sich sehen
 
 %ми'лость%сде'лать ми'лость
-(old) I beg you
-(alt) Gnade gewähren
+[en] (old) I beg you
+[de] (alt) Gnade gewähren
 
 быть
-verb in past + "бы'ло" to do someth. nearly 
-Verb in verg. + "бы'ло" etw. fast gemacht haben
+[en] verb in past + "бы'ло" to do someth. nearly 
+[de] Verb in verg. + "бы'ло" etw. fast gemacht haben
 
 взду'маться
-take it into one’s head
+[en] take it into one’s head
 
 сторона'
-(old) part of the country
-(alt) Gegend
+[en] (old) part of the country
+[de] (alt) Gegend
 
 %поми'ловать%поми'луй 
-(old) please
-(alt) ich bitte dich
+[en] (old) please
+[de] (alt) ich bitte dich
 
 ла'вочка
-Bank
+[de] Bank
 
 %сла'ва%сла'ва бо'гу
-thank heaven
-Gott sei dank
+[en] thank heaven
+[de] Gott sei dank
 
 ба'тюшка
-pater, pere
+[en] pater, pere
 
 непрости'тельный
-unforgivable
+[en] unforgivable
 
 киби'тка
-Kibitka (Fuhrwerk mit Dach)
+[de] Kibitka (Fuhrwerk mit Dach)
 
 # Пушкин. Стихи
 
 кажи'сь
-Ich glaube, es ist... es müsste...
-I think, it is...
+[en] I think, it is...
+[de] Ich glaube, es ist... es müsste...
 
 проща'й
-leb wohl
-goodbye
+[en] goodbye
+[de] leb wohl
 
 то'-то
-etwas
-something
+[en] something
+[de] etwas
 
 па'рка
-Parca
+[de] Parca
 
 !пра'вило
-rule, regulations, principle, maxim, straightener
-Regel, Grundsatz
+[en] rule, regulations, principle, maxim, straightener
+[de] Regel, Grundsatz
 
 весе'лье
-cheer, fun
-Freude, Heiterkeit 
+[en] cheer, fun
+[de] Freude, Heiterkeit 
 
 доку'чный
-irksome, boring
-langweilig
+[en] irksome, boring
+[de] langweilig
 
 спа'ться
-can sleep
+[en] can sleep
 
 # Пушкин. Барышня-крестьянка. Ч. 1
 
 %вы'йти%вы'йти в отста'вку
-retire from service
-den Dienst quittieren 
+[en] retire from service
+[de] den Dienst quittieren 
 
 !пора'
-time
-Zeit
-it‘s time
-es ist Zeit
-до сих по'р still
-до сих по'р bisher
+[en] time
+[de] Zeit
+[en] it‘s time
+[de] es ist Zeit
+[en] до сих по'р still
+[de] до сих по'р bisher
 
 прока'зничать
-play pranks
+[en] play pranks
 
 разоря'ться
-ruin oneself, curse, swear
-verarmen, all sein Geld / Hab und Gut verlieren, an den Bettelstab kommen, ins Elend in Armut geraten, ruiniert / zugrunde/zu Grunde gerichtet sein
+[en] ruin oneself, curse, swear
+[de] verarmen, all sein Geld / Hab und Gut verlieren, an den Bettelstab kommen, ins Elend in Armut geraten, ruiniert / zugrunde/zu Grunde gerichtet sein
 
 доводи'ть
-доводи'ть до све'дения bring to one’s notice
-доводи'ть до све'дения zur Kenntnis bringen
+[en] доводи'ть до све'дения bring to one’s notice
+[de] доводи'ть до све'дения zur Kenntnis bringen
 
 зои'л
-Zoilos
+[de] Zoilos
 
 пока'мест
-so far
+[en] so far
 
 нечувстви'тельность
-insensibility
-Gefühlslosigkeit, Indolenz
+[en] insensibility
+[de] Gefühlslosigkeit, Indolenz
 
 любо'вная свя'зь
-love affair
-Liebesaffäre
+[en] love affair
+[de] Liebesaffäre
 
 жива'ть
 <=жи'ть
@@ -700,83 +700,83 @@ Liebesaffäre
 <=черпа'ть
 
 !гла'вное
-main, key, major, chiefly, above all
-the main thing, the chief thing
-Haupt-
-das Wichtigste, vor allem
+[en] main, key, major, chiefly, above all
+[en] the main thing, the chief thing
+[de] Haupt-
+[de] das Wichtigste, vor allem
 
 %ум%сходи'ть с ума'
-verrückt werden
-go mad
+[en] go mad
+[de] verrückt werden
 
 %производи'ть%производи'ть впечатле'ние
-make an impression
-Eindruck machen
+[en] make an impression
+[de] Eindruck machen
 
 %приводи'ть%приводи'ть в отча'яние
-despaire
-zur Verzweiflung bringen
+[en] despaire
+[de] zur Verzweiflung bringen
 
 %умира'ть%умира'ть со ску'ки
-be bored to death
-sich zu Tode langweilen
+[en] be bored to death
+[de] sich zu Tode langweilen
 
 %пойти'%пойти' в го'сти
-go to a party
-zu Besuch gehen
+[en] go to a party
+[de] zu Besuch gehen
 
 пуска'й
-let 
+[en] let 
 
 %поря'док%по поря'дку
-in the right order
-der Reihe nach
+[en] in the right order
+[de] der Reihe nach
 
 сро'ду
-in one’s life
+[en] in one’s life
 
 влюби'ться
-fall in love
-sich verlieben
+[en] fall in love
+[de] sich verlieben
 
 ска'зывать
-say, tell
+[en] say, tell
 
 %беда'%не беда'
-never mind!
-nicht so schlimm
+[en] never mind!
+[de] nicht so schlimm
 
 прозева'ть
-miss chance
-verpassen
+[en] miss chance
+[de] verpassen
 
 # Пушкин. Барышня-крестьянка. Ч. 2
 
 !план
-plan, scheme, map, target
-Plan, Plan (Projekt), Vorhaben, Vorsatz, Absicht
-Gebiet, Bereich
-Ebene
-Sicht
-Format, Aufnahme
+[en] plan, scheme, map, target
+[de] Plan, Plan (Projekt), Vorhaben, Vorsatz, Absicht
+[de] Gebiet, Bereich
+[de] Ebene
+[de] Sicht
+[de] Format, Aufnahme
 
 примеря'ть
-try on
-anprobieren
+[en] try on
+[de] anprobieren
 
 пред
 <=пе'ред
 
 %заря'%ни све'т ни заря'
-very early
-sehr früh am Morgen
+[en] very early
+[de] sehr früh am Morgen
 
 госуда'рь
-Zar
+[de] Zar
 
 лега'вый
-gundog
-Bluthund
+[en] gundog
+[de] Bluthund
 
 ба'ить
 <=говорить
@@ -785,27 +785,27 @@ Bluthund
 <=крестья'нка
 
 отпры'гивать
-jump aside
+[en] jump aside
 
 научи'ть
-teach
+[en] teach
 
 знако'мая
-woman friend
+[en] woman friend
 
 попра'виться
-сorrect
-korrigieren
+[en] сorrect
+[de] korrigieren
 
 приби'ть
 <=поби'ть
 
 божи'ться
-swear by God
-bei Gott schwören
+[en] swear by God
+[de] bei Gott schwören
 
 набели'ться
-Schminkweiß verwenden
+[de] Schminkweiß verwenden
 
 занима'ться
 <=начина'ться
@@ -813,123 +813,123 @@ Schminkweiß verwenden
 # Пушкин. Барышня-крестьянка. Ч. 3
 
 дру'жески
-friendly
+[en] friendly
 
 разочаро'ванность
-ressentiment
+[en] ressentiment
 
 ма'лый
-Bursche
+[de] Bursche
 
 соблазни'ться
-become tempted by
+[en] become tempted by
 
 осёдлывать
-tack up a horse
+[en] tack up a horse
 
 го'рло
-во всё го'рло at full throat
-во всё го'рло aus vollem Halse
+[en] во всё го'рло at full throat
+[de] во всё го'рло aus vollem Halse
 
 состоя'ние
-быть в состоянии be able to
-быть в состоянии imstande sein 
+[en] быть в состоянии be able to
+[de] быть в состоянии imstande sein 
 
 укореня'ться
-take root
+[en] take root
 
 ухо
-не ве'рить свои'м уша'м not to believe one’s ears
-не ве'рить свои'м уша'м seinen Ohren nicht trauen
+[en] не ве'рить свои'м уша'м not to believe one’s ears
+[de] не ве'рить свои'м уша'м seinen Ohren nicht trauen
 
 опо'мниться
-recollect oneself
-zu sich kommen
+[en] recollect oneself
+[de] zu sich kommen
 
 
 # Пушкин. Барышня-крестьянка. Ч. 4
 
 взойти'
-rise, ascend 
+[en] rise, ascend 
 
 звери'нец
-menagerie
-Gehege, Zwinger, Käfig
+[en] menagerie
+[de] Gehege, Zwinger, Käfig
 
 усы'пать
-bestrew
-überschütten, bestreuen, besäen
+[en] bestrew
+[de] überschütten, bestreuen, besäen
 
 вну'тренно
 <=вну'тренне
 
 пра'во
-име'ть пра'во have a right
-име'ть пра'во das Recht haben
+[en] име'ть пра'во have a right
+[de] име'ть пра'во das Recht haben
 
 слу'чай
-во вся'ком слу'чае auf jeden Fall
-во вся'ком слу'чае in any case
-по слу'чаю for, on account (of)
-по слу'чаю wegen
+[en] во вся'ком слу'чае in any case
+[de] во вся'ком слу'чае auf jeden Fall
+[en] по слу'чаю for, on account (of)
+[de] по слу'чаю wegen
 
 закорене'лый
-eingefleischt, abgebrüht
+[de] eingefleischt, abgebrüht
 
 поту'пить
-поту'пить глаза' lower one’s eyes
-поту'пить глаза' den Blick sinken
+[en] поту'пить глаза' lower one’s eyes
+[de] поту'пить глаза' den Blick sinken
 
 помири'ть
-reconcile with
-versöhnen
+[en] reconcile with
+[de] versöhnen
 
 разуме'ется
-of course
+[en] of course
 
 уми'лостивлять
-mollifly, please
-gnädig stimmen
+[en] mollifly, please
+[de] gnädig stimmen
 
 душа'
-от души' from one’s heart
-от души' von ganzem Herzen
+[en] от души' from one’s heart
+[de] от души' von ganzem Herzen
 
 кара'кули
-skratchy writing
-Gekritzel
+[en] skratchy writing
+[de] Gekritzel
 
 # Пушкин. Барышня-крестьянка. Ч. 5
 
 сумасбро'дство
-extravagance
+[en] extravagance
 
 переговори'ться
 <=договори'ться
 
 удо'стоить
-honor, favor,
-würdigen
+[en] honor, favor,
+[de] würdigen
 
 почти'тельно 
-respectfully
+[en] respectfully
 
 куда'
-хоть куда' terrific, excellent
+[en] хоть куда' terrific, excellent
 
 %стерпе'ться%сте'рпится слю'бится
-a love comes with habit
+[en] a love comes with habit
 
 причи'на
-по при'чине on account of
-по при'чине aus dem Grund
+[en] по при'чине on account of
+[de] по при'чине aus dem Grund
 
 слог
-style
-Stil
+[en] style
+[de] Stil
 
 спры'гивать
-jump down
+[en] jump down
 
 подыма'ть
 <=поднима'ть
@@ -938,223 +938,222 @@ jump down
 # Чехов. Студент. Ч. 5
 
 то'чно
-as though, like
+[en] as though, like
 
 !поду'ть
-blow, swill, souse, go at it, rush it
-eine Zeit lang / etwas wehen / ziehen / blasen / pusten
-zu wehen / ziehen / blasen / pusten beginnen
+[en] blow, swill, souse, go at it, rush it
+[de] eine Zeit lang / etwas wehen / ziehen / blasen / pusten
+[de] zu wehen / ziehen / blasen / pusten beginnen
 
 дьячо'к
-sacristan
+[en] sacristan
 
 закочене'ть
-be pinched with cold
+[en] be pinched with cold
 
 пусты'нно
-deserted
+[en] deserted
 
 вдо'вий
-widow's
+[en] widow's
 
 пя'тница
-Cтрастная пятница Holy Friday
-Cтрастная пятница Karfreitag
+[en] Cтрастная пятница Holy Friday
+[de] Cтрастная пятница Karfreitag
 
 сходи'ть
-get off
-verschwinden
+[en] get off
+[de] verschwinden
 
 ве'черя
-Та'йная Ве'черя the Last Supper
+[en] Та'йная Ве'черя the Last Supper
 Та'йная Ве'черя das Letzte Abendmahl
 
 истоми'ться
 <=томи'ться
 
 заму'ченный
-exhausted
-erschöpft
+[en] exhausted
+[de] erschöpft
 
 предчу'вствовать
-feel
+[en] feel
 
 разводи'ть
-разводи'ть ого'нь make a fire
-разводи'ть ого'нь Feuer anmachen
+[en] разводи'ть ого'нь make a fire
+[de] разводи'ть ого'нь Feuer anmachen
 
 должно' 
-должно' быть probably
-должно' быть wahrscheinlich
+[en] должно' быть probably
+[de] должно' быть wahrscheinlich
 
 погодя'
-after a while
-etwas später
+[en] after a while
+[de] etwas später
 
 настоя'щее
-present
-Gegenwart
+[en] present
+[de] Gegenwart
 
 дух
-перевести' дух take breath
-перевести' дух Atem holen
+[en] перевести' дух take breath
+[de] перевести' дух Atem holen
 
 немно'го
-few, bit, some
-etwas, ein bisschen
+[en] few, bit, some
+[de] etwas, ein bisschen
 
 
 # Чехов. Анна на шее. Ч. 1
 
 молоды'е
-young marrieds 
-Brautpaar
+[en] young marrieds 
+[de] Brautpaar
 
 тро'нуться
-start, move
+[en] start, move
 
 по'лный
-well fleshed
+[en] well fleshed
 
 ба'кены
-side whiskers
-Koteletten
+[en] side whiskers
+[de] Koteletten
 
 по'вод
-matter, reason
-Anlass
+[en] matter, reason
+[de] Anlass
 
 кало'ша
-Galosche
+[de] Galosche
 
 станови'ться
-get, turn to, plant oneself
+[en] get, turn to, plant oneself
 
 
 # Чехов. Анна на шее. Ч. 2
 
 казённый
-state-owned
-staatseigen
+[en] state-owned
+[de] staatseigen
 
 !кла'сть
-lay, put, place
-legen, stecken, tun, hintun, unterbringen, deponieren
-stapeln (Holz)
-verbrauchen, verwenden
-mauern, eine Mauer errichten, einen Ofen setzen
-einen Abdruck machen
-auftragen (Farbe usw., Essen auf den Tisch), aufbringen, auflegen
+[en] lay, put, place
+[de] legen, stecken, tun, hintun, unterbringen, deponieren
+[de] stapeln (Holz)
+[de] verbrauchen, verwenden
+[de] mauern, eine Mauer errichten, einen Ofen setzen
+[de] einen Abdruck machen
+[de] auftragen (Farbe usw., Essen auf den Tisch), aufbringen, auflegen
 
 ра'вный
-все равно it doesn’t matter
-все равно egal
+[en] все равно it doesn’t matter
+[de] все равно' egal
 
 натя'нуто 
-натянуто улыбаться
-smile nervously
+[en] натя'нуто улыбаться smile nervously
 
 # Чехов. Анна на шее. Ч. 3
 
 озабо'ченно
-preoccupied
+[en] preoccupied
 
 посове'товаться
-ask advice
+[en] ask advice
 
 науча'ть
-teach
+[en] teach
 
 оки'дывать
-оки'дывать взгля'дом glance over
+[en] оки'дывать взгля'дом glance over
 
 карта'вить
-be unable to pronounce r and l properly 
+[en] be unable to pronounce r and l properly 
 
 су'нуть
-give
+[en] give
 
 # Чехов. Анна на шее. Ч. 4
 
 !рад
-glad
-froh
+[en] glad
+[de] froh
 
 !потуха'ть
-go out, die out
-erlöschen, abglimmen
+[en] go out, die out
+[de] erlöschen, abglimmen
 
 света'ть
-day is breaking
+[en] day is breaking
 
 увере'нный
-sure
-überzeugt
+[en] sure
+[de] überzeugt
 
 !болва'н
-blockhead, clot, dim-wit, block, dummy
-Idiot
-Holzklotz, Hauklotz
+[en] blockhead, clot, dim-wit, block, dummy
+[de] Idiot
+[de] Holzklotz, Hauklotz
 
 уча'стие
-принима'ть уча'стие take part in
-принима'ть уча'стие teilnehmen an
+[en] принима'ть уча'стие take part in
+[de] принима'ть уча'стие teilnehmen an
 
 
 # Лермонтов. Фаталист. Ч. 1
 фатали'ст
-fatalist
-Fatalist
+[en] fatalist
+[de] Fatalist
 
 каза'чка
-Cossack woman
-Kosakin
+[en] Cossack woman
+[de] Kosakin
 
 %мета'ть%мета'ть банк
-keep the bank
-die Karten aufdecken
+[en] keep the bank
+[de] die Karten aufdecken
 
 ва-ба'нк
-all-in
-игра'ть ва-ба'нк stake everything
+[en] all-in
+[de] игра'ть ва-ба'нк stake everything
 
 де'ло
-в чём де'ло what‘s going on
-в чём де'ло was ist los
+[en] в чём де'ло what‘s going on
+[de] в чём де'ло was ist los
 
 !взводи'ть
-cock, impute, saddle
-nach oben führen, hinaufführen
+[en] cock, impute, saddle
+[de] nach oben führen, hinaufführen
 
 по'лно
-Stop!
-Lass gut sein!
+[en] stop!
+[de] Lass gut sein!
 
 пересы'пать
-sprinkle, intersperse, pour too much, put too much
-umschütten, einstreuen, bestreuen
-comments, rumors, gossip
-Gerede, Gerücht
+[en] sprinkle, intersperse, pour too much, put too much
+[de] umschütten, einstreuen, bestreuen
+[en] comments, rumors, gossip
+[de] Gerede, Gerücht
 
 пред
 <=пе'ред
 
 попа'сть
-что ни попа'ло hit, get, find oneself, fetch up, fall one after the other
-что ни попа'ло in grosser Zahl umfallen, fallen
+[en] что ни попа'ло hit, get, find oneself, fetch up, fall one after the other
+[de] что ни попа'ло in grosser Zahl umfallen, fallen
 
 прав
-jemand hat recht
+[de] jemand hat recht
 
 си'ла
-изо все'й си'лы with all ones might
-изо все'й си'лы aus voller Kraft
+[en] изо все'й си'лы with all ones might
+[de] изо все'й си'лы aus voller Kraft
 
 !отводить
-lead, take, parry, ward off, remove, reject, challenge, allot, set aside
-zu fahren / zu lenken aufhören, seine Zeit / seine Strecke gefahren haben
-bringen, führen, wegführen
-abführen, geleiten
-ableiten, trennen
-zuweisen, anweisen
-ablehnen, verwerfen, zurückweisen
+[en] lead, take, parry, ward off, remove, reject, challenge, allot, set aside
+[de] zu fahren / zu lenken aufhören, seine Zeit / seine Strecke gefahren haben
+[de] bringen, führen, wegführen
+[de] abführen, geleiten
+[de] ableiten, trennen
+[de] zuweisen, anweisen
+[de] ablehnen, verwerfen, zurückweisen
