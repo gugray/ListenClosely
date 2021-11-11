@@ -110,7 +110,7 @@ namespace Tool
                     } 
                     catch(Exception e)
                     {
-                        Console.WriteLine("Error by parse as int the first part of line, split by tabs: '" + line + "' ('" + parts[0] + "')");
+                        // Console.WriteLine("Error by parse as int the first part of line, split by tabs: '" + line + "' ('" + parts[0] + "')");
                     }
                 }
             }
