@@ -274,6 +274,9 @@ namespace Tool
 
             mOrig.SaveJson("_work/" + abbreviation + "-segs.json");
             mOrig.SaveJson("ProsePlayer/public/media/" + abbreviation + "-segs.json");
+
+            var rg = new ReviewGenerator();
+            rg.Print(mOrig, "_work/" + abbreviation + "-annot.html");
         }
 
         static void Main(string[] args)
