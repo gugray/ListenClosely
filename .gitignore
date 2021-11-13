@@ -8,6 +8,8 @@ _gushi
 _work*
 _materials
 
+_materials/ruwiktionary.txt
+
 Player/dist
 ProsePlayer/dist
 node_modules

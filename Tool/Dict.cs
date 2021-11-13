@@ -102,9 +102,16 @@ namespace Tool
                         orWords = new List<OpenRussianWord>();
                         headToORWords[head] = orWords;
                     }
-                    orWords.Add(new OpenRussianWord { DisplayHead = displayHead, Id = int.Parse(parts[0]) });
-                    string alt = head.Replace("ё", "е");
-                    if (alt != head) alts[alt] = head;
+                    try
+                    {
+                        orWords.Add(new OpenRussianWord { DisplayHead = displayHead, Id = int.Parse(parts[0]) });
+                        string alt = head.Replace("ё", "е");
+                        if (alt != head) alts[alt] = head;
+                    } 
+                    catch(Exception e)
+                    {
+                        // Console.WriteLine("Error by parse as int the first part of line, split by tabs: '" + line + "' ('" + parts[0] + "')");
+                    }
                 }
             }
             using (StreamReader sr = new StreamReader(fnTrans))

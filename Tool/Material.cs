@@ -301,7 +301,6 @@ namespace Tool
             {
                 while ((line = sr.ReadLine()) != null)
                 {
-                    line = line.Replace("<…>", "").Trim();
                     while (line.IndexOf("  ") != -1) line = line.Replace("  ", " ");
                     // Here, we detect an especial string <BR> 
                     // on the _start_ of a _not_empty_ line and only _one_ time in the line. 
