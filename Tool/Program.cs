@@ -292,19 +292,28 @@ namespace Tool
             int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
             bool verses = false;
 
-            abbreviation = "APT_BKR_1";
-            title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
+            abbreviation = "MLE_FAT_1";
+            title = "Михаил Лермонтов - Фаталист";
             shiftTitleLines = 0;
             tempoCorrection = 0.0;
             verses = false;
             doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
-            abbreviation = "APT_BKR_2";
-            title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            verses = false;
-            doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // abbreviation = "APT_BKR_1";
+            // title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            // abbreviation = "APT_BKR_2";
+            // title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(useWords, abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+
 
 
             //abbreviation = "MLE_GOV";

@@ -250,6 +250,9 @@ namespace WiktionaryParser
                 if (res != "") res += " ";
                 res += m.Groups[1].Value.Replace("|.", "").Replace("|", "");
             }
+            // A few entries have stuff like the line below. We don't want to bother, just throw these away.
+            // {{phrase||тип=фразеологизм|роль=наречия|слово1={{по-слогам|{{по-слогам|ка́к-то}}}}|лемма1=как-то|знак1=|слово2={{по-слогам|{{по-слогам|раз}}}}|лемма2=раз|знак2=|тип-кат=Устойчивые сочетания|lang=ru}}
+            if (res.Contains('{')) return "";
             return res;
         }
     }
