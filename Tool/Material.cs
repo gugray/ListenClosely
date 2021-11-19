@@ -146,6 +146,72 @@ namespace Tool
             return material;
         }
 
+        /**
+         * Code transferred from GoogleTranscriber
+         */
+        public static Material fromGoogle(string fn)
+        {
+            //Material material = new Material();
+            //string rawJsonStr = File.ReadAllText(fn);
+            //dynamic rawJson = JsonConvert.DeserializeObject(rawJsonStr);
+            //dynamic results = rawJson.Results;
+            //foreach (var result in results)
+            // {
+            //     Segment segm = new Segment();
+            //     var srAlt = result.Alternatives[0];
+            //     for (int i = 0; i < srAlt.Words.Count; ++i)
+            //     {
+            //         var srWord = srAlt.Words[i];
+            //         decimal startMSec = (decimal)Math.Round(srWord.StartTime.ToTimeSpan().TotalSeconds * 1000.0);
+            //         decimal endMSec = (decimal)Math.Round(srWord.EndTime.ToTimeSpan().TotalSeconds * 1000.0);
+            //         var word = new Word
+            //         {
+            //             StartSec = startMSec / 1000,
+            //             LengthSec = (endMSec - startMSec) / 1000,
+            //             Text = srWord.Word,
+            //         };
+            //         if (char.IsPunctuation(word.Text[word.Text.Length - 1]))
+            //         {
+            //             word.Trail = word.Text.Substring(word.Text.Length - 1);
+            //             word.Text = word.Text.Substring(0, word.Text.Length - 1);
+            //         }
+            //         segm.Words.Add(word);
+            //         if (word.Trail == "." || word.Trail == "?" || word.Trail == "!")
+            //         {
+            //             segm.StartSec = segm.Words[0].StartSec;
+            //             segm.LengthSec = segm.Words[segm.Words.Count - 1].StartSec + segm.Words[segm.Words.Count - 1].LengthSec - segm.StartSec;
+            //            material.Segments.Add(segm);
+            //             segm = new Segment();
+            //         }
+            //     }
+            //     if (segm.Words.Count > 0)
+            //     {
+            //         segm.StartSec = segm.Words[0].StartSec;
+            //         segm.LengthSec = segm.Words[segm.Words.Count - 1].StartSec + segm.Words[segm.Words.Count - 1].LengthSec - segm.StartSec;
+            //        material.Segments.Add(segm);
+            //     }
+            // }
+            //
+            // // additional fix for segments having LengthSec <= 0
+            // for (int i = 0; i < material.Segments.Count; i++)
+            // {
+            //     Segment segm = material.Segments[i];
+            //     Segment prevSegm = null;
+            //     Segment nextSegm = null;
+            //     if (i > 0)
+            //     {
+            //         prevSegm = material.Segments[i - 1];
+            //     }
+            //     if (i < material.Segments.Count - 1)
+            //     {
+            //         nextSegm = material.Segments[i + 1];
+            //     }
+            // }
+            //
+            // return material;
+            return null;
+        }
+
         /// <summary>
         /// Parses material from SRT file
         /// </summary>

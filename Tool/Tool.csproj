@@ -3,11 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GoogleTranscriber\GoogleTranscriber.csproj" />
+    <ProjectReference Include="..\MSTranscriber\MSTranscriber.csproj" />
+    <ProjectReference Include="..\WiktionaryParser\WiktionaryParser.csproj" />
   </ItemGroup>
 
   <ItemGroup>
