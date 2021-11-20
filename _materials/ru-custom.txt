@@ -57,7 +57,7 @@
 #
 # For force adding an additional empty line into the text (e.g., for strophical verses), start the next line with combination <BR>
 #
-# Accented vowel characters:
+# Accented vowel characters for main words:
 # а'
 # я'
 # о'
@@ -79,8 +79,8 @@
 выходи'ть
 [en] exit, go out, step out 
 [de] hinausgehen
-[en] выходи'ть за'муж (за кого-л.) marry
-[de] выходи'ть за'муж (за кого-л.) heiraten
+[en] выходи́ть замуж: (за кого-л.) marry
+[de] выходить замуж: (за кого-л.) heiraten
 
 выха'живать
 [en] nurse, restore to health
@@ -90,17 +90,17 @@
 [en] bear
 [de] ertragen, aushalten 
 
-%приходи'ть%приходи'ть в нетерпе'ние
+%приходи'ть%приходить в нетерпение
 [en] become impatient
 [de] ungeduldig werden
 
 бы'ло
-[en] verb + бы'ло: be about to do someth.
-[de] verb + бы'ло: im Begriff sein etw. zu machen
+[en] verb + было: be about to do someth.
+[de] verb + было: im Begriff sein etw. zu machen
 
 цвето'чный
-[en] adjective of "цвето'к". Blumen, Blüten-
-[de] цвето'чная [ко'мната]: Wintergarten
+[en] adjective of "цветок". Blumen, Blüten-
+[de] цветочная [комната]: Wintergarten
 
 заслы'шаться
 [en] be heard
@@ -110,12 +110,12 @@
 [de] Blumenkübel
 
 разду'мывать
-[en] разду'мывать, разду'мать: change one’s mind
-[de] разду'мывать, разду'мать: es sich anders überlegen, seine Absicht ändern
+[en] раздумывать, раздумать: change one’s mind
+[de] раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern
 
 %то'лько
-[en] то'лько что just, a moment ago
-[de] то'лько что gerade, soeben
+[en] только что: just, a moment ago
+[de] только что: gerade, soeben
 
 движе'ние
 [de] Impuls
@@ -129,11 +129,11 @@
 [de] sich treffen, zusammenkommen
 [de] sich versammeln
 
-%ничто'%ничего' ничего'
+%ничто'%ничего ничего
 [en] nothing, nought
 [de] nichts
 
-%ничего'%ничего' ничего'
+%ничего'%ничего ничего
 [en] nothing, nought
 [de] nichts
 
@@ -152,7 +152,7 @@
 [de] was für
 
 челаэ'к
-[de] = челове'к. Anrede an einen Kellner oder Diener (veraltet)
+[de] = "человек". Anrede an einen Kellner oder Diener (veraltet)
 
 есть
 [en] eat
@@ -243,22 +243,22 @@
 [de] während
 
 о'браз
-[en] таки'м о'бразом in such a way
-[de] таки'м о'бразом auf diese Weise
-[en] каки'м о'бразом how, in what way?
-[de] каки'м о'бразом auf welche Weise
+[en] таким образом: in such a way
+[de] таким образом: auf diese Weise
+[en] каким образом: how, in what way?
+[de] каким образом: auf welche Weise
 
-%расположе'ние%расположе'ние ду'ха
+%расположе'ние%расположение духа
 [en] mood
 [de] Stimmungslage
 
 стать
-[en] стать (=нача'ть) что-л. де'лать begin to
-[de] стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
+[en] стать (=начать) что-л. делать: begin to
+[de] стать (=начать) что-л. делать: beginnen zu..., anfangen zu...
 
 %станови'ться
-[en] стать (=нача'ть) что-л. де'лать begin to
-[de] стать (=нача'ть) что-л. де'лать beginnen zu..., anfangen zu...
+[en] стать (=начать) что-л. делать: begin to
+[de] стать (=начать) что-л. делать: beginnen zu..., anfangen zu...
 
 течь
 [en] run
@@ -290,7 +290,7 @@
 [de] Ablage
 
 лото'чек
-<=лото'к
+<=лоток
 
 !чи'нно
 [en] orderly
@@ -383,8 +383,11 @@ folglich
 !мочь
 [en] (verb) can
 (Verb) können
-[en] мо'жет быть perhaps
-[de] мо'жет быть vielleicht
+[en] может быть: perhaps
+[de] может быть: vielleicht
+
+мочь
+[en] нет мочи: impossible
 
 !тро'нуть
 [en] touch
@@ -403,7 +406,7 @@ folglich
 [de] Werst (alt)  = 1,067 km
 
 подземе'лие
-<=подземе'лье
+<=подземелье
 
 %чуть%чуть не
 [en] almost
@@ -464,7 +467,7 @@ folglich
 [de] einspannen
 
 взви'деть
-<=уви'деть
+<=увидеть
 
 пересечённый
 [en] intersected
@@ -477,30 +480,30 @@ folglich
 [de] ein bisschen (kaum), ein wenig (etwas)
 
 пристава'ть
-<=устава'ть
+<=уставать
 
 недале'че
 <=недалеко
 
 сие'
-<=э'то
+<=это
 
 недви'жимый
 [en] motionless
 bewegungslos
 
 каки'
-<=како'й
+<=какой
 
 обува'ться
 [en] put shoes on
 [de] sich Schule anziehen
 
 а'ли
-<=и'ли
+<=или
 
 рассвенёт
-<=рассвета'ть
+<=рассветать
 
 приготовля'ться
 [en] make ready
@@ -510,7 +513,7 @@ bewegungslos
 [de] bekannt
 
 # Пушкин. Метель. Ч. 2
-%де'ло%в са'мом де'ле
+%де'ло%в самом деле
 [en] really
 [de] tatsächlich
 
@@ -525,7 +528,7 @@ bewegungslos
 [en] be in love
 [de] verliebt
 
-%подо'бный%и тому' подо'бное
+%подо'бный%и тому подобное
 [en] and so on
 
 положи'ть
@@ -542,8 +545,8 @@ bewegungslos
 [de] Fieber
 
 ме'ра
-[en] по кра'йней ме'ре at any rate, at least
-[de] по кра'йней ме'ре wenigstens
+[en] по крайней мере: at any rate, at least
+[de] по крайней мере: wenigstens
 
 бра'нный
 [en] military
@@ -592,8 +595,8 @@ bewegungslos
 [de] (alt) Gnade gewähren
 
 быть
-[en] verb in past + "бы'ло" to do someth. nearly 
-[de] Verb in verg. + "бы'ло" etw. fast gemacht haben
+[en] verb in past + "было": to do someth. nearly 
+[de] Verb in verg. + "было": etw. fast gemacht haben
 
 взду'маться
 [en] take it into one’s head
@@ -665,8 +668,8 @@ bewegungslos
 [de] Zeit
 [en] it‘s time
 [de] es ist Zeit
-[en] до сих по'р still
-[de] до сих по'р bisher
+[en] до сих пор: still
+[de] до сих пор: bisher
 
 прока'зничать
 [en] play pranks
@@ -676,8 +679,8 @@ bewegungslos
 [de] verarmen, all sein Geld / Hab und Gut verlieren, an den Bettelstab kommen, ins Elend in Armut geraten, ruiniert / zugrunde/zu Grunde gerichtet sein
 
 доводи'ть
-[en] доводи'ть до све'дения bring to one’s notice
-[de] доводи'ть до све'дения zur Kenntnis bringen
+[en] доводить до сведения: bring to one’s notice
+[de] доводить до сведения: zur Kenntnis bringen
 
 зои'л
 [de] Zoilos
@@ -694,10 +697,10 @@ bewegungslos
 [de] Liebesaffäre
 
 жива'ть
-<=жи'ть
+<=жить
 
 почерпа'ть
-<=черпа'ть
+<=черпать
 
 !гла'вное
 [en] main, key, major, chiefly, above all
@@ -705,7 +708,7 @@ bewegungslos
 [de] Haupt-
 [de] das Wichtigste, vor allem
 
-%ум%сходи'ть с ума'
+%ум%сходить с ума
 [en] go mad
 [de] verrückt werden
 
@@ -782,7 +785,7 @@ bewegungslos
 <=говорить
 
 поселя'нка
-<=крестья'нка
+<=крестьянка
 
 отпры'гивать
 [en] jump aside
@@ -798,7 +801,7 @@ bewegungslos
 [de] korrigieren
 
 приби'ть
-<=поби'ть
+<=побить
 
 божи'ться
 [en] swear by God
@@ -808,7 +811,7 @@ bewegungslos
 [de] Schminkweiß verwenden
 
 занима'ться
-<=начина'ться
+<=начинаться
 
 # Пушкин. Барышня-крестьянка. Ч. 3
 
@@ -828,19 +831,19 @@ bewegungslos
 [en] tack up a horse
 
 го'рло
-[en] во всё го'рло at full throat
-[de] во всё го'рло aus vollem Halse
+[en] во всё горло: at full throat
+[de] во всё горло: aus vollem Halse
 
 состоя'ние
-[en] быть в состоянии be able to
-[de] быть в состоянии imstande sein 
+[en] быть в состоянии: be able to
+[de] быть в состоянии: imstande sein 
 
 укореня'ться
 [en] take root
 
 ухо
-[en] не ве'рить свои'м уша'м not to believe one’s ears
-[de] не ве'рить свои'м уша'м seinen Ohren nicht trauen
+[en] не верить своим ушам: not to believe one’s ears
+[de] не верить своим ушам: seinen Ohren nicht trauen
 
 опо'мниться
 [en] recollect oneself
@@ -861,24 +864,24 @@ bewegungslos
 [de] überschütten, bestreuen, besäen
 
 вну'тренно
-<=вну'тренне
+<=внутренне
 
 пра'во
-[en] име'ть пра'во have a right
-[de] име'ть пра'во das Recht haben
+[en] иметь право: have a right
+[de] иметь право: das Recht haben
 
 слу'чай
-[en] во вся'ком слу'чае in any case
-[de] во вся'ком слу'чае auf jeden Fall
-[en] по слу'чаю for, on account (of)
-[de] по слу'чаю wegen
+[en] во всяком случае: in any case
+[de] во всяком случае: auf jeden Fall
+[en] по случаю: for, on account (of)
+[de] по случаю: wegen
 
 закорене'лый
 [de] eingefleischt, abgebrüht
 
 поту'пить
-[en] поту'пить глаза' lower one’s eyes
-[de] поту'пить глаза' den Blick sinken
+[en] потупить глаза: lower one’s eyes
+[de] потупить глаза: den Blick sinken
 
 помири'ть
 [en] reconcile with
@@ -892,8 +895,8 @@ bewegungslos
 [de] gnädig stimmen
 
 душа'
-[en] от души' from one’s heart
-[de] от души' von ganzem Herzen
+[en] от души: from one’s heart
+[de] от души: von ganzem Herzen
 
 кара'кули
 [en] skratchy writing
@@ -905,7 +908,7 @@ bewegungslos
 [en] extravagance
 
 переговори'ться
-<=договори'ться
+<=договориться
 
 удо'стоить
 [en] honor, favor,
@@ -915,14 +918,14 @@ bewegungslos
 [en] respectfully
 
 куда'
-[en] хоть куда' terrific, excellent
+[en] хоть куда: terrific, excellent
 
-%стерпе'ться%сте'рпится слю'бится
+%стерпе'ться%стерпится слюбится
 [en] a love comes with habit
 
 причи'на
-[en] по при'чине on account of
-[de] по при'чине aus dem Grund
+[en] по причине: on account of
+[de] по причине: aus dem Grund
 
 слог
 [en] style
@@ -932,7 +935,7 @@ bewegungslos
 [en] jump down
 
 подыма'ть
-<=поднима'ть
+<=поднимать
 
 
 # Чехов. Студент. Ч. 5
@@ -958,19 +961,19 @@ bewegungslos
 [en] widow's
 
 пя'тница
-[en] Cтрастная пятница Holy Friday
-[de] Cтрастная пятница Karfreitag
+[en] Cтрастная пятница: Holy Friday
+[de] Cтрастная пятница: Karfreitag
 
 сходи'ть
 [en] get off
 [de] verschwinden
 
 ве'черя
-[en] Та'йная Ве'черя the Last Supper
-Та'йная Ве'черя das Letzte Abendmahl
+[en] Тайная Вечеря: the Last Supper
+[de] Тайная Вечеря: das Letzte Abendmahl
 
 истоми'ться
-<=томи'ться
+<=томиться
 
 заму'ченный
 [en] exhausted
@@ -980,12 +983,12 @@ bewegungslos
 [en] feel
 
 разводи'ть
-[en] разводи'ть ого'нь make a fire
-[de] разводи'ть ого'нь Feuer anmachen
+[en] разводить огонь: make a fire
+[de] разводить огонь: Feuer anmachen
 
 должно' 
-[en] должно' быть probably
-[de] должно' быть wahrscheinlich
+[en] должно быть: probably
+[de] должно быть: wahrscheinlich
 
 погодя'
 [en] after a while
@@ -996,8 +999,8 @@ bewegungslos
 [de] Gegenwart
 
 дух
-[en] перевести' дух take breath
-[de] перевести' дух Atem holen
+[en] перевести дух: take breath
+[de] перевести дух: Atem holen
 
 немно'го
 [en] few, bit, some
@@ -1047,11 +1050,11 @@ bewegungslos
 [de] auftragen (Farbe usw., Essen auf den Tisch), aufbringen, auflegen
 
 ра'вный
-[en] все равно it doesn’t matter
-[de] все равно' egal
+[en] все равно: it doesn’t matter
+[de] все равно: egal
 
 натя'нуто 
-[en] натя'нуто улыбаться smile nervously
+[en] натянуто улыбаться: smile nervously
 
 # Чехов. Анна на шее. Ч. 3
 
@@ -1065,7 +1068,7 @@ bewegungslos
 [en] teach
 
 оки'дывать
-[en] оки'дывать взгля'дом glance over
+[en] окидывать взглядом: glance over
 
 карта'вить
 [en] be unable to pronounce r and l properly 
@@ -1096,8 +1099,8 @@ bewegungslos
 [de] Holzklotz, Hauklotz
 
 уча'стие
-[en] принима'ть уча'стие take part in
-[de] принима'ть уча'стие teilnehmen an
+[en] принимать участие: take part in
+[de] принимать участие: teilnehmen an
 
 
 # Лермонтов. Фаталист. Ч. 1
@@ -1115,11 +1118,11 @@ bewegungslos
 
 ва-ба'нк
 [en] all-in
-[de] игра'ть ва-ба'нк stake everything
+[de] играть ва-банк: stake everything
 
 де'ло
-[en] в чём де'ло what‘s going on
-[de] в чём де'ло was ist los
+[en] в чём дело: what‘s going on
+[de] в чём дело: was ist los
 
 !взводи'ть
 [en] cock, impute, saddle
@@ -1139,17 +1142,17 @@ bewegungslos
 <=пе'ред
 
 попа'сть
-[en] что ни попа'ло hit, get, find oneself, fetch up, fall one after the other
-[de] что ни попа'ло in grosser Zahl umfallen, fallen
+[en] что ни попало: hit, get, find oneself, fetch up, fall one after the other
+[de] что ни попало: in grosser Zahl umfallen, fallen
 
 прав
 [de] jemand hat recht
 
 си'ла
-[en] изо все'й си'лы with all ones might
-[de] изо все'й си'лы aus voller Kraft
+[en] изо всей силы: with all ones might
+[de] изо всей силы: aus voller Kraft
 
-!отводить
+!отводи'ть
 [en] lead, take, parry, ward off, remove, reject, challenge, allot, set aside
 [de] zu fahren / zu lenken aufhören, seine Zeit / seine Strecke gefahren haben
 [de] bringen, führen, wegführen
@@ -1157,3 +1160,25 @@ bewegungslos
 [de] ableiten, trennen
 [de] zuweisen, anweisen
 [de] ablehnen, verwerfen, zurückweisen
+
+# Pushkin, Lermontov
+
+!посреди'
+[de] mitten
+[de] in der Mitte
+[de] mittig
+[en] in the middle
+[fr] au milieu
+[fr] au milieu de
+
+чтоб
+<=чтобы
+
+ль
+<=ли
+
+б
+<=бы
+
+дале'че
+<=далеко
