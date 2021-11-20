@@ -54,6 +54,8 @@ namespace Tool
         public string Text = "";
         [JsonProperty("lemma")]
         public string Lemma = "";
+        [JsonIgnore]
+        public string AccentedLemma = "";
         [JsonProperty("trail")]
         public string Trail = "";
         [JsonProperty("entries")]
@@ -352,7 +354,15 @@ namespace Tool
                             throw new Exception("The current lemma text is empty but the current word text is '" + segm.Words[i].Text + "'");
                         if (lemmas[i].Text != "" && segm.Words[i].Text == "")
                             throw new Exception("The current lemma text is '" + lemmas[i].Text + "' but the current word text is empty");
+
+                        // Provide the option to add the accent manually in the lemmatized data, which can later be used for detect the correct accent form in the dictionary
                         segm.Words[i].Lemma = lemmas[i].Text;
+
+                        if (segm.Words[i].Lemma.Contains(Dict.acuteAccent))
+                        {
+                            segm.Words[i].AccentedLemma = segm.Words[i].Lemma;
+                            segm.Words[i].Lemma = segm.Words[i].Lemma.Replace(Dict.acuteAccent, "");
+                        }
                     }
                 }
             }

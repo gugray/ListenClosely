@@ -66,7 +66,7 @@ namespace Tool
         /// </summary>
         Dictionary<string, string> alts = new Dictionary<string, string>();
 
-        static readonly string acuteAccent = char.ConvertFromUtf32(0x0301);
+        public static readonly string acuteAccent = char.ConvertFromUtf32(0x0301);
 
         class OpenRussianWord
         {
@@ -233,11 +233,13 @@ namespace Tool
             string head = rawHead.Replace("'", "");
 
             if (!headToEntries.ContainsKey(head)) return;
-            Entry e = headToEntries[head].Find(x => x.DisplayHead == displayHead);
-            if (e == null) return;
-            headToEntries[head].Remove(e);
-            if (headToEntries[head].Count == 0)
-                headToEntries.Remove(head);
+            Entry e = headToEntries[head].Find(x => x.DisplayHead == displayHead || x.DisplayHead == head);
+            if (e != null)
+            {
+                headToEntries[head].Remove(e);
+                if (headToEntries[head].Count == 0)
+                    headToEntries.Remove(head);
+            }
         }
 
         public void UpdateFromCustomList(string fnCustDictPath)
@@ -384,6 +386,40 @@ namespace Tool
             }
         }
 
+
+        public void indexDisplayedHeaders()
+        {
+            // Extend headToEntries by add also the unique references by displayed head
+            // This part of index will be used for detect the translations by accented lemma
+            Dict tmp = new Dict();
+            foreach (string head in headToEntries.Keys)
+            {
+                List<Entry> entries4head = headToEntries[head];
+                foreach (Entry entry in entries4head)
+                {
+                    if (head.Equals(entry.DisplayHead)) continue;
+                    if (headToEntries.ContainsKey(entry.DisplayHead)) continue;
+
+                    if (!tmp.headToEntries.ContainsKey(entry.DisplayHead))
+                    {
+                        tmp.headToEntries[entry.DisplayHead] = new List<Entry>();
+                    }
+
+                    tmp.headToEntries[entry.DisplayHead].Add(entry);
+                }
+            }
+            foreach (string head in tmp.headToEntries.Keys)
+            {
+                headToEntries.Add(head, tmp.headToEntries[head]);
+
+                string alt = head.Replace("ё", "е");
+                if (alts.ContainsKey(alt)) continue;
+                alts[alt] = head;
+            }
+
+            // TODO extend also wdToMultiHeads!!!
+        }
+
         /**
          * Detect collocations
          * @mwHead as collocation
@@ -422,8 +458,7 @@ namespace Tool
         /// Annotates material with words from dictioanry.
         /// </summary>
         /// <param name="material"></param>
-        /// <param name="usingLemma"></param>
-        public void FillDict(Material material, bool usingLemma)
+        public void FillDict(Material material)
         {
             List<DictEntry> entries = material.DictEntries;
             Dictionary<string, int> headToIx = new Dictionary<string, int>();
@@ -431,7 +466,11 @@ namespace Tool
             {
                 foreach (var word in segm.Words)
                 {
-                    string wdText = usingLemma ? word.Lemma : word.Text;
+                    string wdText = word.Lemma;
+                    if (!string.IsNullOrEmpty(word.AccentedLemma) && !word.AccentedLemma.Equals(wdText))
+                    {
+                        wdText = word.AccentedLemma;
+                    }
                     string wdLo = wdText.ToLowerInvariant();
                     // Russian normalization
                     wdText = wdText.Replace("ё", "е");
@@ -442,64 +481,46 @@ namespace Tool
                     else if (headToIx.ContainsKey(wdLo))
                         word.Entries.Add(headToIx[wdLo]);
                     // Lookup - new
-                    else annotateWord(segm, word, entries, headToIx, usingLemma, wdText, wdLo);
+                    else annotateWord(segm, word, entries, headToIx, wdText, wdLo);
                 }
             }
         }
 
-        static void addToWord(Word word, string head, bool usingLemma, List<Entry> hits,
+        static void addToWord(Word word, string head, List<Entry> hits,
             List<DictEntry> entries, Dictionary<string, int> headToIx)
         {
             foreach (var hit in hits)
             {
-                // avoid duplicates (e.g. by second call, usingLemma=false)
-                // this check is relevant for the second call of FillDict only
-                bool willSkip = false;
-                if (!usingLemma)
+                DictEntry de = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
+                foreach (var sense in hit.Meanings)
                 {
-                    foreach (DictEntry de in entries)
-                    {
-                        if (de.Head == head)
-                        {
-                            willSkip = true;
-                            break;
-                        }
-                    }
+                    var ds = new DictSense { SrcDef = sense.Translation };
+                    if (!string.IsNullOrEmpty(sense.Lang))
+                        ds.SrcDef = "[" + sense.Lang + "] " + ds.SrcDef;
+                    de.Senses.Add(ds);
                 }
-
-                if (!willSkip)
-                {
-                    DictEntry de = new DictEntry { Head = head, DisplayHead = hit.DisplayHead };
-                    foreach (var sense in hit.Meanings)
-                    {
-                        var ds = new DictSense { SrcDef = sense.Translation };
-                        if (!string.IsNullOrEmpty(sense.Lang))
-                            ds.SrcDef = "[" + sense.Lang + "] " + ds.SrcDef;
-                        de.Senses.Add(ds);
-                    }
-                    int ix = entries.Count;
-                    headToIx[head] = ix;
-                    entries.Add(de);
-                    word.Entries.Add(ix);
-                }
+                int ix = entries.Count;
+                headToIx[head] = ix;
+                entries.Add(de);
+                word.Entries.Add(ix);
             }
         }
 
         void annotateWord(Segment segm, Word word, List<DictEntry> entries, Dictionary<string, int> headToIx,
-            bool usingLemma, string wdText, string wdLo)
+            string wdText, string wdLo)
         {
             // Text
             if (headToEntries.ContainsKey(wdText))
-                addToWord(word, wdText, usingLemma, headToEntries[wdText], entries, headToIx);
+                addToWord(word, wdText, headToEntries[wdText], entries, headToIx);
             // Text as alt
             else if (alts.ContainsKey(wdText) && headToEntries.ContainsKey(alts[wdText]))
-                addToWord(word, alts[wdText], usingLemma, headToEntries[alts[wdText]], entries, headToIx);
+                addToWord(word, alts[wdText], headToEntries[alts[wdText]], entries, headToIx);
             // Lower-case
             else if (headToEntries.ContainsKey(wdLo))
-                addToWord(word, wdLo, usingLemma, headToEntries[wdLo], entries, headToIx);
+                addToWord(word, wdLo, headToEntries[wdLo], entries, headToIx);
             // Lower-case as alt
             else if (alts.ContainsKey(wdLo) && headToEntries.ContainsKey(alts[wdLo]))
-                addToWord(word, alts[wdLo], usingLemma, headToEntries[alts[wdLo]], entries, headToIx);
+                addToWord(word, alts[wdLo], headToEntries[alts[wdLo]], entries, headToIx);
 
             // Hint of a multi-word head
             string wdForMulti = null;
@@ -514,7 +535,7 @@ namespace Tool
             foreach (string mwHead in wdToMultiHeads[wdForMulti])
             {
                 if (!isMWHit(segm, mwHead)) continue;
-                addToWord(word, mwHead, usingLemma, headToEntries[mwHead], entries, headToIx);
+                addToWord(word, mwHead, headToEntries[mwHead], entries, headToIx);
             }
         }
     }
