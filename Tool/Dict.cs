@@ -193,11 +193,22 @@ namespace Tool
             string displayHead = rawHead.Replace("'", acuteAccent);
             string head = rawHead.Replace("'", "");
 
+            string lang = "";
+            if(line.StartsWith("["))
+            {
+                string [] split = line.Split("]");
+                if(split.Length > 1)
+                {
+                    lang = split[0].Substring(1);
+                    line = line.Substring(line.IndexOf("]") + 1);
+                }
+            }
+
             if (isIdiom)
             {
                 // add the idiom line
                 var ee = addOrGetEntry(head, displayHead);
-                ee.Meanings.Add(new Meaning { Translation = line, Src = srcCustom });
+                ee.Meanings.Add(new Meaning { Translation = line, Src = srcCustom, Lang = lang });
                 return;
             }
             // add the dictionary translation line
@@ -205,7 +216,7 @@ namespace Tool
             if (!line.StartsWith("<="))
             {
                 var ee = addOrGetEntry(head, displayHead);
-                ee.Meanings.Add(new Meaning { Translation = line, Src = srcCustom });
+                ee.Meanings.Add(new Meaning { Translation = line, Src = srcCustom, Lang = lang });
                 return;
             }
 
@@ -214,13 +225,14 @@ namespace Tool
             var sameAs = line.Substring(2).Trim();
 
             List<Meaning> meanings = new List<Meaning>();
-            meanings.Add(new Meaning { Translation = "= " + sameAs, Src = srcCustom });
+            // This will produce an additional entry: "= same_as_lemma". Let us comment out.
+            //meanings.Add(new Meaning { Translation = "= " + sameAs, Src = srcCustom, Lang = "ru" });
 
             if (headToEntries.ContainsKey(sameAs))
             {
                 foreach (var ee in headToEntries[sameAs])
                     foreach (var m in ee.Meanings)
-                        meanings.Add(new Meaning { Translation = m.Translation, Src = srcCustom });
+                        meanings.Add(new Meaning { Translation = m.Translation, Src = srcCustom, Lang = m.Lang });
             }
 
             var entry = addOrGetEntry(head, displayHead);
@@ -467,14 +479,17 @@ namespace Tool
                 foreach (var word in segm.Words)
                 {
                     string wdText = word.Lemma;
-                    if (!string.IsNullOrEmpty(word.AccentedLemma) && !word.AccentedLemma.Equals(wdText))
+                    if (!string.IsNullOrEmpty(word.AccentedLemma) && (!word.AccentedLemma.Equals(wdText) || word.AccentedLemma.Contains("ё")) )
                     {
                         wdText = word.AccentedLemma;
+                    } 
+                    else
+                    {
+                        // Russian normalization
+                        wdText = wdText.Replace("ё", "е");
                     }
                     string wdLo = wdText.ToLowerInvariant();
-                    // Russian normalization
-                    wdText = wdText.Replace("ё", "е");
-                    wdLo = wdLo.Replace("ё", "е");
+                    
                     // Lookup - seen before
                     if (headToIx.ContainsKey(wdText))
                         word.Entries.Add(headToIx[wdText]);

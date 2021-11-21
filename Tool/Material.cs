@@ -358,7 +358,10 @@ namespace Tool
                         // Provide the option to add the accent manually in the lemmatized data, which can later be used for detect the correct accent form in the dictionary
                         segm.Words[i].Lemma = lemmas[i].Text;
 
-                        if (segm.Words[i].Lemma.Contains(Dict.acuteAccent))
+                        if (segm.Words[i].Lemma.Contains(Dict.acuteAccent) ||
+                                (!segm.Words[i].Lemma.Contains(Dict.acuteAccent) &&
+                                segm.Words[i].Lemma.Contains("ё"))
+                            )
                         {
                             segm.Words[i].AccentedLemma = segm.Words[i].Lemma;
                             segm.Words[i].Lemma = segm.Words[i].Lemma.Replace(Dict.acuteAccent, "");
@@ -437,8 +440,8 @@ namespace Tool
                     if(line.StartsWith("<BR>") || line.StartsWith("<br>"))
                     {
                         hasAddParMark = true;
-                        while (line.IndexOf("<BR>") != -1) line = line.Replace("<br>", "");
-                        while (line.IndexOf("<br>") != -1) line = line.Replace("<br>", "");
+                        line = line.Replace("<br>", "");
+                        line = line.Replace("<br>", "");
                     }
                     if (line != "")
                     {

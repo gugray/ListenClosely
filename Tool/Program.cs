@@ -479,89 +479,97 @@ namespace Tool
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
 
-            //abbreviation = "MLE_PAR";
-            //title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
-            //shiftTitleLines = 2;
-            //tempoCorrection = 0.0;
-            //verses = true;
-            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // abbreviation = "MLE_PAR";
+            // title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
-        //   abbreviation = "MLE_GOV";
-        //   title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //
-        //   abbreviation = "MLE_PNT";
-        //   title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //
-        //   abbreviation = "MLE_VOD";
-        //   title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
-        //   shiftTitleLines = 1;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //
-        //   abbreviation = "APT_DMJ";
-        //   title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "APT_EZH";
-        //   title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "APT_SSN";
-        //   title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "APT_BESY";
-        //   title = "Александр Пушкин. Бесы.Читает Александр Заполь";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "MLE_ZAV";
-        //   title = "Михаил Лермонтов. Завещание. Читает Евгений Шибаров";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "MLE_PAR_1";
-        //   title = "Михаил Лермонтов. Парус. Читает Евгений Шибаров";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //  abbreviation = "MLE_ROD";
-        //  title = "Михаил Лермонтов. Родина. Читает Евгений Шибаров";
-        //  shiftTitleLines = 2;
-        //  tempoCorrection = 0.0;
-        //  verses = true;
-        //  doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-        //   
-        //   abbreviation = "MLE_UTES";
-        //   title = "Михаил Лермонтов. Утес. Читает Даниил Казбеков";
-        //   shiftTitleLines = 2;
-        //   tempoCorrection = 0.0;
-        //   verses = true;
-        //   doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // abbreviation = "MLE_GOV";
+            // title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_PNT";
+            // title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_VOD";
+            // title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "APT_DMJ";
+            // title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "APT_EZH";
+            // title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "APT_SSN";
+            // title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "APT_BESY";
+            // title = "Александр Пушкин. Бесы.Читает Александр Заполь";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_ZAV";
+            // title = "Михаил Лермонтов. Завещание. Читает Евгений Шибаров";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "MLE_PAR_1";
+            // title = "Михаил Лермонтов. Парус. Читает Евгений Шибаров";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //   
+            // abbreviation = "MLE_ROD";
+            // title = "Михаил Лермонтов. Родина. Читает Евгений Шибаров";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //  
+            // abbreviation = "MLE_UTES";
+            // title = "Михаил Лермонтов. Утес. Читает Даниил Казбеков";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
+            abbreviation = "APT_ONEG_1";
+            title = "Александр Пушкин. Роман в стихах «Евгений Онегин». Глава шестая. Строфы XXX - XXXIII. Читает Евгений Шибаров";
+            shiftTitleLines = 4;
+            tempoCorrection = 0.0;
+            verses = true;
+            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+
 
         }
     }
