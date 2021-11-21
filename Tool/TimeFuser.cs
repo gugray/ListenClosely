@@ -108,7 +108,7 @@ namespace Tool
                 }
                 // Start time of first word: end of previous word
                 decimal start = flatWords[x.Key - 1].StartSec + flatWords[x.Key - 1].LengthSec;
-                if (x.Key == flatWords.Count) continue;
+                if (x.Key == flatWords.Count - 1) break;
                 decimal end = flatWords[x.Key + 1].StartSec;
                 decimal len = (end - start) / ((decimal)x.Value);
                 for (int i = 0; i < x.Value; ++i)
