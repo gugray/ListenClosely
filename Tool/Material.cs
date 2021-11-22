@@ -93,6 +93,8 @@ namespace Tool
         public int ParaIx = -1;
         [JsonProperty("isTitleLine")]
         public bool IsTitleLine = false;
+        [JsonProperty("isHiddenTextLine")]
+        public bool IsHiddenTextLine = false;
         [JsonProperty("isVerse")]
         public bool IsVerse = false;
         [JsonProperty("isEmptyLine")]
@@ -419,8 +421,8 @@ namespace Tool
         public static Material FromPlainText(string abbreviation, bool segmentSents)
         {
             string line;
+            AdditionalLines addParas = new AdditionalLines();
             var paras = new List<string>();
-            var addParas = new List<int>();
             int addParaIx = -1;
 
             String fn = "_work/" + abbreviation + "-orig.txt";
@@ -436,18 +438,30 @@ namespace Tool
                     // must be later generated (in the finalized segments file). 
                     // It is required for layout of verses.
                     // The index of found line numbers will be stored into an additional work file.
-                    bool hasAddParMark = false;
-                    if(line.StartsWith("<BR>") || line.StartsWith("<br>"))
-                    {
-                        hasAddParMark = true;
-                        line = line.Replace("<br>", "");
-                        line = line.Replace("<br>", "");
-                    }
+                    
+                    AdditionalLines.AdditionalLine al = new AdditionalLines.AdditionalLine();
+                    line = al.parseOrigTextLine(line);
+
                     if (line != "")
                     {
                         addParaIx++;
-                        paras.Add(line.Trim());
-                        if(hasAddParMark) addParas.Add(addParaIx);
+                        paras.Add(line);
+
+                        if (al.IsLineBreakRequired)
+                        {
+                            al.Idx = addParaIx;
+                            addParas.addLine(al);
+                        }
+                    }
+                    else
+                    {
+                        if (al.IsLineBreakRequired)
+                        {
+                            al.Idx = addParaIx;
+                            addParas.addLine(al);
+
+                            addParaIx--;
+                        }
                     }
                 }
             }
@@ -475,13 +489,12 @@ namespace Tool
             String addFn = "_work/" + abbreviation + "-addpar.txt";
             // delete file if exists
             File.Delete(addFn);
-            if (addParas.Count > 0)
+            if (addParas.Lines.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < addParas.Count; i++)
+                foreach (AdditionalLines.AdditionalLine al in addParas.Lines)
                 {
-                    if (i > 0) sb.Append(',');
-                    sb.Append(addParas[i]);
+                    sb.AppendLine(al.toString());
                 }
                 File.WriteAllText(addFn, sb.ToString(), Encoding.UTF8);
             }
@@ -520,4 +533,125 @@ namespace Tool
             File.WriteAllText(fn, sb.ToString(), Encoding.UTF8);
         }
     }
+
+    public class AdditionalLines
+    {
+        public List<AdditionalLine> Lines;
+
+        public AdditionalLines()
+        {
+            this.Lines = new List<AdditionalLine>(); 
+        }
+        public bool hasHiddenText()
+        {
+            foreach  (AdditionalLine line in this.Lines)
+            {
+                if(line.hasHiddenText())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void addLine(string line)
+        {
+            this.Lines.Add(new AdditionalLine(line));
+        }
+
+        public void addLine(AdditionalLine al)
+        {
+            this.Lines.Add(al);
+        }
+
+        public class AdditionalLine
+        {
+            public bool IsLineBreakRequired = false;
+
+            // default constructor
+            public AdditionalLine()
+            {
+            }
+
+            // the line read from the saved file *-addpar.txt
+            public AdditionalLine(string line)
+            {
+                parse(line);
+                IsLineBreakRequired = true;
+            }
+            
+            public int Idx = -1;
+            public string HiddenText = "";
+
+            public bool hasHiddenText()
+            {
+                return !string.IsNullOrEmpty(this.HiddenText);
+            }
+
+            /**
+             * Read the line entry from *-addpar.txt
+             */
+            private void parse(String line)
+            {
+                string[] split = line.Split('\t');
+                this.HiddenText = "";
+                this.Idx = int.Parse(split[0]);
+                if (split.Length > 1)
+                {
+                    this.HiddenText = split[1];
+                }
+            }
+
+            /**
+             * This will parse a line for search the leading "<br>" or "<br/>" or the hidden text in the format: "<br>my text</br>".
+             * Returns the same line removing the hidden text and the line break marks if any.
+             * The HasData boolean flag will be set true, if the line break detected
+             * Note the index field Idx must be set manually
+             */
+            public string parseOrigTextLine(String line)
+            {
+                string lineLo = line.ToLower();
+                string hiddenText = "";
+
+                if (lineLo.StartsWith("<br"))
+                {
+                    this.IsLineBreakRequired = true;
+                    if (lineLo.StartsWith("<br/>"))
+                    {
+                        line = line.Replace("<br/>", "");
+                        line = line.Replace("<BR/>", "");
+                    }
+                    else
+                    {
+                        if (lineLo.Contains("</br>"))
+                        {
+                            lineLo = lineLo.Replace("<br>", "").Trim();
+                            int i = lineLo.IndexOf("</br>");
+                            hiddenText = line.Substring(4, i); // 4 is length of "<br>"
+                            i = line.IndexOf("</br>");
+                            line = line.Substring(i + 5); // 5 is length of "</br>"
+                        }
+                        line = line.Replace("<br>", "");
+                        line = line.Replace("<BR>", "");
+                        line = line.Replace("</br>", "");
+                        line = line.Replace("</BR>", "");
+                    }
+                }
+
+                this.HiddenText = hiddenText;
+
+                return line.Trim();
+            }
+
+            /**
+             * The line data as it has to be populated into the *-addpar.txt
+             */
+            public string toString()
+            {
+                return this.Idx + "\t" + this.HiddenText;
+            }
+        }
+
+    }
+
 }

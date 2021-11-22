@@ -49,19 +49,17 @@ namespace Tool
          */
         static void shiftSegments(Material mat, int position, bool markAsTitle)
         {
-            if (position == 0)
-            {
-                return;
-            }
+            shiftSegments(mat, position, null, markAsTitle);
+        }
 
-            // less as 2 segments - no sense to add a line
+        /**
+         * This method will add an empty segment on the given position and add the "hidden" text into the new line
+         */
+        static void shiftSegments(Material mat, int position, string hiddenText, bool markAsTitle)
+        {
             int i = mat.Segments.Count;
-            if (i < 2)
-            {
-                return;
-            }
 
-            // requested line position >= the end position
+            // requested line position >= the end position - ? ...
             if (position >= mat.Segments[i - 1].ParaIx)
             {
                 return;
@@ -88,6 +86,11 @@ namespace Tool
             // list of words must contain one empty word
             mat.Segments[i].Words.Add(new Word());
             mat.Segments[i].Words[0].Text = "";
+            if(!string.IsNullOrEmpty(hiddenText))
+            {
+                mat.Segments[i].Words[0].Text = hiddenText;
+                mat.Segments[i].IsHiddenTextLine = true;
+            }
             mat.Segments[i].Words[0].Lemma = "";
             mat.Segments[i].Words[0].Lead = "";
             mat.Segments[i].Words[0].Trail = "";
@@ -144,28 +147,34 @@ namespace Tool
             {
                 return;
             }
-            string line = File.ReadAllText(addFn);
-            if (line.Trim().Length == 0) return;
 
-            string[] parts = line.Split(',');
-            if (parts.Length == 0) return;
+            AdditionalLines addPars = new AdditionalLines();
 
-            List<int> addPars = new List<int>();
-            for (int i = 0; i < parts.Length; i++)
+            String line;
+            using (StreamReader sr = new StreamReader(addFn))
             {
-                int val;
-                if (int.TryParse(parts[i], out val))
-                    addPars.Add(int.Parse(parts[i]));
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) return;
+                    addPars.addLine(line);
+                }
             }
-            if (addPars.Count == 0) return;
+
+            if(addPars.Lines.Count == 0)
+            {
+                return;
+            }
+
 
             // add empty segments
-            for (int i = 0; i < addPars.Count; i++)
+            for (int i = 0; i < addPars.Lines.Count; i++)
             {
-                int addPar = addPars[i];
+                AdditionalLines.AdditionalLine al = addPars.Lines[i];
+                int addPar = al.Idx;
                 if (shiftTitleLines > 0) addPar++;
                 addPar += i;
-                shiftSegments(mat, addPar, false);
+
+                shiftSegments(mat, addPar, al.HiddenText, false);
             }
         }
 
