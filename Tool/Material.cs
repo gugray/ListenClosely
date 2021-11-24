@@ -442,26 +442,26 @@ namespace Tool
                     AdditionalLines.AdditionalLine al = new AdditionalLines.AdditionalLine();
                     line = al.parseOrigTextLine(line);
 
+                    addParaIx++;
+
                     if (line != "")
                     {
-                        addParaIx++;
                         paras.Add(line);
 
                         if (al.IsLineBreakRequired)
                         {
+                            addParaIx--;
+
                             al.Idx = addParaIx;
                             addParas.addLine(al);
                         }
                     }
-                    else
+                    else if (al.IsLineBreakRequired)
                     {
-                        if (al.IsLineBreakRequired)
-                        {
-                            al.Idx = addParaIx;
-                            addParas.addLine(al);
+                        addParaIx--;
 
-                            addParaIx--;
-                        }
+                        al.Idx = addParaIx;
+                        addParas.addLine(al);
                     }
                 }
             }
