@@ -189,7 +189,7 @@
 [en] indeed, isn‘t it
 [de] doch, ja
 
-%суди'ть%cу'дя по
+%суди'ть%cудя по
 [en] judging by/from
 [de] nach, ausgehend von 
 
@@ -207,11 +207,11 @@
 [en] odd, strange
 [de] seltsam, merkwürdig
 
-%ме'жду%ме'жду те'м
+%ме'жду%между тем
 [en] meanwhile
 [de] währenddessen
 
-%то%то' есть
+%то%то есть
 [en] that is
 [de] das heißt
 [de] und zwar
@@ -238,7 +238,7 @@
 [en] aim at...
 [de] zielen, visieren
 
-%в%в то вре'мя как
+%в%в то время как
 [en] when, while
 [de] während
 
@@ -256,7 +256,7 @@
 [en] стать (=начать) что-л. делать: begin to
 [de] стать (=начать) что-л. делать: beginnen zu..., anfangen zu...
 
-%станови'ться
+станови'ться
 [en] стать (=начать) что-л. делать: begin to
 [de] стать (=начать) что-л. делать: beginnen zu..., anfangen zu...
 
@@ -271,7 +271,7 @@
 [en] kindness, goodness
 [de] Güte
 
-%потому'%потому' что
+%потому'%потому что
 [en] because
 [de] weil
 
@@ -442,7 +442,7 @@ folglich
 
 # Пушкин. Метель. Ч. 2
 
-%разъе'зд%быть в разъе'зде
+%разъе'зд%быть в разъезде
 [en] be travelling
 [de] unterwegs sein
 
@@ -455,7 +455,7 @@ folglich
 [en] cornet
 [de] Kornett (Offizier)
 
-%охо'та%с охо'тою
+%охо'та%с охотою
 [en] readily 
 [de] gerne
 
@@ -590,7 +590,7 @@ bewegungslos
 сви'деться
 [de] sich sehen
 
-%ми'лость%сде'лать ми'лость
+%ми'лость%сделать милость
 [en] (old) I beg you
 [de] (alt) Gnade gewähren
 
@@ -605,14 +605,14 @@ bewegungslos
 [en] (old) part of the country
 [de] (alt) Gegend
 
-%поми'ловать%поми'луй 
+%поми'ловать%помилуй 
 [en] (old) please
 [de] (alt) ich bitte dich
 
 ла'вочка
 [de] Bank
 
-%сла'ва%сла'ва бо'гу
+%сла'ва%слава богу
 [en] thank heaven
 [de] Gott sei dank
 
@@ -659,7 +659,7 @@ bewegungslos
 
 # Пушкин. Барышня-крестьянка. Ч. 1
 
-%вы'йти%вы'йти в отста'вку
+%вы'йти%выйти в отставку
 [en] retire from service
 [de] den Dienst quittieren 
 
@@ -712,26 +712,26 @@ bewegungslos
 [en] go mad
 [de] verrückt werden
 
-%производи'ть%производи'ть впечатле'ние
+%производи'ть%производить впечатление
 [en] make an impression
 [de] Eindruck machen
 
-%приводи'ть%приводи'ть в отча'яние
+%приводи'ть%приводить в отчаяние
 [en] despaire
 [de] zur Verzweiflung bringen
 
-%умира'ть%умира'ть со ску'ки
+%умира'ть%умирать со скуки
 [en] be bored to death
 [de] sich zu Tode langweilen
 
-%пойти'%пойти' в го'сти
+%пойти'%пойти в гости
 [en] go to a party
 [de] zu Besuch gehen
 
 пуска'й
 [en] let 
 
-%поря'док%по поря'дку
+%поря'док%по порядку
 [en] in the right order
 [de] der Reihe nach
 
@@ -745,7 +745,7 @@ bewegungslos
 ска'зывать
 [en] say, tell
 
-%беда'%не беда'
+%беда'%не беда
 [en] never mind!
 [de] nicht so schlimm
 
@@ -770,7 +770,7 @@ bewegungslos
 пред
 <=пе'ред
 
-%заря'%ни све'т ни заря'
+%заря'%ни свет ни заря
 [en] very early
 [de] sehr früh am Morgen
 
@@ -1112,7 +1112,7 @@ bewegungslos
 [en] Cossack woman
 [de] Kosakin
 
-%мета'ть%мета'ть банк
+%мета'ть%метать банк
 [en] keep the bank
 [de] die Karten aufdecken
 
