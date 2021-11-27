@@ -230,7 +230,7 @@
 [en] red
 [de] rot
 
-!кисточка
+!ки'сточка
 [en] brush, tassel
 [de] Pinsel, Quaste
 
