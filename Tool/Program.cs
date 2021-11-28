@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.IO;
-using Newtonsoft.Json;
-using GoogleTranscriber;
+
 
 namespace Tool
 {
@@ -68,11 +64,13 @@ namespace Tool
             i = mat.Segments.Count - 1;
             for (; i > 0; i--)
             {
-                if (mat.Segments[i].ParaIx == position)
+                if (mat.Segments[i].ParaIx < position)
                 {
                     break;
                 }
             }
+            i++;
+
             mat.Segments.Insert(i, new Segment());
 
             // clean the segment on the current position for have no data
@@ -187,9 +185,18 @@ namespace Tool
             {
                 foreach(Word word in seg.Words)
                 {
-                    if(word.Lead.Trim() == "\uFE19")
+                    if(word.Lead.Contains("\uFE19"))
                     {
-                        word.Lead = "<...>";
+                        word.Lead = word.Lead.Replace("\uFE19", "<...>");
+                    }
+                    else if(word.Text.Contains("\uFE19"))
+                    {
+                        word.Text = word.Text.Replace("\uFE19", "<...>");
+                        word.Lemma = word.Lemma.Replace("\uFE19", "");
+                    }
+                    else if (word.Trail.Contains("\uFE19"))
+                    {
+                        word.Trail = word.Trail.Replace("\uFE19", "<...>");
                     }
                 }
             }
@@ -215,18 +222,20 @@ namespace Tool
             // Using Google?
             if (!useMS)
             {
+                string googleJson = "_work/" + abbreviation + "-conv-goog.json";
                 transJson = "_work/" + abbreviation + "-goog.json";
+
                 // If transcription is missing, get it now
-                if (!File.Exists(transJson))
+                if (!File.Exists(googleJson))
                 {
                     // TODO
                     // Transcribe text with Google engine
                     GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber("ServiceAccountKey.json");
-                    gt.Transcribe("_audio/" + abbreviation + ".flac", "ru", transJson); // ? "../_work/" + abbreviation + "-conv-goog.json"
+                    gt.Transcribe("_audio/" + abbreviation + ".flac", "ru", googleJson); // ? "../_work/" + abbreviation + "-conv-goog.json"
                 }
 
                 // Set title, serialize
-                trans = Material.fromGoogle(transJson);
+                trans = Material.fromGoogle(googleJson);
                 trans.Title = title;
             }
             // Using MS?
@@ -285,8 +294,11 @@ namespace Tool
             dict.FillDict(mOrig);
 
             // Workaround for mark the title lines if required
-            shiftTitleSegments(mOrig, shiftTitleLines);
-
+            if(shiftTitleLines > 0)
+            {
+                shiftTitleSegments(mOrig, shiftTitleLines);
+            }
+            
             // Workaround for mark the empty lines between the strophes of verses if required
             shiftAdditionalParas(mOrig, abbreviation, shiftTitleLines);
 
@@ -309,7 +321,7 @@ namespace Tool
 
             bool breakWork = false;  // for 1st start, set true; for 2nd start, set false
 
-            bool useMs = false;       // set true for use MS Speech2Text API, else false for use the Google engine
+            bool useMs = true;       // set true for use MS Speech2Text API, else false for use the Google engine
             double shift = 0.0;
             double tempoCorrection = 0.0;
 
@@ -367,14 +379,14 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
+            // 
             // abbreviation = "ATCH_ANS_3";
             // title = "А. П. Чехов. Анна на шее (3). Читает Анна Шибарова";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
+            // 
             // abbreviation = "ATCH_ANS_4";
             // title = "А. П. Чехов. Анна на шее (4). Читает Анна Шибарова";
             // shiftTitleLines = 0;
@@ -458,7 +470,7 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
+            //
             // abbreviation = "APT_BKR_2";
             // title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
             // shiftTitleLines = 0;
@@ -571,13 +583,13 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = true;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-
-            abbreviation = "APT_ONEG_1";
-            title = "Александр Пушкин. Роман в стихах «Евгений Онегин». Глава шестая. Строфы XXX - XXXIII. Читает Евгений Шибаров";
-            shiftTitleLines = 4;
-            tempoCorrection = 0.0;
-            verses = true;
-            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "APT_ONEG_1";
+            // title = "Александр Пушкин. Роман в стихах «Евгений Онегин». Глава шестая. Строфы XXX - XXXIII. Читает Евгений Шибаров";
+            // shiftTitleLines = 4;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
 
         }
