@@ -1009,6 +1009,10 @@ bewegungslos
 
 # Чехов. Анна на шее. Ч. 1
 
+дон-жуа'н
+[de] Don Juan, Schürzenjäger
+[en] Don Juan, philanderer
+
 молоды'е
 [en] young marrieds 
 [de] Brautpaar
