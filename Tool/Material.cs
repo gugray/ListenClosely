@@ -351,7 +351,7 @@ namespace Tool
                     for (int i = 0; i < lemmas.Count; ++i)
                     {
                         if (lemmas[i].Lead != segm.Words[i].Lead)
-                            throw new Exception("The current lemma lead '" + lemmas[i].Lead + "' if not the same as the current word lead '" + segm.Words[i].Lead  + "'");
+                            throw new Exception("The current lemma lead '" + lemmas[i].Lead + "' is not the same as the current word lead '" + segm.Words[i].Lead  + "'");
                         if (lemmas[i].Text == "" && segm.Words[i].Text != "")
                             throw new Exception("The current lemma text is empty but the current word text is '" + segm.Words[i].Text + "'");
                         if (lemmas[i].Text != "" && segm.Words[i].Text == "")
