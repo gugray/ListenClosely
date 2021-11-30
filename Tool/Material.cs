@@ -438,7 +438,9 @@ namespace Tool
                     // must be later generated (in the finalized segments file). 
                     // It is required for layout of verses.
                     // The index of found line numbers will be stored into an additional work file.
-                    
+
+                    if (line == "") continue;
+
                     AdditionalLines.AdditionalLine al = new AdditionalLines.AdditionalLine();
                     line = al.parseOrigTextLine(line);
 
@@ -450,19 +452,17 @@ namespace Tool
 
                         if (al.IsLineBreakRequired)
                         {
-                            addParaIx--;
-
                             al.Idx = addParaIx;
                             addParas.addLine(al);
                         }
                     }
                     else if (al.IsLineBreakRequired)
                     {
-                        addParaIx--;
-
                         al.Idx = addParaIx;
                         addParas.addLine(al);
+                        addParaIx--;
                     }
+
                 }
             }
             var sents = new List<string>();
