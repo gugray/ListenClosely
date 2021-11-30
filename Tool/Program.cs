@@ -321,7 +321,7 @@ namespace Tool
 
             bool breakWork = false;  // for 1st start, set true; for 2nd start, set false
 
-            bool useMs = true;       // set true for use MS Speech2Text API, else false for use the Google engine
+            bool useMs = false;       // set true for use MS Speech2Text API, else false for use the Google engine
             double shift = 0.0;
             double tempoCorrection = 0.0;
 
@@ -498,6 +498,20 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //
+            // abbreviation = "ATCH_SHT_1";
+            // title = "А. П. Чехов (1). Шуточка. Читает Марина Бобрик";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "ATCH_SHT_2";
+            // title = "А. П. Чехов (3). Шуточка. Читает Марина Бобрик";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
 
             // abbreviation = "MLE_PAR";
@@ -506,7 +520,7 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = true;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-
+            // 
             // abbreviation = "MLE_GOV";
             // title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
             // shiftTitleLines = 2;
