@@ -31,6 +31,11 @@
 #       es sich anders überlegen, seine Absicht ändern                             | < for the word "раздумывать"
 #       раздумывать, раздумать: change one’s mind                                  | < New entries 
 #       раздумывать, раздумать: es sich anders überlegen, seine Absicht ändern     | < from customer dictionary
+#   Example (3) 
+#       !ге'нри
+#
+#   (= Empty string, no translations) 
+#   This will suppress all translations of the word "Генри"
 #
 #   Especial handling for the Line 2 format:
 #   If the Line 2 is done in format <=WORD_2, the translation block for value of WORD will 
@@ -181,7 +186,7 @@
 [en] towards, to
 [de] zu, an, gegenüber, gegen, um, bis zu
 
-%к%к чёрту
+%чёрт%к чёрту
 [de] zum Teufel
 
 !ведь
@@ -207,9 +212,10 @@
 [en] odd, strange
 [de] seltsam, merkwürdig
 
-%ме'жду%между тем
-[en] meanwhile
-[de] währenddessen
+%ме'жду%между те'м
+[en] meanwhile, in the meantime 
+[de] währenddessen, inzwischen
+
 
 %то%то есть
 [en] that is
@@ -1193,3 +1199,59 @@ bewegungslos
 его'
 [en] his; its
 [de] sein
+
+!ге'нри
+
+сы'тно
+[en] nourishing, substantial
+
+%броса'ться%броса'ться в глаза'
+[de] auffallen
+[en] notice, catch sight of 
+
+пома'зать
+[de] schmieren
+
+суди'ть
+[en] су́дя по... judging by/from
+[de] су́дя по... nach, ausgehend von 
+
+!тара'щить
+[en] тара́щить глаза́ stare at, gape at
+[de] тара́щить глаза́ anglotzen
+
+#Dosoyewsky, Prestuplenye i nakazanye
+неприме'тно
+<=незаметно
+
+во'стрый
+<=острый
+
+старушо'нка
+<=старуха
+
+вдови'ца
+<=вдова
+
+ясне'ть
+[en] become clear
+[de] klar werden
+[fr] devenir clair
+
+папиро'сочница
+[en] cigarette case
+[de] Zigarettenetui
+[fr] étui à cigarettes
+
+су'щность
+[de] в су́щности im Wesentlichen; eigentlich
+[en] в су́щности essentially; actually
+[fr] в су́щности en gros
+
+распи'вочная
+[de] Trinkstube
+[en] drinking bar
+[fr] bar à boire
+
+как
+как бы
