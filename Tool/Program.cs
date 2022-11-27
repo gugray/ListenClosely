@@ -200,7 +200,6 @@ namespace Tool
                     }
                 }
             }
-            
         }
 
         /**
@@ -315,6 +314,27 @@ namespace Tool
             mOrig.SaveJson("ProsePlayer/public/media/" + abbreviation + "-segs.json");
         }
 
+        /**
+         * 
+         * */
+        static void printDownloadEntry(String abbreviation, String title, String baseUrl)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            Console.WriteLine("<b>" + title + "</b>");
+            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + "-segs.json\">JSON</a>");
+            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + ".m4a\">M4A</a>");
+            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + ".webm\">WEBM</a>");
+        }
+        static void printIndexEntry(String abbreviation, String title, String baseUrl)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            Console.WriteLine("<li class=\"title\">");
+            Console.WriteLine("<a href=\"" + baseUrl + "/prose/player.html?ep=" + abbreviation  + "\">" + title + "</a>");
+            Console.WriteLine("</li>");
+        }
+
         static void Main(string[] args)
         {
             string customDictFileName = "ru-custom.txt";
@@ -328,10 +348,11 @@ namespace Tool
             string abbreviation;
             string title;
             int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
-            bool verses = true;
+            bool verses = false;
 
+            String baseUrl = "https://leibov.de";
 
-            // abbreviation = "MLE_FAT_1";
+            // abbreviation = "MLE_FAT_1"; 
             // title = "М. Ю. Лермонтов. Фаталист (1). Из романа «Герой нашего времени». Читает Евгений Шибаров";
             // shiftTitleLines = 3;
             // tempoCorrection = 0.0;
@@ -398,7 +419,7 @@ namespace Tool
             // title = "А. П. Чехов. Глупый француз. Читает Владимир Иванчин";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
-            // verses = true;
+            // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             //
             // abbreviation = "LTL_RTD";
@@ -428,7 +449,7 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
+            // 
             // abbreviation = "APT_MET_1";
             // title = "А. С. Пушкин. Метель (1). Читает Анна Шибарова";
             // shiftTitleLines = 2;
@@ -507,13 +528,40 @@ namespace Tool
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             // 
             // abbreviation = "ATCH_SHT_2";
-            // title = "А. П. Чехов (3). Шуточка. Читает Марина Бобрик";
+            // title = "А. П. Чехов (2). Шуточка. Читает Марина Бобрик";
             // shiftTitleLines = 0;
             // tempoCorrection = 0.0;
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-
-
+            // 
+            // abbreviation = "FMD_PIN_1";
+            // title = "Федор Достоевский (1). Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова";
+            // shiftTitleLines = 4;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_PIN_2";
+            // title = "Федор Достоевский (2). Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_ELK_1";
+            // title = "Федор Достоевский (1). Ёлка и свадьба (Из записок неизвестного).Читает Илья Кукуй";
+            // shiftTitleLines = 3;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_ELK_2";
+            // title = "Федор Достоевский (2). Ёлка и свадьба (Из записок неизвестного).Читает Илья Кукуй";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //
             // abbreviation = "MLE_PAR";
             // title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
             // shiftTitleLines = 2;
@@ -564,7 +612,7 @@ namespace Tool
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             // 
             // abbreviation = "APT_BESY";
-            // title = "Александр Пушкин. Бесы.Читает Александр Заполь";
+            // title = "Александр Пушкин. Бесы. Читает Александр Заполь";
             // shiftTitleLines = 2;
             // tempoCorrection = 0.0;
             // verses = true;
@@ -604,7 +652,195 @@ namespace Tool
             // tempoCorrection = 0.0;
             // verses = true;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-
+            // 
+            // abbreviation = "BLOK_DEV";
+            // title = "Александр Блок. Девушка пела в церковном хоре... Читает Елена Грачева";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "BLOK_NOCH";
+            // title = "Александр Блок. Ночь, улица, фонарь, аптека... Читает Дмитрий Калугин";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "BLOK_OPM";
+            // title = "Александр Блок. Она пришла с мороза... Читает Вениамин Ицкович";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "BLOK_VOR";
+            // title = "Александр Блок. Ворона. Читает Эля Любарова";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FET_KART";
+            // title = "Афанасий Фет. Чудная картина... Читает Алексей Востриков";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FET_KOT";
+            // title = "Афанасий Фет. Кот поет, глаза прищуря... Читает Влада Гехтман";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FET_NOK";
+            // title = "Афанасий Фет. Непогода - осень - куришь... Читает Вениамин Ицкович";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FET_YDSN";
+            // title = "Афанасий Фет. Я долго стоял неподвижно Читает Алексей Востриков";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FET_ZAR";
+            // title = "Афанасий Фет. На заре ты её не буди... Читает Вениамин Ицкович";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_VUAL";
+            // title = "Анна Ахматова. Сжала руки под темной вуалью... Читает Любовь Шендерова";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_DANTE";
+            // title = "Анна Ахматова. Данте. Читает Айна Любарова";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_MOL";
+            // title = "Анна Ахматова. Молюсь оконному лучу... Читает Анна Зиндер";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_MUSA";
+            // title = "Анна Ахматова. Муза. Читает Наталья Мовнина";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_MUSE";
+            // title = "Анна Ахматова. Музе. Читает Любовь Шендерова";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_ONLJB";
+            // title = "Анна Ахматова. Он любил три вещи на свете... Читает Любовь Шендерова";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_PESENKA";
+            // title = "Анна Ахматова. Песенка. Читает Любовь Шендерова";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_PPVSTR";
+            // title = "Анна Ахматова. Песня последней встречи. Читает Любовь Шендерова";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_PROVDR";
+            // title = "Анна Ахматова. Проводила друга до передней... Читает Анна Зиндер";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_PRGLK";
+            // title = "Анна Ахматова. Прогулка. Читает Наталья Мовнина";
+            // shiftTitleLines = 2;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_KAKVS";
+            // title = "Анна Ахматова. Хочешь знать, как всё это было?.. Читает Анна Зиндер";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "AHM_KAKKUK";
+            // title = "Анна Ахматова. Я живу, как кукушка в часах... Читает Любовь Шендерова";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //
+            // abbreviation = "AHM_SHSUM";
+            // title = "Анна Ахматова. Я сошла с ума, о мальчик странный... Читает Любовь Шендерова";
+            // shiftTitleLines = 1;
+            // tempoCorrection = 0.0;
+            // verses = true;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //
+             abbreviation = "FMD_PIN_3";
+             title = "Федор Достоевский (1). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+             shiftTitleLines = 5;
+             tempoCorrection = 0.0;
+             verses = false;
+             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+             
+             abbreviation = "FMD_PIN_4";
+             title = "Федор Достоевский (2). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+             shiftTitleLines = 0;
+             tempoCorrection = 0.0;
+             verses = false;
+             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+             
+             abbreviation = "FMD_PIN_5";
+             title = "Федор Достоевский (3). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+             shiftTitleLines = 0;
+             tempoCorrection = 0.0;
+             verses = false;
+             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+             
+             abbreviation = "FMD_PIN_6";
+             title = "Федор Достоевский (4). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+             shiftTitleLines = 0;
+             tempoCorrection = 0.0;
+             verses = false;
+             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+             
+             abbreviation = "FMD_PIN_7";
+             title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+             shiftTitleLines = 0;
+             tempoCorrection = 0.0;
+             verses = false;
+             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
         }
     }
