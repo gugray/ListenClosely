@@ -807,40 +807,40 @@ namespace Tool
             // verses = true;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             //
-             abbreviation = "FMD_PIN_3";
-             title = "Федор Достоевский (1). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-             shiftTitleLines = 5;
-             tempoCorrection = 0.0;
-             verses = false;
-             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-             
-             abbreviation = "FMD_PIN_4";
-             title = "Федор Достоевский (2). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-             shiftTitleLines = 0;
-             tempoCorrection = 0.0;
-             verses = false;
-             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-             
-             abbreviation = "FMD_PIN_5";
-             title = "Федор Достоевский (3). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-             shiftTitleLines = 0;
-             tempoCorrection = 0.0;
-             verses = false;
-             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-             
-             abbreviation = "FMD_PIN_6";
-             title = "Федор Достоевский (4). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-             shiftTitleLines = 0;
-             tempoCorrection = 0.0;
-             verses = false;
-             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-             
-             abbreviation = "FMD_PIN_7";
-             title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-             shiftTitleLines = 0;
-             tempoCorrection = 0.0;
-             verses = false;
-             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // abbreviation = "FMD_PIN_3";
+            // title = "Федор Достоевский (1). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            // shiftTitleLines = 5;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_PIN_4";
+            // title = "Федор Достоевский (2). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_PIN_5";
+            // title = "Федор Достоевский (3). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_PIN_6";
+            // title = "Федор Достоевский (4). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            // 
+            // abbreviation = "FMD_PIN_7";
+            // title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            // shiftTitleLines = 0;
+            // tempoCorrection = 0.0;
+            // verses = false;
+            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
         }
     }
