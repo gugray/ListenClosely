@@ -287,6 +287,8 @@ namespace Tool
                 dict.UpdateFromCustomList("_materials/" + customDictFileName);
             }
 
+            dict.SortByLang();
+
             dict.indexDisplayedHeaders();
 
             // compose the lemmas-based translations
@@ -835,12 +837,12 @@ namespace Tool
             // verses = false;
             // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             // 
-            // abbreviation = "FMD_PIN_7";
-            // title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            abbreviation = "FMD_PIN_7";
+            title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
+            shiftTitleLines = 0;
+            tempoCorrection = 0.0;
+            verses = false;
+            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
 
         }
     }

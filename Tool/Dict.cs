@@ -15,7 +15,7 @@ namespace Tool
         /// <summary>
         /// One meaning of a headword in one language
         /// </summary>
-        class Meaning
+        class Meaning : IEquatable<Meaning>, IComparable<Meaning>
         {
             /// <summary>
             /// Target language. Two-letter code like "en", "de", "fr" etc.
@@ -31,6 +31,64 @@ namespace Tool
             /// Translation into target language (or defintion in Russian)
             /// </summary>
             public string Translation;
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+                Meaning objAsPart = obj as Meaning;
+                if (objAsPart == null) return false;
+                else return Equals(objAsPart);
+            }
+
+            // Default comparer for Part type.
+            public int CompareTo(Meaning comparePart)
+            {
+                // A null value means that this object is greater.
+                if (comparePart == null) return 1;
+
+                bool myLangBlank = (Lang == null || Lang == "");
+                bool compLangBlank = (comparePart.Lang == null || comparePart.Lang == "");
+
+                bool myTranslBlank = (Translation == null || Translation == "");
+                bool compTranslBlank = (comparePart.Translation == null || comparePart.Translation == "");
+
+                int cmpTranslations;
+                if (myTranslBlank && !compTranslBlank) cmpTranslations = -1;
+                else if (compTranslBlank && !myTranslBlank) cmpTranslations = 1;
+                else cmpTranslations = Translation.CompareTo(comparePart.Translation);
+
+                // my Lang = null; move up
+                if (myLangBlank && !compLangBlank) return -1;
+                // other lang == null; move up
+                if (compLangBlank && !myLangBlank) return 1;
+                // both Lang not null
+                if(!myLangBlank && !compLangBlank)
+                {
+                    int cmp = Lang.CompareTo(comparePart.Lang);
+                    // my Lang is "de"; move up
+                    if ("de" == Lang && comparePart.Lang != "de") return -1;
+                    // other Lang is "de"; move down
+                    if ("de" == comparePart.Lang && Lang != "de") return 1;
+
+                    // my Lang is same as other? compare the Translations
+                    if (cmp == 0)
+                    {
+                        return cmpTranslations;
+                    }
+                    // sort Langs alphabetically
+                    return cmp;
+                }
+
+                // both Langs are null? compare the Translations
+                return cmpTranslations;
+            }
+
+            public bool Equals(Meaning other)
+            {
+                if (other == null) return false;
+                return CompareTo(other) != 0;
+            }
+
         }
 
         /// <summary>
@@ -313,6 +371,25 @@ namespace Tool
                         var _ = addOrGetEntry(idiomBody, idiomBody);
                     }
                     else idiomBody = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Provide an additional sort of translations by Lang: 
+        /// - first, place the entries without a language mark; 
+        /// - then, the entries with "de"
+        /// - the, sorted by Lang alphabetically
+        /// </summary>
+        public void SortByLang()
+        {
+            foreach (string head in headToEntries.Keys)
+            {
+                List<Entry> entries4head = headToEntries[head];
+                foreach (Entry entry in entries4head)
+                {
+                    // sort the entrries by dictionary mark
+                    entry.Meanings.Sort();
                 }
             }
         }
