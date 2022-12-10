@@ -183,9 +183,11 @@ namespace Tool
                     string[] parts = line.Split('\t');
                     if (parts.Length < 5) continue;
                     Dictionary<int, List<string>> idToTrans;
+
                     if (parts[1] == "en") idToTrans = idToTransEn;
                     else if (parts[1] == "de") idToTrans = idToTransDe;
-                    else throw new Exception("Unexpected language code: " + parts[1]);
+                    else throw new Exception("Unexpected language code: " + parts[1] + " detected in Openrussion file translations.csv");
+
                     int id = int.Parse(parts[2]);
                     List<string> trans;
                     if (idToTrans.ContainsKey(id)) trans = idToTrans[id];
@@ -548,7 +550,7 @@ namespace Tool
         public void FillDict(Material material)
         {
             List<DictEntry> entries = material.DictEntries;
-            Dictionary<string, int> headToIx = new Dictionary<string, int>();
+            Dictionary<string, List<int>> headToIx = new Dictionary<string, List<int>>();
             foreach (var segm in material.Segments)
             {
                 foreach (var word in segm.Words)
@@ -564,12 +566,12 @@ namespace Tool
                         wdText = wdText.Replace("ё", "е");
                     }
                     string wdLo = wdText.ToLowerInvariant();
-                    
+
                     // Lookup - seen before
                     if (headToIx.ContainsKey(wdText))
-                        word.Entries.Add(headToIx[wdText]);
+                        word.Entries.AddRange(headToIx[wdText]);
                     else if (headToIx.ContainsKey(wdLo))
-                        word.Entries.Add(headToIx[wdLo]);
+                        word.Entries.AddRange(headToIx[wdLo]);
                     // Lookup - new
                     else annotateWord(segm, word, entries, headToIx, wdText, wdLo);
                 }
@@ -577,7 +579,7 @@ namespace Tool
         }
 
         static void addToWord(Word word, string head, List<Entry> hits,
-            List<DictEntry> entries, Dictionary<string, int> headToIx)
+            List<DictEntry> entries, Dictionary<string, List<int>> headToIx)
         {
             foreach (var hit in hits)
             {
@@ -590,13 +592,17 @@ namespace Tool
                     de.Senses.Add(ds);
                 }
                 int ix = entries.Count;
-                headToIx[head] = ix;
+                if(!headToIx.ContainsKey(head))
+                {
+                    headToIx[head] = new List<int>();
+                }
+                headToIx[head].Add(ix);
                 entries.Add(de);
                 word.Entries.Add(ix);
             }
         }
 
-        void annotateWord(Segment segm, Word word, List<DictEntry> entries, Dictionary<string, int> headToIx,
+        void annotateWord(Segment segm, Word word, List<DictEntry> entries, Dictionary<string, List<int>> headToIx,
             string wdText, string wdLo)
         {
             // Text
