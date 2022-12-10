@@ -280,7 +280,7 @@ namespace Tool
 
             mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
             Dict dict = Dict.FromOpenRussian("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
-            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr" });
+            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr", "de" });
             if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
             {
                 // Extend/override the dictionary by additional customized dictionary
@@ -315,8 +315,16 @@ namespace Tool
             mOrig.SaveJson("_work/" + abbreviation + "-segs.json");
             mOrig.SaveJson("ProsePlayer/public/media/" + abbreviation + "-segs.json");
 
-            var rg = new ReviewGenerator();
-            rg.Print(mOrig, "_work/" + abbreviation + "-annot.html");
+
+            try
+            {
+                var rg = new ReviewGenerator();
+                rg.Print(mOrig, "_work/" + abbreviation + "-annot.html");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Please correct the review generator part!!!");
+            }
         }
 
         /**
@@ -573,12 +581,12 @@ namespace Tool
             verses = false;
             doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             
-            abbreviation = "ATCH_SHT_2";
-            title = "А. П. Чехов. Шуточка. Читает Марина Бобрик [2]";
-            shiftTitleLines = 0;
-            tempoCorrection = 0.0;
-            verses = false;
-            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
+            //abbreviation = "ATCH_SHT_2";
+            //title = "А. П. Чехов. Шуточка. Читает Марина Бобрик [2]";
+            //shiftTitleLines = 0;
+            //tempoCorrection = 0.0;
+            //verses = false;
+            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
             // 
             // abbreviation = "FMD_PIN_1";
             // title = "Федор Достоевский (1). Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова";
