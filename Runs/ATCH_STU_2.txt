@@ -1,0 +1,5 @@
+abbreviation=ATCH_STU_2
+title=А. П. Чехов. Студент. Читает Анна Шибарова [2]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

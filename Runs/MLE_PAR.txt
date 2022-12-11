@@ -1,0 +1,7 @@
+abbreviation=MLE_PAR
+title=Михаил Лермонтов. Парус. Читает Вениамин Ицкович
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

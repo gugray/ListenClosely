@@ -1,0 +1,7 @@
+abbreviation=AHM_MUSA
+title=Анна Ахматова. Муза. Читает Наталья Мовнина
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

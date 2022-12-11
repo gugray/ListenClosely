@@ -1,0 +1,7 @@
+abbreviation=BLOK_DEV
+title=Александр Блок. Девушка пела в церковном хоре... Читает Елена Грачева
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

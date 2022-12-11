@@ -1,0 +1,7 @@
+abbreviation=FET_NOK
+title=Афанасий Фет. Непогода - осень - куришь... Читает Вениамин Ицкович
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

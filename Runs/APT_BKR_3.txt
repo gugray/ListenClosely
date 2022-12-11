@@ -1,0 +1,5 @@
+abbreviation=APT_BKR_3
+title=А. С. Пушкин. Барышня-крестьянка. Читает Влада Гехтман [3]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

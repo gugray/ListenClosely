@@ -1,0 +1,7 @@
+abbreviation=BLOK_OPM
+title=Александр Блок. Она пришла с мороза... Читает Вениамин Ицкович
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

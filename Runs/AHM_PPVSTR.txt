@@ -1,0 +1,7 @@
+abbreviation=AHM_PPVSTR
+title=Анна Ахматова. Песня последней встречи. Читает Любовь Шендерова
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

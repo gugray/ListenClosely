@@ -1,0 +1,7 @@
+abbreviation=BLOK_NOCH
+title=Александр Блок. Ночь, улица, фонарь, аптека... Читает Дмитрий Калугин
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

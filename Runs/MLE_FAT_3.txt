@@ -1,0 +1,5 @@
+abbreviation=MLE_FAT_3
+title=М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени». Читает Евгений Шибаров [3]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

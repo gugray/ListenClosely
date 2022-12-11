@@ -1,0 +1,5 @@
+abbreviation=APT_MET_3
+title=А. С. Пушкин. Метель. Читает Анна Шибарова [3]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

@@ -314,6 +314,11 @@ namespace Tool
 
         public void UpdateFromCustomList(string fnCustDictPath)
         {
+            if(!File.Exists(fnCustDictPath))
+            {
+                throw new FileNotFoundException("File not found: '" + fnCustDictPath + "'");
+            }
+
             string line;
             using (StreamReader sr = new StreamReader(fnCustDictPath))
             {

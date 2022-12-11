@@ -1,0 +1,6 @@
+abbreviation=ATCH_GFR
+title=А. П. Чехов. Глупый француз. Читает Владимир Иванчин
+shiftTitleLines=2
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

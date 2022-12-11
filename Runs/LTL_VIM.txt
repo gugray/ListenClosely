@@ -1,0 +1,6 @@
+abbreviation=LTL_VIM
+title=Лев Толстой: Война и мир. Читает Анна Шибарова
+shiftTitleLines=4
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

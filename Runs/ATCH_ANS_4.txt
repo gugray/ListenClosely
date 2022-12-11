@@ -1,0 +1,5 @@
+abbreviation=ATCH_ANS_4
+title=А. П. Чехов. Анна на шее. Читает Анна Шибарова [4]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

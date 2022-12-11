@@ -1,0 +1,7 @@
+abbreviation=AHM_PROVDR
+title=Анна Ахматова. Проводила друга до передней... Читает Анна Зиндер
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

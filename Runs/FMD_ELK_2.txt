@@ -1,0 +1,5 @@
+abbreviation=FMD_ELK_2
+title=Федор Достоевский. Ёлка и свадьба (Из записок неизвестного).Читает Илья Кукуй [2]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

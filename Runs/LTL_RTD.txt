@@ -1,0 +1,6 @@
+abbreviation=LTL_RTD
+title=Лев Толстой. Детство. Читает Анна Шибарова
+shiftTitleLines=4
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

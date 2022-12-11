@@ -1,0 +1,7 @@
+abbreviation=AHM_MOL
+title=Анна Ахматова. Молюсь оконному лучу... Читает Анна Зиндер
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

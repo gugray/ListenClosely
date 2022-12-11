@@ -103,6 +103,8 @@ namespace Tool
 
     class Material
     {
+        private const string WORK_DIR_PATH = "./_work";
+
         [JsonProperty("title")]
         public string Title = "";
         [JsonProperty("segments")]
@@ -425,7 +427,7 @@ namespace Tool
             var paras = new List<string>();
             int addParaIx = -1;
 
-            String fn = "_work/" + abbreviation + "-orig.txt";
+            String fn = WORK_DIR_PATH + "/" + abbreviation + "-orig.txt";
 
             using (StreamReader sr = new StreamReader(fn))
             {
@@ -486,7 +488,7 @@ namespace Tool
             }
 
             // the index of additional lines is not empty -> write the 'addpar' work file
-            String addFn = "_work/" + abbreviation + "-addpar.txt";
+            String addFn = WORK_DIR_PATH + "/" + abbreviation + "-addpar.txt";
             // delete file if exists
             File.Delete(addFn);
             if (addParas.Lines.Count > 0)

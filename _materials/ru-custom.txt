@@ -1253,5 +1253,8 @@ bewegungslos
 [en] drinking bar
 [fr] bar à boire
 
-как
-как бы
+я'рко-кра'сный
+[en] bright-red
+
+замира'ть
+[de] замирает дух jemandem stockt der Atem

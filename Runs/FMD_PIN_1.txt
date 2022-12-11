@@ -1,0 +1,6 @@
+abbreviation=FMD_PIN_1
+title=Федор Достоевский. Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова [1]
+shiftTitleLines=4
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

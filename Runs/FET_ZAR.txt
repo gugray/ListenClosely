@@ -1,0 +1,7 @@
+abbreviation=FET_ZAR
+title=Афанасий Фет. На заре ты её не буди... Читает Вениамин Ицкович
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

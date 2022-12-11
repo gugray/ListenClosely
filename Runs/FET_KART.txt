@@ -1,0 +1,7 @@
+abbreviation=FET_KART
+title=Афанасий Фет. Чудная картина... Читает Алексей Востриков
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

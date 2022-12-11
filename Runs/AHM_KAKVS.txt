@@ -1,0 +1,7 @@
+abbreviation=AHM_KAKVS
+title=Анна Ахматова. Хочешь знать, как всё это было?.. Читает Анна Зиндер
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

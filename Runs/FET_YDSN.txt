@@ -1,0 +1,7 @@
+abbreviation=FET_YDSN
+title=Афанасий Фет. Я долго стоял неподвижно Читает Алексей Востриков
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

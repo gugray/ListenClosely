@@ -1,0 +1,6 @@
+abbreviation=ATCH_SHT_1
+title=А. П. Чехов. Шуточка. Читает Марина Бобрик [1]
+shiftTitleLines=2
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

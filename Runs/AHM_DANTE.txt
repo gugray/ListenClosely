@@ -1,0 +1,7 @@
+abbreviation=AHM_DANTE
+title=Анна Ахматова. Данте. Читает Айна Любарова
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

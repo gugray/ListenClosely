@@ -1,0 +1,7 @@
+abbreviation=AHM_ONLJB
+title=Анна Ахматова. Он любил три вещи на свете... Читает Любовь Шендерова
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

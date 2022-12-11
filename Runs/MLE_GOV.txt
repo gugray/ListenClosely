@@ -1,0 +1,7 @@
+abbreviation=MLE_GOV
+title=М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

@@ -1,0 +1,7 @@
+abbreviation=MLE_VOD
+title=М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

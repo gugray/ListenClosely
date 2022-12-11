@@ -1,0 +1,5 @@
+abbreviation=FMD_PIN_7
+title=Федор Достоевский. Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин [5]
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

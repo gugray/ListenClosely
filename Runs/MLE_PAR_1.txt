@@ -1,0 +1,7 @@
+abbreviation=MLE_PAR_1
+title=Михаил Лермонтов. Парус. Читает Евгений Шибаров
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

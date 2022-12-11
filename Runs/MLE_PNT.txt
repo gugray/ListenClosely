@@ -1,0 +1,7 @@
+abbreviation=MLE_PNT
+title=М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков
+shiftTitleLines=2
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

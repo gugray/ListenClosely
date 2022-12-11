@@ -1,0 +1,7 @@
+abbreviation=APT_ONEG_1
+title=Александр Пушкин. Роман в стихах «Евгений Онегин». Глава шестая. Строфы XXX - XXXIII. Читает Евгений Шибаров
+shiftTitleLines=4
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=MP3

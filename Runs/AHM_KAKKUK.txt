@@ -1,0 +1,7 @@
+abbreviation=AHM_KAKKUK
+title=Анна Ахматова. Я живу, как кукушка в часах... Читает Любовь Шендерова
+shiftTitleLines=1
+verses=true
+customDicPath=.\_materials\ru-custom.txt
+postLemmatizingStrategy=PROCESS
+audioFormat=WAV

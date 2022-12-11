@@ -1,16 +1,468 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Ini;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using System;
+using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
 using System.IO;
-
+using File = System.IO.File;
 
 namespace Tool
 {
     class Program
     {
-        static void shiftSegments(Material mat, decimal ofs)
+        // Installation parts
+        private const string WORK_DIR_PATH = "./_work";
+        private const string AUDIO_DIR_PATH = "./_audio";
+        private const string MATERIALS_OPENR_WORDS_PATH = "./_materials/openrussian/words.csv";
+        private const string MATERIALS_OPENR_TRANSL_PATH = "./_materials/openrussian/translations.csv";
+        private const string MATERIALS_RUWIKI_PATH = "./_materials/ruwiktionary.txt";
+        private const string RULEM_PY_PATH = ".\\Scripts\\rulem_mod.py";
+        private const string INI_FILE = "ListenClosely.ini";
+
+        private const string OVERWRITE = "OVERWRITE";
+        private const string SKIP = "SKIP";
+        private const string BACKUP = "BACKUP";
+        private const string BREAK = "BREAK";
+        private const string PROCESS = "PROCESS";
+
+        private const string GOOGLE_API = "G";
+        private const string MS_API = "M";
+
+        private const string AUDIO_MP3 = "MP3";
+        private const string AUDIO_WAV = "WAV";
+
+        // Which entries from RuWiki have to be read
+        private static string[] RU_WIKI_LANGUAGES = new string[] { "it", "es", "fr", "de" };
+
+        // internal set
+        private static string ORIG_FILE_PATH;
+        private static string PLAIN_FILE_PATH;
+        private static string LEMS_FILE_PATH;
+        private static string ADD_PAR_FILE_PATH;
+        private static string GOOGLE_JSON_FILE_PATH;
+        private static string GOOGLE_TRANS_JSON_FILE_PATH;
+        private static string MS_TRANS_JSON_FILE_PATH;
+        private static string MS_CONV_JSON_FILE_PATH;
+        private static string SEGS_FILE_PATH;
+        private static string FLAC_FILE_PATH;
+        private static string WEBM_FILE_PATH;
+        private static string M4A_FILE_PATH;
+        private static string AUDIO_IN_FILE_PATH;
+
+        private static string SPEECH_API; // MS/Google
+
+        // set by INI
+        private static string GOOGLE_API_KEY_PATH;
+        private static string FFMPEG_PATH;
+
+
+        // set by properties file
+        // Abbreviated name of the work data, mandatory
+        private static string ABBREVIATION;
+        // The path to the custom dictionary (nullable)
+        private static string CUSTOM_DIC_PATH;
+        // The work title, which will be displayed on the page, mandatory
+        private static string TITLE;
+        // The audio input file format; currently supported only WAV and MP3
+        private static string AUDIO_FORMAT;
+        // The first X lines which will be marked as title lines of the text
+        // default 0
+        private static int SHIFT_TITLE_LINES; 
+        // The value to shift the segments timestamps
+        // default 0.0
+        private static decimal SHIFT; 
+        // The value for tempo correction(0 if not required)
+        // default 0.0
+        private static double TEMPO_CORRECTION; 
+        // The flag for mark main text as verses lines
+        // default false
+        private static bool VERSES; 
+        // if a speech recognition file found as created by previous run:
+        // break / skip [default] / backup / overwrite
+        private static string SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY;
+        // if a lemmatization file found as created by previous run:
+        // break / skip [default] / backup / overwrite
+        private static string LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY;
+        // if a FLAC file found as created by previous run:
+        // break / skip [default] / backup / overwrite
+        private static string FFMPEG_OUT_FILE_OVERRIDE_STRATEGY;
+        // if a ready segments output file found as created by previous run:
+        // break / skip / backup / overwrite [default]
+        private static string SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY; 
+        // what to do after the lemmatizator did the work:
+        // break [default] / process 
+        private static string POST_LEMMATIZING_STRATEGY;
+
+        private static string BASE_URL;
+
+
+        /**
+         * Initialize the static variables; read the INI file and the properties; check main pre-conditions
+         */
+        private static void setUp(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            readRunProperties(args);
+
+            ORIG_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-orig.txt");
+            PLAIN_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-plain.txt");
+            LEMS_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-lem.txt");
+            ADD_PAR_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-addpar.txt");
+            GOOGLE_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-conv-goog.json");
+            GOOGLE_TRANS_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-goog.json");
+            MS_TRANS_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-ms.json");
+            MS_CONV_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-conv-ms.json");
+            SEGS_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-segs.json");
+
+            FLAC_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".flac");
+            WEBM_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".webm");
+            M4A_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".m4a");
+
+            readIni();
+
+            checkPreconditions();
+        }
+
+        private static String toAbsolutePath(string filePath)
+        {
+            return new FileInfo(filePath).FullName;
+        }
+
+        /**
+         * Read and validate the run settings from the properties file passed as run argument
+         */
+        private static void readRunProperties(string[] args)
+        {
+            Console.WriteLine("Analyze the call arguments...");
+
+            // At the moment, only the supported processing is to pass a path to properties
+            // file into the application as a single argument
+
+            if (args.Length == 0)
+            {
+                // Print the elp line and finish
+                Console.WriteLine("Please provide a path to the run configuration file");
+                System.Environment.Exit(1);
+            }
+
+            string path = args[0];
+
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException("File not found: '" + toAbsolutePath(path) + "'");
+            }
+
+            SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
+            LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
+            FFMPEG_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
+            SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY = OVERWRITE;
+            POST_LEMMATIZING_STRATEGY = BREAK;
+            SHIFT_TITLE_LINES = 0;
+            SHIFT = 0;
+            TEMPO_CORRECTION = 0.0;
+            VERSES = false;
+
+            ABBREVIATION = null;
+            CUSTOM_DIC_PATH = null;
+            TITLE = null;
+            AUDIO_FORMAT = null;
+
+            string line;
+            using (StreamReader sr = new StreamReader(path))
+            {
+                // only single-line property entries are supported!
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.StartsWith("#")) continue;
+                    if (!line.Contains("=")) continue;
+                    string[] split = line.Split("=");
+                    if (split.Length < 2) continue;
+                    string key = split[0].Trim();
+                    if (key.Length == 0) continue;
+                    string[] valueArr = new string[split.Length - 1];
+                    Array.Copy(split, 1, valueArr, 0, valueArr.Length);
+                    string value = String.Join("", valueArr).Trim();
+
+
+                    if (value.Length > 0)
+                    {
+                        switch (key)
+                        {
+                            case "abbreviation":
+                                ABBREVIATION = value;
+                                break;
+                            case "customDicPath":
+                                CUSTOM_DIC_PATH = value;
+                                break;
+                            case "speechApiOutFileOverrideStrategy":
+                                SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
+                                checkAllowedValuesBSBO("speechApiOutFileOverrideStrategy", SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY);
+                                break;
+                            case "lemmatizingOutFileOverrideStrategy":
+                                LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
+                                checkAllowedValuesBSBO("lemmatizingOutFileOverrideStrategy", LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY);
+                                break;
+                            case "ffmpegOutFileOverrideStrategy":
+                                FFMPEG_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
+                                checkAllowedValuesBSBO("ffmpegOutFileOverrideStrategy", FFMPEG_OUT_FILE_OVERRIDE_STRATEGY);
+                                break;
+                            case "segmentsOutFileOverrideStrategy":
+                                SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
+                                checkAllowedValuesBSBO("segmentsOutFileOverrideStrategy", SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY);
+                                break;
+                            case "postLemmatizingStrategy":
+                                POST_LEMMATIZING_STRATEGY = value.ToUpper();
+                                checkAllowedValuesBP("postLemmatizingStrategy", POST_LEMMATIZING_STRATEGY);
+                                break;
+                            case "title":
+                                TITLE = value;
+                                break;
+                            case "audioFormat":
+                                AUDIO_FORMAT = value.ToUpper();
+                                break;
+                            case "shiftTitleLines":
+                                try
+                                {
+                                    SHIFT_TITLE_LINES = int.Parse(value);
+                                    if (SHIFT_TITLE_LINES < 0)
+                                    {
+                                        throw new InvalidDataException("Cannot read argument 'shiftTitleLines' value '" + value + "'. Invalid value");
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    throw new InvalidDataException("Cannot read argument 'shiftTitleLines' value '" + value + "' as integer", e);
+                                }
+                                break;
+                            case "tempoCorrection":
+                                try
+                                {
+                                    TEMPO_CORRECTION = double.Parse(value);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw new InvalidDataException("Cannot read argument 'tempoCorrection' value '" + value + "' as double", e);
+                                }
+                                break;
+                            case "shift":
+                                try
+                                {
+                                    SHIFT = decimal.Parse(value);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw new InvalidDataException("Cannot read argument 'shift' value '" + value + "' as decimal", e);
+                                }
+                                break;
+                            case "verses":
+                                try
+                                {
+                                    VERSES = bool.Parse(value.ToLower());
+                                }
+                                catch (Exception e)
+                                {
+                                    throw new InvalidDataException("Cannot read argument 'verses' value '" + value + "' as boolean", e);
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                if (ABBREVIATION == null) throw new InvalidDataException("The argument 'abbreviation' is mandatory");
+                if (TITLE == null) throw new InvalidDataException("The argument 'title' is mandatory");
+                if (CUSTOM_DIC_PATH != null )
+                {
+                    CUSTOM_DIC_PATH = toAbsolutePath(CUSTOM_DIC_PATH);
+                    if(!File.Exists(CUSTOM_DIC_PATH))
+                    {
+                        throw new FileNotFoundException("File not found: '" + CUSTOM_DIC_PATH + "'");
+                    }
+                }
+            }
+        }
+
+        private static void checkAllowedValuesBSBO(string key, string value)
+        {
+            switch (value)
+            {
+                case BREAK:
+                case SKIP:
+                case BACKUP:
+                case OVERWRITE:
+                    return;
+                default:
+                    throw new InvalidDataException("Unexepcted value '" + value + "'" +
+                        " for argument '" + key + "'. Only " +
+                        "'" + BREAK + "'/" +
+                        "'" + SKIP + "'/" +
+                        "'" + BACKUP + "' and " +
+                        "'" + OVERWRITE +
+                        "' are allowed");
+            }
+        }
+        private static void checkAllowedValuesBP(string key, string value)
+        {
+            switch (value)
+            {
+                case BREAK:
+                case PROCESS:
+                    return;
+                default:
+                    throw new InvalidDataException("Unexepcted value '" + value + "'" +
+                        " for argument '" + key + "'. Only " +
+                        "'" + BREAK + "' and " +
+                        "'" + PROCESS +
+                        "' are allowed");
+            }
+        }
+
+        private static void checkAllowedValuesMW(string key, string value)
+        {
+            switch (value)
+            {
+                case AUDIO_MP3:
+                case AUDIO_WAV:
+                    return;
+                default:
+                    throw new InvalidDataException("Unexepcted value '" + value + "'" +
+                        " for argument '" + key + "'. Only " +
+                        "'" + AUDIO_MP3 + "' and " +
+                        "'" + AUDIO_WAV +
+                        "' are allowed");
+            }
+        }
+
+
+        /**
+         * Read and validate the main application settings from the program INI file 'ListenClosely.ini'
+         * which is expected in the program installation root
+         */
+        private static void readIni()
+        {
+            Console.WriteLine("Read the INI file...");
+
+            string dirPath = toAbsolutePath(".");
+            try
+            {
+                var configProvider = new IniConfigurationProvider(
+                new IniConfigurationSource()
+                {
+                    Path = INI_FILE,
+                    FileProvider = new PhysicalFileProvider(dirPath)
+                }
+                );
+                configProvider.Load();
+
+                configProvider.TryGet("Tool:GoogleAppiKeyPath", out GOOGLE_API_KEY_PATH);
+                configProvider.TryGet("Tool:FFmpegPath", out FFMPEG_PATH);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidProgramException("Cannot read settings from the file'" + dirPath + "\\" + INI_FILE + "'", e);
+            }
+
+            // Hard coded at the mionemt
+            SPEECH_API = GOOGLE_API;
+        }
+
+
+        private static void checkPreconditions()
+        {
+            Console.WriteLine("Check the settings...");
+
+            // Pre-check the main directoris are here
+            if (!Directory.Exists(WORK_DIR_PATH))
+            {
+                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(WORK_DIR_PATH) + "'");
+            }
+            if (!Directory.Exists(AUDIO_DIR_PATH))
+            {
+                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(AUDIO_DIR_PATH) + "'");
+            }
+
+            // Pre-check if the python script exists (except: the lemmas file is already provided and it will be handled)
+            // The possible missing Python installation will be detected directly by call the script
+            if (!File.Exists(LEMS_FILE_PATH) ||
+                (LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            {
+
+                // TODO Actually, we can solve this case by try to recreate the file by write as hard coded data
+
+                // Python required
+                if (!File.Exists(RULEM_PY_PATH))
+                {
+                    throw new FileNotFoundException("File not found: '" + toAbsolutePath(RULEM_PY_PATH) + "'");
+                }
+            }
+
+            // Pre-check if the ServiceAccountKey.json is installed (except: the Google file is already provided and will be reused)
+            if ((SPEECH_API == GOOGLE_API && !File.Exists(GOOGLE_JSON_FILE_PATH)) ||
+               (SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            {
+                if (GOOGLE_API_KEY_PATH == null)
+                {
+                    throw new InvalidDataException("The mandatory configuration for Google API is missing in the file'" + INI_FILE + "'");
+                }
+                else if (!File.Exists(GOOGLE_API_KEY_PATH))
+                {
+                    throw new FileNotFoundException("File not found: '" + toAbsolutePath(GOOGLE_API_KEY_PATH) + "'");
+                }
+            }
+            // Pre-check for MS API ... - ?
+            else if ((SPEECH_API == MS_API && !File.Exists(MS_CONV_JSON_FILE_PATH)) ||
+                (SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            {
+                // TODO - check something is required?
+            }
+
+            // Pre-check if the FFMpeg installation script exists (except: the audio files are already provided and will be reused
+            if (!File.Exists(FLAC_FILE_PATH) || (FFMPEG_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || FFMPEG_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            {
+                if (FFMPEG_PATH == null)
+                {
+                    throw new InvalidDataException("The mandatory configuration for FFmpeg tool is missing in the file'" + INI_FILE + "'");
+                }
+                else 
+                {
+                    FFMPEG_PATH = toAbsolutePath(FFMPEG_PATH);
+                    if (!File.Exists(FFMPEG_PATH))
+                    {
+                        throw new FileNotFoundException("File not found: '" + FFMPEG_PATH + "'");
+                    }
+                }
+
+                if (AUDIO_FORMAT == null) throw new InvalidDataException("The argument 'audioFormat' is mandatory");
+                checkAllowedValuesMW("audioFormat", AUDIO_FORMAT);
+
+                // Pre-check the input audio file exists
+                // Only the formats WAV and MP3 are supported, yet
+                AUDIO_IN_FILE_PATH = AUDIO_DIR_PATH + "/" + ABBREVIATION + ".";
+                if (AUDIO_FORMAT == AUDIO_WAV) AUDIO_IN_FILE_PATH += "wav";
+                else AUDIO_IN_FILE_PATH += "mp3";
+                AUDIO_IN_FILE_PATH = toAbsolutePath(AUDIO_IN_FILE_PATH);
+                if (!File.Exists(AUDIO_IN_FILE_PATH))
+                {
+                    throw new FileNotFoundException("File not found: '" + AUDIO_IN_FILE_PATH + "'");
+                }
+            }
+
+            if(!File.Exists(ORIG_FILE_PATH))
+            {
+                throw new FileNotFoundException("File not found: '" + ORIG_FILE_PATH + "'");
+            }
+        }
+
+
+        private static void shiftSegments(Material mat)
         {
             foreach (var segm in mat.Segments)
             {
-                if (segm.StartSec > 0) segm.StartSec += ofs;
+                if (segm.StartSec > 0) segm.StartSec += SHIFT;
             }
         }
 
@@ -20,21 +472,16 @@ namespace Tool
          * which may be helpful for avoid the speech recognition errors on the Google side,
          * then revert the duration and the start time to the initial values
          */
-        static void changeSegmentsForTempo(Material mat, double tempoCorrection)
+        private static void changeSegmentsForTempo(Material mat)
         {
-            if (tempoCorrection == 0.0)
-            {
-                return;
-            }
-
             foreach (var segm in mat.Segments)
             {
-                segm.StartSec = (decimal)((double)segm.StartSec * tempoCorrection);
-                segm.LengthSec = (decimal)((double)segm.LengthSec * tempoCorrection);
+                segm.StartSec = (decimal)((double)segm.StartSec * TEMPO_CORRECTION);
+                segm.LengthSec = (decimal)((double)segm.LengthSec * TEMPO_CORRECTION);
                 foreach (var wd in segm.Words)
                 {
-                    wd.StartSec = (decimal)((double)segm.StartSec * tempoCorrection);
-                    wd.LengthSec = (decimal)((double)wd.LengthSec * tempoCorrection);
+                    wd.StartSec = (decimal)((double)segm.StartSec * TEMPO_CORRECTION);
+                    wd.LengthSec = (decimal)((double)wd.LengthSec * TEMPO_CORRECTION);
                 }
             }
         }
@@ -43,7 +490,7 @@ namespace Tool
          * This method will add an empty segment on the given position
          * 
          */
-        static void shiftSegments(Material mat, int position, bool markAsTitle)
+        private static void shiftSegments(Material mat, int position, bool markAsTitle)
         {
             shiftSegments(mat, position, null, markAsTitle);
         }
@@ -51,7 +498,7 @@ namespace Tool
         /**
          * This method will add an empty segment on the given position and add the "hidden" text into the new line
          */
-        static void shiftSegments(Material mat, int position, string hiddenText, bool markAsTitle)
+        private static void shiftSegments(Material mat, int position, string hiddenText, bool markAsTitle)
         {
             int i = mat.Segments.Count;
 
@@ -118,12 +565,15 @@ namespace Tool
          * This method will take first N lines and mark they as a separate paragraph. 
          * To be used for mark the title lines in the verses.
          */
-        static void shiftTitleSegments(Material mat, int shiftTitleLines)
+        private static void shiftTitleSegments(Material mat)
         {
-            shiftSegments(mat, shiftTitleLines, true);
+            shiftSegments(mat, SHIFT_TITLE_LINES, true);
         }
 
-        static void markVerses(Material mat)
+        /**
+         * Set the attribute "IsVerse" to true
+         */
+        private static void markVerses(Material mat)
         {
             foreach (Segment seg in mat.Segments)
             {
@@ -138,10 +588,9 @@ namespace Tool
          *  This method will search for the 'addpar' file and parfe the content a a list of numbers, 
          *  then, for each number, it will add an empoty segment
          */
-        static void shiftAdditionalParas(Material mat, string abbreviation, int shiftTitleLines)
+        private static void shiftAdditionalParas(Material mat)
         {
-            String addFn = "_work/" + abbreviation + "-addpar.txt";
-            if (!File.Exists(addFn))
+            if (!File.Exists(ADD_PAR_FILE_PATH))
             {
                 return;
             }
@@ -149,7 +598,7 @@ namespace Tool
             AdditionalLines addPars = new AdditionalLines();
 
             String line;
-            using (StreamReader sr = new StreamReader(addFn))
+            using (StreamReader sr = new StreamReader(ADD_PAR_FILE_PATH))
             {
                 while ((line = sr.ReadLine()) != null)
                 {
@@ -169,7 +618,7 @@ namespace Tool
             {
                 AdditionalLines.AdditionalLine al = addPars.Lines[i];
                 int addPar = al.Idx;
-                if (shiftTitleLines > 0) addPar++;
+                if (SHIFT_TITLE_LINES > 0) addPar++;
                 addPar += i;
 
                 shiftSegments(mat, addPar, al.HiddenText, false);
@@ -179,7 +628,7 @@ namespace Tool
         /**
          * The special character (U + FE19) will be recognized as a ellipsis mark and replaced by "<...>"
          * */
-        static void transformEllipsisCharacter(Material mat)
+        private static void transformEllipsisCharacter(Material mat)
         {
             foreach (Segment seg in mat.Segments)
             {
@@ -202,700 +651,335 @@ namespace Tool
             }
         }
 
+
         /**
-         * abbreviation         abbreviated name of the work data
-         * shift                the value to shift the segments timestamps
-         * tempoCorrection      the value for tempo correction (0 if not required)
-         * customDictFileName   the file name  of custom dictionary (nullable)
-         * title                the work title, which will be displayed on the page
-         * veses                the flag for mark main text as veses lines
-         * shiftTitleLines      the first X lines which will be marked as title lines of the text
-         * breakWork            to be set true until the -lem file is still not done by rulem.py
-         * useMS                parse transcription by MS; otherwise, get Google transcription via API
-         */
-        static void doOrigAlignRus(string abbreviation, decimal shift, double tempoCorrection, string customDictFileName,
-            string title, int shiftTitleLines, bool verses, bool breakWork, bool useMS)
+        * Save the segments file
+        */
+        private static void saveSegmentsFile(Material mOrig)
         {
-            string transJson;
-            Material trans = null;
-            // Using Google?
-            if (!useMS)
+            if (saveByStrategy(SEGS_FILE_PATH, SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY))
             {
-                string googleJson = "_work/" + abbreviation + "-conv-goog.json";
-                transJson = "_work/" + abbreviation + "-goog.json";
+                Console.WriteLine("Save the segments file '" + SEGS_FILE_PATH + "'...");
+                mOrig.SaveJson(SEGS_FILE_PATH);
+            }
+        }
+
+        private static void printInfoForPublish()
+        {
+            Console.WriteLine("<!-- DOWNLOAD FILE ENTRIES FOR: " + TITLE + " -->");
+
+            Console.WriteLine("<b>" + TITLE + "</b>");
+            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + "-segs.json\">JSON</a>");
+            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + ".m4a\">M4A</a>");
+            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + ".webm\">WEBM</a>");
+
+            Console.WriteLine("<!-- INDEX ENTRY FOR: " + TITLE + " -->");
+
+            Console.WriteLine("<li class=\"title\">");
+            Console.WriteLine("<a href=\"" + BASE_URL + "/prose/player.html?ep=" + ABBREVIATION + "\">" + TITLE + "</a>");
+            Console.WriteLine("</li>");
+        }
+
+
+        /**
+         * Call Python based Yandex lemmatizer as system process
+         */
+        private static void callLemmatizer()
+        {
+            // Pre-check if the input file exists
+            if (!File.Exists(PLAIN_FILE_PATH))
+            {
+                throw new FileNotFoundException("File not found: '" + PLAIN_FILE_PATH + "'");
+            }
+
+            // process only if required
+            if (!saveByStrategy(LEMS_FILE_PATH, LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY)) return;
+
+            // Option overwrite
+            string arguments = " " + RULEM_PY_PATH + " \"" + PLAIN_FILE_PATH + "\" \"" + LEMS_FILE_PATH + "\"";
+            callProcess("Python based Yandex lemmatizer", "python", arguments, false);
+        }
+
+
+        /**
+         * Call Google or MS Speech API and handle the output file
+         * Returns the path to API file;
+         */
+        private static string callSpeechApi()
+        {
+            string transJson = null;
+            string convertedJson = null;
+            if (SPEECH_API == GOOGLE_API)
+            {
+                transJson = GOOGLE_TRANS_JSON_FILE_PATH;
+                convertedJson = GOOGLE_JSON_FILE_PATH;
+            }
+            else
+            {
+                transJson = MS_TRANS_JSON_FILE_PATH;
+                convertedJson = MS_CONV_JSON_FILE_PATH;
+            }
+
+            if (!saveByStrategy(convertedJson, SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY)) return transJson;
+
+            Material trans = null;
+
+            // Using Google?
+            if (SPEECH_API == GOOGLE_API)
+            {
+                Console.WriteLine("Call the Google speech API...");
 
                 // If transcription is missing, get it now
-                if (!File.Exists(googleJson))
-                {
-                    // TODO
-                    // Transcribe text with Google engine
-                    GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber("ServiceAccountKey.json");
-                    gt.Transcribe("_audio/" + abbreviation + ".flac", "ru", googleJson); // ? "../_work/" + abbreviation + "-conv-goog.json"
-                }
+                // Transcribe text with Google engine
+                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber("ServiceAccountKey.json");
+                gt.Transcribe(FLAC_FILE_PATH, "ru", GOOGLE_JSON_FILE_PATH); // ? "../_work/" + abbreviation + "-conv-goog.json"
 
                 // Set title, serialize
-                trans = Material.fromGoogle(googleJson);
-                trans.Title = title;
+                trans = Material.fromGoogle(GOOGLE_JSON_FILE_PATH);
             }
             // Using MS?
             else
             {
-                transJson = "_work/" + abbreviation + "-ms.json";
+                Console.WriteLine("Call the Microsoft speech API...");
+
                 // -conv-ms.json is the direct output of the MS service
                 // It is nout our own Material class serialized
-                trans = Material.FromMS("_work/" + abbreviation + "-conv-ms.json");
+                trans = Material.FromMS(MS_CONV_JSON_FILE_PATH);
             }
+
             // We have a new transcription: save it
-            if (trans != null)
+            if (trans != null && transJson != null)
             {
                 // Set title, serialize
-                trans.Title = title;
+                trans.Title = TITLE;
                 trans.SaveJson(transJson);
+                return transJson;
             }
+            else
+            {
+                throw new InvalidProgramException("Broken speech recognition");
+            }
+        }
+
+        /**
+         *  Call FFMgeg tool for convert the original filer (WAV/MP3) into FLAC, WEBM and M4A
+         */
+        private static void callFfmpeg()
+        {
+            if (!saveByStrategy(FLAC_FILE_PATH, FFMPEG_OUT_FILE_OVERRIDE_STRATEGY)) return;
+
+            // FLAC
+            Console.WriteLine("Create a FLAC file '" + FLAC_FILE_PATH + "'...");
+            string arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
+                + " -af aformat=s16:16000 -ac 1 -start_at_zero -copytb 1 "
+                + "\"" + FLAC_FILE_PATH + "\" -y";
+            callProcess("convert audio to FLAC", FFMPEG_PATH, arguments, true);
+            Console.WriteLine("The FLAC file stored in '" + FLAC_FILE_PATH + "'");
+
+            try
+            {
+                // WEBM
+                Console.WriteLine("Create a WEBM file '" + WEBM_FILE_PATH + "'...");
+                arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
+                    + " -vn -dash 1 \"" + WEBM_FILE_PATH + "\" -y";
+                callProcess("convert audio to WEBM", FFMPEG_PATH, arguments, true);
+                Console.WriteLine("The WEBM file stored in '" + WEBM_FILE_PATH + "'");
+            }
+            catch (Exception e)
+            {
+                // ignore the errors, WEBM and M4A are optional for this processing
+                Console.WriteLine("Error by saving WEBM file in '" + WEBM_FILE_PATH + "': " + e.Message);
+            }
+            try
+            {
+                // M4A
+                Console.WriteLine("Create a M4A file '" + M4A_FILE_PATH + "'...");
+                arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
+                    + " -vn -codec:a aac \"" + M4A_FILE_PATH + "\" -y";
+                callProcess("convert audio to M4A", FFMPEG_PATH, arguments, true);
+                Console.WriteLine("The M4A file stored in '" + M4A_FILE_PATH + "'");
+            }
+            catch (Exception e)
+            {
+                // ignore the errors, WEBM and M4A are optional for this processing
+                Console.WriteLine("Error by saving M4A file in '" + M4A_FILE_PATH + "': " + e.Message);
+            }
+        }
+
+        private static void callProcess(string processName, string fileName, string args, bool skipStdErr)
+        {
+            Console.WriteLine("Execute the " + processName + " call: '" + fileName + " " + string.Join(" ", args) + "'");
+
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = fileName;
+            start.Arguments = args;
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+
+            try
+            {
+                using (Process process = Process.Start(start))
+                {
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from program
+                        string result = reader.ReadToEnd(); // Here is the result of StdOut
+
+                        if (!skipStdErr && stderr != null && stderr.Length > 0)
+                        {
+                            throw new InvalidProgramException("Errors occured by run '" + processName + "': " + stderr);
+                        }
+                    }
+                }
+            }
+            catch (Win32Exception e)
+            {
+                throw new InvalidProgramException("Cannot run '" + processName + "': " + e.Message, e);
+            }
+        }
+
+
+        private static bool saveByStrategy(string filePath, string strategy)
+        {
+            if (File.Exists(filePath))
+            {
+                // Option skip
+                if (strategy == SKIP)
+                {
+                    return false;
+                }
+                // Option break
+                else if (strategy == BREAK)
+                {
+                    throw new InvalidProgramException("The file " + filePath + " exists already. Break processing.");
+                }
+                // Option backup
+                else if (strategy == BACKUP)
+                {
+                    // TODO: implement backup
+                }
+            }
+
+            // Option overwrite [default]
+            return true;
+        }
+
+
+
+        /**
+         * Process the main data preparation flow
+         */
+        private static void doOrigAlignRus()
+        {
+            // Prepare the flac file (at least)
+            callFfmpeg();
+
+            // this one will be initialized within callSpeechApi
+            // Call the speach API
+            string transJson = callSpeechApi();
 
             // Re-load - just to make it easier to uncomment part above independently
             var mTrans = Material.LoadJson(transJson);
-            mTrans.Title = title;
+            mTrans.Title = TITLE;
 
-            // Read original text, and segment paragraphs
-            var mOrig = Material.FromPlainText(abbreviation, true);
-            mOrig.Title = title;
+            // Read original text and segment paragraphs
+            Console.WriteLine("Read original text and segment paragraphs...");
+            var mOrig = Material.FromPlainText(ABBREVIATION, true);
+            mOrig.Title = TITLE;
+
             // Save as plain text, for lemmatization
-            mOrig.SavePlain("_work/" + abbreviation + "-plain.txt");
+            Console.WriteLine("Save as plain text, for lemmatization...");
+            mOrig.SavePlain(PLAIN_FILE_PATH);
 
             // Align, and infuse timestamps
             TimeFuser fs = new TimeFuser(mTrans, mOrig);
             fs.Fuse();
 
-            // Stop here until -lem file is done by rulem.py
-            if (breakWork)
-            {
-                return;
-            }
-
-            // MANUAL STEP HERE: Run rulem.py on ep-plain.txt
+            // Call the lemmatization
+            callLemmatizer();
 
             // Shift all segment timestamps... Don't ask why
-            shiftSegments(mOrig, shift);
+            shiftSegments(mOrig);
 
-            mOrig.AddLemmasRu("_work/" + abbreviation + "-lem.txt");
-            Dict dict = Dict.FromOpenRussian("_materials/openrussian/words.csv", "_materials/openrussian/translations.csv");
-            dict.UpdateFromRuWiktionary("_materials/ruwiktionary.txt", false, new string[] { "it", "es", "fr", "de" });
-            if (customDictFileName != null && File.Exists("_materials/" + customDictFileName))
+            // Read lemmas to JSON from lemmatized text file
+            mOrig.AddLemmasRu(LEMS_FILE_PATH);
+
+            Console.WriteLine("Prepare translations based on Open Ruissian dictionary...");
+
+            // Read translations from OpenRussian dictionary
+            Dict dict = Dict.FromOpenRussian(MATERIALS_OPENR_WORDS_PATH, MATERIALS_OPENR_TRANSL_PATH);
+
+            Console.WriteLine("Prepare translations based on RuWiki dictionary...");
+
+            // Additionally, read from RuWiki dictionary
+            dict.UpdateFromRuWiktionary(MATERIALS_RUWIKI_PATH, false, RU_WIKI_LANGUAGES);
+
+            // Finally, read fom customer dictionary if any
+            if (CUSTOM_DIC_PATH != null)
             {
+                Console.WriteLine("Prepare translations based on customer dictionary '" + CUSTOM_DIC_PATH + "'...");
+
                 // Extend/override the dictionary by additional customized dictionary
-                dict.UpdateFromCustomList("_materials/" + customDictFileName);
+                dict.UpdateFromCustomList(CUSTOM_DIC_PATH);
             }
 
+            // Sort the dictionary entries by language, for each header
             dict.SortByLang();
 
+            // 
             dict.indexDisplayedHeaders();
 
-            // compose the lemmas-based translations
+            // Compose the lemmas-based translations
             dict.FillDict(mOrig);
 
             // Workaround for mark the title lines if required
-            if(shiftTitleLines > 0)
+            if(SHIFT_TITLE_LINES > 0)
             {
-                shiftTitleSegments(mOrig, shiftTitleLines);
+                shiftTitleSegments(mOrig);
             }
             
             // Workaround for mark the empty lines between the strophes of verses if required
-            shiftAdditionalParas(mOrig, abbreviation, shiftTitleLines);
+            shiftAdditionalParas(mOrig);
 
-            if (verses)
+            // set the IsVerse attribute to true (may be used iun JavaScript for markup purposes)
+            if (VERSES)
             {
                 markVerses(mOrig);
             }
 
-            changeSegmentsForTempo(mOrig, tempoCorrection);
+            // if tempo correction requested
+            if (TEMPO_CORRECTION != 0.0)
+            {
+                changeSegmentsForTempo(mOrig);
+            }
 
+            // change the \uFE19 character to "<...>"; it is actually an optional step,
+            // because the "<...>" notation in the original text seems to work, too
             transformEllipsisCharacter(mOrig);
 
-            mOrig.SaveJson("_work/" + abbreviation + "-segs.json");
-            mOrig.SaveJson("ProsePlayer/public/media/" + abbreviation + "-segs.json");
+            // save the segments file
+            saveSegmentsFile(mOrig);
 
+            // print info for update the HTML files
+            printInfoForPublish();
 
-            try
-            {
-                var rg = new ReviewGenerator();
-                rg.Print(mOrig, "_work/" + abbreviation + "-annot.html");
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("Please correct the review generator part!!!");
-            }
+            // try
+            // {
+            //     var rg = new ReviewGenerator();
+            //     rg.Print(mOrig, "_work/" + abbreviation + "-annot.html");
+            // }
+            // catch(Exception e)
+            // {
+            //     Console.WriteLine("Please correct the review generator part!!!");
+            // }
         }
-
-        /**
-         * 
-         * */
-        static void printDownloadEntry(String abbreviation, String title, String baseUrl)
-        {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-            Console.WriteLine("<b>" + title + "</b>");
-            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + "-segs.json\">JSON</a>");
-            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + ".m4a\">M4A</a>");
-            Console.WriteLine("<a href = \"" + baseUrl + "/media/" + abbreviation + ".webm\">WEBM</a>");
-        }
-        static void printIndexEntry(String abbreviation, String title, String baseUrl)
-        {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-            Console.WriteLine("<li class=\"title\">");
-            Console.WriteLine("<a href=\"" + baseUrl + "/prose/player.html?ep=" + abbreviation  + "\">" + title + "</a>");
-            Console.WriteLine("</li>");
-        }
-
+        
         static void Main(string[] args)
         {
-            string customDictFileName = "ru-custom.txt";
-
-            bool breakWork = false;  // for 1st start, set true; for 2nd start, set false
-
-            bool useMs = false;       // set true for use MS Speech2Text API, else false for use the Google engine
-            double shift = 0.0;
-            double tempoCorrection = 0.0;
-
-            string abbreviation;
-            string title;
-            int shiftTitleLines; // the count of title lines; an additional empty paragraph will be add after
-            bool verses = false;
-
-            // abbreviation = "MLE_FAT_1";
-            // title = "Михаил Лермонтов - Фаталист";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_BKR_1";
-            // title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_2";
-            // title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            //
-            //abbreviation = "MLE_GOV";
-            //title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
-            //shiftTitleLines = 2;
-            //tempoCorrection = 0.0;
-            //verses = true;
-            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            //abbreviation = "MLE_PNT";
-            //title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
-            //shiftTitleLines = 2;
-            //tempoCorrection = 0.0;
-            //verses = true;
-            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            //abbreviation = "MLE_VOD";
-            //title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
-            //shiftTitleLines = 1;
-            //tempoCorrection = 0.0;
-            //verses = true;
-            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_FAT_1";
-            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (1). Читает Евгений Шибаров";
-            // shiftTitleLines = 3;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_FAT_2";
-            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (2). Читает Евгений Шибаров";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_FAT_3";
-            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (3). Читает Евгений Шибаров";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_FAT_4";
-            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (4). Читает Евгений Шибаров";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_FAT_5";
-            // title = "М. Ю. Лермонтов. Фаталист. Из романа «Герой нашего времени» (5). Читает Евгений Шибаров";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "ATCH_ANS_1";
-            // title = "А. П. Чехов. Анна на шее (1). Читает Анна Шибарова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "ATCH_ANS_2";
-            // title = "А. П. Чехов. Анна на шее (2). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "ATCH_ANS_3";
-            // title = "А. П. Чехов. Анна на шее (3). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "ATCH_ANS_4";
-            // title = "А. П. Чехов. Анна на шее (4). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //  
-            // abbreviation = "ATCH_GFR";
-            // title = "А. П. Чехов. Глупый француз. Читает Владимир Иванчин";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "LTL_RTD";
-            // title = "Лев Толстой. Детство. Читает Анна Шибарова";
-            // shiftTitleLines = 4;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "LTL_VIM";
-            // title = "Лев Толстой: Война и мир. Читает Анна Шибарова";
-            // shiftTitleLines = 4;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "ATCH_STU_1";
-            // title = "А. П. Чехов. Студент (1). Читает Анна Шибарова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "ATCH_STU_2";
-            // title = "А. П. Чехов. Студент (2). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_MET_1";
-            // title = "А. С. Пушкин. Метель (1). Читает Анна Шибарова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_MET_2";
-            // title = "А. С. Пушкин. Метель (2). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_MET_3";
-            // title = "А. С. Пушкин. Метель (3). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_MET_4";
-            // title = "А. С. Пушкин. Метель (4). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_MET_5";
-            // title = "А. С. Пушкин. Метель (5). Читает Анна Шибарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_1";
-            // title = "А. С. Пушкин. Барышня-крестьянка (1). Читает Влада Гехтман";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "APT_BKR_2";
-            // title = "А. С. Пушкин. Барышня-крестьянка (2). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_BKR_3";
-            // title = "А. С. Пушкин. Барышня-крестьянка (3). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_BKR_4";
-            // title = "А. С. Пушкин. Барышня-крестьянка (4). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_BKR_5";
-            // title = "А. С. Пушкин. Барышня-крестьянка (5). Читает Влада Гехтман";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            abbreviation = "ATCH_SHT_1";
-            title = "А. П. Чехов. Шуточка. Читает Марина Бобрик [1]";
-            shiftTitleLines = 2;
-            tempoCorrection = 0.0;
-            verses = false;
-            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            
-            //abbreviation = "ATCH_SHT_2";
-            //title = "А. П. Чехов. Шуточка. Читает Марина Бобрик [2]";
-            //shiftTitleLines = 0;
-            //tempoCorrection = 0.0;
-            //verses = false;
-            //doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_1";
-            // title = "Федор Достоевский (1). Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова";
-            // shiftTitleLines = 4;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_2";
-            // title = "Федор Достоевский (2). Преступление и наказание. Часть четвертая. Глава четвертая. Читает Айна Любарова";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_ELK_1";
-            // title = "Федор Достоевский (1). Ёлка и свадьба (Из записок неизвестного).Читает Илья Кукуй";
-            // shiftTitleLines = 3;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_ELK_2";
-            // title = "Федор Достоевский (2). Ёлка и свадьба (Из записок неизвестного).Читает Илья Кукуй";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "MLE_PAR";
-            // title = "Михаил Лермонтов. Парус. Читает Вениамин Ицкович";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_GOV";
-            // title = "М. Ю. Лермонтов. Из Гете. Читает Даниил Казбеков";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_PNT";
-            // title = "М. Ю. Лермонтов. Посреди небесных тел... Читает Михаил Казбеков";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_VOD";
-            // title = "М. Ю. Лермонтов. Выхожу один я на дорогу... Читает Даниил Казбеков";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_DMJ";
-            // title = "А. С. Пушкин. В альбом Павлу Вяземскому. Читает Михаил Казбеков";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_EZH";
-            // title = "А. С. Пушкин. Если жизнь тебя обманет. Читает Михаил Казбеков";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_SSN";
-            // title = "А. С. Пушкин. Стихи, сочиненные ночью во время бессонницы. Читает Влада Гехтман";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_BESY";
-            // title = "Александр Пушкин. Бесы. Читает Александр Заполь";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_ZAV";
-            // title = "Михаил Лермонтов. Завещание. Читает Евгений Шибаров";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "MLE_PAR_1";
-            // title = "Михаил Лермонтов. Парус. Читает Евгений Шибаров";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //   
-            // abbreviation = "MLE_ROD";
-            // title = "Михаил Лермонтов. Родина. Читает Евгений Шибаров";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //  
-            // abbreviation = "MLE_UTES";
-            // title = "Михаил Лермонтов. Утес. Читает Даниил Казбеков";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "APT_ONEG_1";
-            // title = "Александр Пушкин. Роман в стихах «Евгений Онегин». Глава шестая. Строфы XXX - XXXIII. Читает Евгений Шибаров";
-            // shiftTitleLines = 4;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "BLOK_DEV";
-            // title = "Александр Блок. Девушка пела в церковном хоре... Читает Елена Грачева";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "BLOK_NOCH";
-            // title = "Александр Блок. Ночь, улица, фонарь, аптека... Читает Дмитрий Калугин";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "BLOK_OPM";
-            // title = "Александр Блок. Она пришла с мороза... Читает Вениамин Ицкович";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "BLOK_VOR";
-            // title = "Александр Блок. Ворона. Читает Эля Любарова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FET_KART";
-            // title = "Афанасий Фет. Чудная картина... Читает Алексей Востриков";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FET_KOT";
-            // title = "Афанасий Фет. Кот поет, глаза прищуря... Читает Влада Гехтман";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FET_NOK";
-            // title = "Афанасий Фет. Непогода - осень - куришь... Читает Вениамин Ицкович";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FET_YDSN";
-            // title = "Афанасий Фет. Я долго стоял неподвижно Читает Алексей Востриков";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FET_ZAR";
-            // title = "Афанасий Фет. На заре ты её не буди... Читает Вениамин Ицкович";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_VUAL";
-            // title = "Анна Ахматова. Сжала руки под темной вуалью... Читает Любовь Шендерова";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_DANTE";
-            // title = "Анна Ахматова. Данте. Читает Айна Любарова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_MOL";
-            // title = "Анна Ахматова. Молюсь оконному лучу... Читает Анна Зиндер";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_MUSA";
-            // title = "Анна Ахматова. Муза. Читает Наталья Мовнина";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_MUSE";
-            // title = "Анна Ахматова. Музе. Читает Любовь Шендерова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_ONLJB";
-            // title = "Анна Ахматова. Он любил три вещи на свете... Читает Любовь Шендерова";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_PESENKA";
-            // title = "Анна Ахматова. Песенка. Читает Любовь Шендерова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_PPVSTR";
-            // title = "Анна Ахматова. Песня последней встречи. Читает Любовь Шендерова";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_PROVDR";
-            // title = "Анна Ахматова. Проводила друга до передней... Читает Анна Зиндер";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_PRGLK";
-            // title = "Анна Ахматова. Прогулка. Читает Наталья Мовнина";
-            // shiftTitleLines = 2;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_KAKVS";
-            // title = "Анна Ахматова. Хочешь знать, как всё это было?.. Читает Анна Зиндер";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "AHM_KAKKUK";
-            // title = "Анна Ахматова. Я живу, как кукушка в часах... Читает Любовь Шендерова";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "AHM_SHSUM";
-            // title = "Анна Ахматова. Я сошла с ума, о мальчик странный... Читает Любовь Шендерова";
-            // shiftTitleLines = 1;
-            // tempoCorrection = 0.0;
-            // verses = true;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            //
-            // abbreviation = "FMD_PIN_3";
-            // title = "Федор Достоевский (1). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 5;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_4";
-            // title = "Федор Достоевский (2). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_5";
-            // title = "Федор Достоевский (3). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_6";
-            // title = "Федор Достоевский (4). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-            // 
-            // abbreviation = "FMD_PIN_7";
-            // title = "Федор Достоевский (5). Преступление и наказание. Часть первая. Глава первая. Читает Дмитрий Калугин";
-            // shiftTitleLines = 0;
-            // tempoCorrection = 0.0;
-            // verses = false;
-            // doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-
+            setUp(args);
+            doOrigAlignRus();
         }
     }
 }

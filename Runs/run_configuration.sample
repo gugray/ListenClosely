@@ -1,0 +1,66 @@
+# Sample run configuration for start ListenClosely in terminal
+
+################################################
+#  Abbreviated name of the work data, mandatory
+################################################
+#abbreviation=TST_1
+
+################################################
+# The work title, which will be displayed on 
+# the page, mandatory
+################################################
+#title=Test Title
+
+################################################
+# The first X lines which will be marked as title 
+# lines of the text, default 0
+################################################
+#shiftTitleLines=0
+
+################################################
+# The path to the custom dictionary, optional
+################################################
+#customDicPath=.\_materials\ru-custom.txt
+
+################################################
+# The audio input file format; 
+# currently supported only WAV and MP3
+################################################
+#audioFormat=WAV
+
+################################################
+# The flag for mark main text as verses 
+# lines, default false
+################################################
+#verses=false
+
+################################################
+# What to do after the lemmatizator did the work:
+# break [default] / process 
+################################################
+#postLemmatizingStrategy=PROCESS
+
+################################################
+# If a speech recognition file found as created 
+# by previous run:
+# break / skip [default] / backup / overwrite
+################################################
+#speechApiOutFileOverrideStrategy=SKIP
+
+################################################
+# if a lemmatization file found as created by previous run:
+# break / skip [default] / backup / overwrite
+################################################
+#lemmatizingOutFileOverrideStrategy=BACKUP
+
+################################################
+# if a FLAC file found as created by previous run:
+# break / skip [default] / backup / overwrite
+################################################
+#ffmpegOutFileOverrideStrategy=SKIP
+
+################################################
+# if a ready segments output file found as created by previous run:
+# break / skip / backup / overwrite [default]
+################################################
+#segmentsOutFileOverrideStrategy=OVERWRITE
