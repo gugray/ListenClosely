@@ -391,7 +391,9 @@ namespace Tool
                 (LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
             {
 
+
                 // TODO Actually, we can solve this case by try to recreate the file by write as hard coded data
+                
 
                 // Python required
                 if (!File.Exists(RULEM_PY_PATH))
