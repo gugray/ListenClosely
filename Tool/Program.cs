@@ -17,10 +17,11 @@ namespace Tool
         // Installation parts
         private const string WORK_DIR_PATH = "./_work";
         private const string AUDIO_DIR_PATH = "./_audio";
+        private const string SCRIPTS_DIR_PATH = "./Scripts";
         private const string MATERIALS_OPENR_WORDS_PATH = "./_materials/openrussian/words.csv";
         private const string MATERIALS_OPENR_TRANSL_PATH = "./_materials/openrussian/translations.csv";
-        private const string MATERIALS_RUWIKI_PATH = "./_materials/ruwiktionary.txt";
-        private const string RULEM_PY_PATH = ".\\Scripts\\rulem_mod.py";
+        private const string MATERIALS_RUWIKI_PATH = "./_materials/ruwiktionary/ruwiktionary.txt";
+        private const string RULEM_PY_PATH = SCRIPTS_DIR_PATH + "/rulem_mod.py";
         private const string INI_FILE = "ListenClosely.ini";
 
         private const string OVERWRITE = "OVERWRITE";
@@ -106,6 +107,8 @@ namespace Tool
         private static void setUp(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            checkEnvironments();
 
             readRunProperties(args);
 
@@ -370,10 +373,9 @@ namespace Tool
             SPEECH_API = GOOGLE_API;
         }
 
-
-        private static void checkPreconditions()
+        private static void checkEnvironments()
         {
-            Console.WriteLine("Check the settings...");
+            Console.WriteLine("Check the environment...");
 
             // Pre-check the main directoris are here
             if (!Directory.Exists(WORK_DIR_PATH))
@@ -384,14 +386,21 @@ namespace Tool
             {
                 throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(AUDIO_DIR_PATH) + "'");
             }
+            if (!Directory.Exists(SCRIPTS_DIR_PATH))
+            {
+                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(SCRIPTS_DIR_PATH) + "'");
+            }
+        }
+
+        private static void checkPreconditions()
+        {
+            Console.WriteLine("Check the settings...");
 
             // Pre-check if the python script exists (except: the lemmas file is already provided and it will be handled)
             // The possible missing Python installation will be detected directly by call the script
             if (!File.Exists(LEMS_FILE_PATH) ||
                 (LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
             {
-
-
                 // TODO Actually, we can solve this case by try to recreate the file by write as hard coded data
                 
 
@@ -980,8 +989,20 @@ namespace Tool
         
         static void Main(string[] args)
         {
-            setUp(args);
-            doOrigAlignRus();
+            try
+            {
+                setUp(args);
+                doOrigAlignRus();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("ERROR");
+                Console.WriteLine(e.Message);
+                System.Environment.Exit(1);
+            }
+
+            Console.WriteLine("READY");
+            System.Environment.Exit(0);
         }
     }
 }

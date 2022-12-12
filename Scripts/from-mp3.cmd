@@ -2,7 +2,6 @@
 setlocal
 
 rem SET "FFMPEG=ffmpeg.exe"
-rem SET "FFMPEG=..\_tools\ffmpeg-n4.4-79-gde1132a891-win64-gpl-4.4\bin\ffmpeg.exe"
 SET "FFMPEG=..\_tools\ffmpeg-2021-01-05-git-66deab3a26-full_build\bin\ffmpeg.exe"
 
 
