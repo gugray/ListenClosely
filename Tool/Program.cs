@@ -17,6 +17,7 @@ namespace Tool
         // Installation parts
         private const string WORK_DIR_PATH = "./_work";
         private const string AUDIO_DIR_PATH = "./_audio";
+        private const string OUT_DIR_PATH = "./_out";
         private const string SCRIPTS_DIR_PATH = "./Scripts";
         private const string MATERIALS_OPENR_WORDS_PATH = "./_materials/openrussian/words.csv";
         private const string MATERIALS_OPENR_TRANSL_PATH = "./_materials/openrussian/translations.csv";
@@ -131,9 +132,27 @@ namespace Tool
             checkPreconditions();
         }
 
-        private static String toAbsolutePath(string filePath)
+        private static string toAbsolutePath(string filePath)
         {
             return new FileInfo(filePath).FullName;
+        }
+
+        private static string getBackupName(string filePath)
+        {
+            FileInfo fi = new FileInfo(filePath);
+            string extension = fi.Extension;
+            string name = fi.FullName;
+            name = name.Substring(0, name.Length - extension.Length);
+            String now = DateTime.Now.ToString("MM_yyyy_HH_mm_ss");
+            name += "_" + now + extension;
+            return name;
+        }
+        private static string getOutName(string filePath)
+        {
+            FileInfo fi = new FileInfo(filePath);
+            string name = fi.Name;
+            fi = new FileInfo(OUT_DIR_PATH + "/" + name);
+            return fi.FullName;
         }
 
         /**
@@ -378,17 +397,25 @@ namespace Tool
             Console.WriteLine("Check the environment...");
 
             // Pre-check the main directoris are here
-            if (!Directory.Exists(WORK_DIR_PATH))
+            string abs = toAbsolutePath(WORK_DIR_PATH);
+            if (!Directory.Exists(abs))
             {
-                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(WORK_DIR_PATH) + "'");
+                throw new FileNotFoundException("Directory not found: '" + abs + "'");
             }
-            if (!Directory.Exists(AUDIO_DIR_PATH))
+            abs = toAbsolutePath(AUDIO_DIR_PATH);
+            if (!Directory.Exists(abs))
             {
-                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(AUDIO_DIR_PATH) + "'");
+                throw new FileNotFoundException("Directory not found: '" + abs + "'");
             }
-            if (!Directory.Exists(SCRIPTS_DIR_PATH))
+            abs = toAbsolutePath(SCRIPTS_DIR_PATH);
+            if (!Directory.Exists(abs))
             {
-                throw new FileNotFoundException("Directory not found: '" + toAbsolutePath(SCRIPTS_DIR_PATH) + "'");
+                throw new FileNotFoundException("Directory not found: '" + abs + "'");
+            }
+            abs = toAbsolutePath(OUT_DIR_PATH);
+            if (!Directory.Exists(abs))
+            {
+                throw new FileNotFoundException("Directory not found: '" + abs + "'");
             }
         }
 
@@ -675,6 +702,16 @@ namespace Tool
             }
         }
 
+        /**
+         * Save the 3 work files into the output directory
+         */
+        private static void distibuteFiles()
+        {
+            copyFile(WEBM_FILE_PATH, false, true);
+            copyFile(M4A_FILE_PATH, false, true);
+            copyFile(SEGS_FILE_PATH, false, true);
+        }
+
         private static void printInfoForPublish()
         {
             Console.WriteLine("<!-- DOWNLOAD FILE ENTRIES FOR: " + TITLE + " -->");
@@ -742,7 +779,7 @@ namespace Tool
 
                 // If transcription is missing, get it now
                 // Transcribe text with Google engine
-                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber("ServiceAccountKey.json");
+                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber(GOOGLE_API_KEY_PATH);
                 gt.Transcribe(FLAC_FILE_PATH, "ru", GOOGLE_JSON_FILE_PATH); // ? "../_work/" + abbreviation + "-conv-goog.json"
 
                 // Set title, serialize
@@ -869,7 +906,7 @@ namespace Tool
                 // Option backup
                 else if (strategy == BACKUP)
                 {
-                    // TODO: implement backup
+                    copyFile(filePath, true, true);
                 }
             }
 
@@ -878,6 +915,32 @@ namespace Tool
         }
 
 
+        /**
+         * Backup the given file with the timestamp into the same path
+         */
+        private static bool copyFile(string filePath, bool isBackup, bool ignoreErrors)
+        {
+            try
+            {
+                string newFilePath = isBackup ? getBackupName(filePath) : getOutName(filePath);
+                string msg = isBackup ? 
+                    "Backup file '" + filePath + "' as '" + newFilePath + "'..." : 
+                    "Copy file '" + filePath + "' as '" + newFilePath + "'...";
+                Console.WriteLine(msg);
+                File.Copy(filePath, newFilePath);
+            }
+            catch(Exception e)
+            {
+                string errorMsg = isBackup ? "Error by backup: " : "Error by copy: ";
+                if (!ignoreErrors)
+                {
+                    throw new InvalidProgramException(errorMsg + e.Message, e);
+                }
+                Console.WriteLine(errorMsg);
+                return false;
+            }
+            return true;
+        }
 
         /**
          * Process the main data preparation flow
@@ -972,6 +1035,8 @@ namespace Tool
 
             // save the segments file
             saveSegmentsFile(mOrig);
+
+            distibuteFiles();
 
             // print info for update the HTML files
             printInfoForPublish();
