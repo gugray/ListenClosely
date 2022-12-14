@@ -1,39 +1,83 @@
-﻿## Prerequisites, environment
+﻿## Dev & Prod: environment setup
 
-* **Python 3**
-* **pymystem3**: Russian lemmatizer by Yandex
-https://pypi.org/project/pymystem3/ <br>
-`pip install pymystem3`
-* **FFMPEG**: Command-line tool for audio conversion <br>
-https://ffmpeg.org/download.html
-* The [OpenRussian](https://de.openrussian.org/dictionary) dictionary downloaded as a CSV file.
-* Specifically, the following files are needed in `_materials\openrussian`:
-   * words.csv
-   * translations.csv
+### Python 3
+* Download Python 3 installer from https://www.python.org/downloads/windows/
+* Process the Python 3 installation. During the installation, approve the installation of pip tool. Also, approve adding python to Windows system environment variables.
+    
+### pymystem3: Russian lemmatizer by Yandex, see https://pypi.org/project/pymystem3/<br>
+* start the command line and call:<br>
+  `pip install pymystem3`
+        
+### FFMPEG: Command-line tool for audio conversion <br>
+* download executable (as zip archive) for Windows from https://ffmpeg.org/download.html
+* unpack into a local directory
+    
+### The [OpenRussian](https://de.openrussian.org/) dictionary as a CSV files <br>
+* Note for prod: this is a delivery part. 
+* Note for dev: this ais a project part <br>
+  - Specifically, the following files are needed in `_materials\openrussian`:
+    - `words.csv`
+    - `translations.csv`
+  - TODO: download description
+    
+### The [RuWiktionary](https://ru.wiktionary.org/) dictionary as txt file <br>
+* Note for prod: this is a delivery part. 
+* Note for dev: this ais a project part <br>
+    - TODO: download description for https://dumps.wikimedia.org/ruwiktionary/
 
-### Transcribing with Google
 
-Prerequisite:
+## Dev: Setup MS Visual Studio
+
+### Clone the project into a local repository
+
+### Control / adjust the paths in project configuration:
+* In the Solution Explorer (Projektmappen Explorer) select the project "Tool". 
+    Open the menu "Debug" ("Debuggen") -> Tool: Debug properties (Debugeigenschaften) -> Correct the path of work directory
+* Correct the value of workingDirectory in the files "launchsettings.json" in projects: WiktionaryParser, MSTranscriber, Tool
+    
+### Control the build settings for all projects
+* In Solution Explorer (Projektmappen Explorer) select the main Solution (Projektmappe)
+* Right mouse click on it -> select Configuration Manager (Konfigurations-Manager)
+* Settings for all projects: 
+  - Configuration=Release
+  - Platform=Any CPU
+  - Build for the "Tool" project = yes, else "no"
+        
+### Create a build for project Tool
+* In Solution Explorer (Projektmappen Explorer), select the project "Tool"
+* Right mouse click -> Publish (Erstellen) -> Publish (Auswahl veröffentlichen) -> Add a publish profile (Veröffentlichungsprofil hinhufügen)
+ - Target (Ziel) => Folder (Ordner) -> Next
+ - Specific target (Bestimmtes Ziel) => Folder (Ordner) -> Next
+ - Location (Speicherort) => keep default -> Finish
+ - Edit the just created puublishing profile with "Show all settings" 
+    ("Alle Einstellungen anzeigen") for set:
+     - Deployment mode (Bereitstellungsmodus) => Self-contained (Eigenständif)
+     - Target runtime (Zielruntime) => win-x86
+ - Click on "File publish options" ("Dateiveröffentlichungsoptionen") and set:
+     - Produce single file (Einzelne Datei erstellen) = yes
+     - Enable ReadyToRun compilation (ReadyToRun-Komprimierung aktivieren) = yes
+
+### Setup Transcribing with Google
+
 * A Google service account key for access to the Google Speech API <br>
 https://console.cloud.google.com/apis/library/speech.googleapis.com <br>
 https://console.cloud.google.com/apis/credentials <br>
    * Place `ServiceAccountKey.json` into solution root
    * Edit values at top of GoogleTranscriber.cs (projectId and bucketName) to match what you set up in API console.<br>
 
-For switch to Google API, set the boolean variable useMs in the Main method of Tool Program to false.<br>
+`For switch to Google API, set the boolean variable useMs in the Main method of Tool Program to false.<br>`
 
 The code in `Tool` itself takes care of uploading the FLAC file, initiating the transcription, polling for progress, and retrieving
 the transcribed text.<br>
 
-### Transcribing with MS Speech-To-Text
+### Setup Transcribing with MS Speech-To-Text (Development in process; not supported in prod.)
 
-Prerequisite:
 * A subscription key for the speech-to-text service in Azure App Services<br>
 https://portal.azure.com/#blade/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/SpeechServices
 
-For switch to Microsoft API, set the boolean variable useMs in the Main method of Tool Program to true.<br>
+`For switch to Microsoft API, set the boolean variable useMs in the Main method of Tool Program to true.<br>`
 
-How to:
+Notes:
 * Transcription is performed by a dedicated tool in the repository, `MSTranscriber`.
 * Use from-mp3.cmd to creat a WAV file with the required parameters. Upload the file to a publicly available URL.
 * Create a `TranslationConfig.json` in the solution root (you can use the sample file).
@@ -42,120 +86,7 @@ Enter your subscription key, and fill in the URL, language, and output file name
 * To prepare, open the Properties of the `Tool` project in Visual Studio (right-click in Solution Explorer),
 and under Debug set the solution root as the working directory.
 
-## Processing a file
-<pre>
-1. Prepare the installation
-    - Clone the project into a local repository
-    - Create sub folders:
-    ./_audio/
-    ./_materials/
-    ./_tools/
-    ./_work/
-
-2. Prepare the input files:
-    - the file containing the original text. Name convention:
-        [ABBR]-orig.txt
-    - the audio file (WAV or MP3). Name convention:
-        [ABBR].wav / [ABBR].mp3
-    Where [ABBR] is the abbreviation.
-Place the audio file into ./_audio
-Place the text file into ./_work/
-
-3. Before you start, doublecheck the input text file for:
-    3.1. Typos
-    3.2. Special characters in the text
-    3.3. Exact match between the written text and the read audio data
-    3.4. If needed, provide the expected markup, e.g., for the line breaks;
-    the markup description see in: ./_materials/ru-custom.txt
-
-4. Prepare the output audio files. 
-Navigate to ./Scripts and start (as per input file format):
-        from-mp3.cmd [ABBR] WAV
-        or
-        from-mp3.cmd [ABBR] MP3
-Expectede result:
-    Three output files will be created:
-    ./_audio/[ABBR].flac : will be used for pass to Google / Microsoft speech recognition API
-    ./_audio/[ABBR].m4a  : to be uploaded to the tool
-    ./_audio/[ABBR].webm : to be uploaded to the tool
-
-5. Open the Tool Program in MS Visual Studio and start the 1st processing step.
-Provide changes in the code, in Main method:
-            bool breakWork = true; <- set true for this step!
-            ...
-Enter a new section with:
-            useMs = false; <- for use Google engine; for use Microsoft engine, set true
-            abbreviation = "[ABBR]"; <- use the same abbreviation as above
-            title = "[The text title]"; <- Provide the title line
-            shiftTitleLines = 0; <- set the number of lines in original text which reepresent the title
-            verses = false; <- if the text is a prose; else set true
-            doOrigAlignRus(abbreviation, (decimal)shift, tempoCorrection, customDictFileName, title, shiftTitleLines, verses, breakWork, useMs);
-Start the execution. Expectede result:
-The *FLAC file will be passed to the desired speech recognizing engine. Following files will be created
-(example for use the Google engine):
-    ./_work/[ABBR]-conv-goog.json : Google engine output file with timelines
-    ./_work/[ABBR]-plain.txt      : The original text file converted to the plain text (1 sentence=1line)
-                                  : This one is expected for for lemmatization as next step
-    ./_work/[ABBR]-goog.json      : The merged file containing the original text and the Google time markup.
-
-6. Process the Yandex Engine based lemmatization for the input text. Navigate to ./Scripts and start:
-    rulem.cmd [ABBR]
-Expectede result: the new file will be stored, as the lemmatization output:
-    ./_work/[ABBR]-lem.txt
-
-7. The manual control and correction of lemmatization can be done on this point.
-
-8. Open the Tool Program in MS Visual Studio and start the 2nd processing step.
-Provide changes in the code, in Main method:
-            bool breakWork = false; <- set false for this step!
-Start the execution. Expectede result:
-The final output file will be created:
-    ./_work/[ABBR]-segs.json : The merged file containing: the original text; 
-                                 the Google time markup; the dictionaty section; 
-                                 and the dictionaty related markup.
-
-9. Upload the files to the server; they will be used in the Javascript 'prose' tool:
-    ./_work/[ABBR]-segs.json
-    ./_audio/[ABBR].m4a
-    ./_audio/[ABBR].webm
-
-10. Control the results in a browser. Known issues:
-    10.1. Broken synchronization
-        This problem requires a complex analyze and fix. The synchronization issue may be caused by the mismatch 
-        between the text and audio data, but also by errors in the speech recognition (e.g., due to bad
-        quality of input audio file)
-        Mainly: for each JSON sub element in the "segments" session, following mathes are expected:
-        - "startSec" - same as "startSec" + "lengthSec" of the previous element;
-        - "lengthSec" - in the common case, is > 0 (except the empty lines)
-        - the time attributes of sub elements in the sub section "words" are not in use
-        - "paraIx" - is the paragraph index, starting by 0
-    10.2. Markup issue (text delimiters, title lines)
-            - Correct the markup in the original file [ABBR]-orig.txt and/or the call argument shiftTitleLines
-            - If manual correctioins was done for lemmatization, backup the file ./_work/[ABBR]-lem.txt
-            - delete files 
-                ./_work/[ABBR]-conv-goog.json
-                ./_work/[ABBR]-plain.txt
-                ./_work/[ABBR]-goog.json markup.            
-                ./_work/[ABBR]-lem.txt
-                ./_work/[ABBR]-segs.json
-            - process the steps from 5 and the next
-            - if the backup of ./_work/[ABBR]-lem.txt was done, take over the manual correction into the new generated data
-    10.3. Typos in the text
-            - Correct the original file [ABBR]-orig.txt
-            - see 10.2. for next processing
-    10.4. Lemmatization issues
-            - Manual correct the local file ./_work/[ABBR]-lem.txt
-            - Delete the file /_work/[ABBR]-segs.json
-            - Process steps 8 and the next
-    10.5  Translation issues
-            - Decide the best way to correct:
-                a. correct the lemmatization file ./_work/[ABBR]-lem.txt
-                b. enhance the customer dictionary file ./_materials/ru-custom.txt
-                c. (not recommended, only in grave cases) enhance the main dictionary file ./_materials/ruwiktionary.txt
-            - Delete the file /_work/[ABBR]-segs.json
-            - Process steps 8 and the next
-</pre>
-## Compiling the player
+## Dev: Compiling the player
 
 ### Prerequisites
 
@@ -180,3 +111,112 @@ by itself.
 * To devolop the tool (run it locally, with livereload), you need:<br/>
 `yarn serve`
 * You only need to run `yarn` again to update the Node modules if the content of `package.json` has changed.
+
+## Prod: Processing files
+<pre>
+1. Install the delivered data:
+    ./_materials/openrussian/**
+    ./_materials/ruwiktionary/ruwiktionary.txt
+    ./ru-custom.txt.sample
+    ./run_configuration.sample
+    ./ListenClosely.ini.sample
+    ./ListenClosely.exe
+2. Meet the dev. & prod. preconditions (see above). 
+   Also, ensure you have a working internet connection, 
+   which is required for access the Google online service.
+3. At the moment, the tool supports in prod. only the Google API. So: 
+    - Provide a Google commercial account. 
+    - Receive the file `ServiceAccountKey.json` from Google.
+    - Install it in your local environment.
+4. Copy the file `./ListenClosely.ini.sample` into the installation directory as `./ListenClosely.ini`. Edit it for set the correct local paths to the files:
+    - `GoogleAppiKeyPath` = [the full path to Google ServiceAccountKey.json file]
+    - `FFmpegPath` = [the full path to mmpeg executable, ffmpeg.exe]
+5. Create the mandatory sub folders:
+    ./_audio
+    ./_work
+6. Prepare the input files:
+    - the file containing the original text, in the plain-text format, 
+    as UTF-8 without BOM. 
+    Name convention:
+        [ABBR]-orig.txt
+    - the audio file (WAV or MP3). 
+    Name convention:
+        [ABBR].wav / [ABBR].mp3
+    Where [ABBR] is the abbreviation.
+Place the audio file into the sub directory ./_audio
+Place the text file into the sub directory ./_work/
+7. If you plan to use a customer dictionary: create the initial file, 
+   as a copy of the delivered `ru-custom.txt.sample`, and save it 
+   into ./_materials/
+By apply the custom changes, follow the instructions in the file.
+8. Before you start, doublecheck the input text file for:
+    8.1. Typos
+    8.2. Special characters in the text
+    8.3. Exact match between the written text and the read audio data
+    8.4. If needed, provide the expected markup, e.g., for the line breaks.
+    The markup description see in: `ru-custom.txt.sample`
+9. Prepare the run properties file, based on run_configuration.sample.
+    Recommended: create the sub folder `_runs` and save the file in this 
+    folder as `[ABBR].run`
+    Follow the configuration instructions in this file.
+9. In the command line, start the program execution with pass the path 
+   to just created run properties file, e.g.:
+    .\ListenClosely.exe "C:\Meine Dateien\ListenClosely\._runs\TST.run"
+10. The program will process following execution steps:
+    10.1. Convert the given audio files into the FLAC, M4A and WEBM
+          formats, as `[ABBR].flac`, `[ABBR].m4a` and `[ABBR].webm`
+    10.2. Pass the FLAC file to the Google speech regognizing API
+    10.3. Call the Python based lemmatizer for process the text.
+        10.3.1. If the key `postLemmatizingStrategy` is not provided 
+            in the run file or is provided by set to "BREAK": 
+            - stop the work. The manual control and correction of 
+            lemmatization can be done on this point.
+        10.3.2. If the key `postLemmatizingStrategy` is provided in the 
+            run file by set to "PROCESS", next steps will be done.
+    10.4. Compose the file `[ABBR]-segs.json`
+    10.5. Copy the files `[ABBR].m4a`, `[ABBR].webm` and `[ABBR]-segs.json` 
+            into the directory ./_out (will be creted, if missing)
+11. Upload the files to the server. The files will be used in the Javascript 
+    'prose' application:
+    ./_out/[ABBR]-segs.json
+    ./_out/[ABBR].m4a
+    ./_out/[ABBR].webm
+12. Control the results in a browser. Known issues:
+    12.1. Broken synchronization
+        This problem requires a complex analyze and fix. The synchronization 
+        issue may be caused by the mismatch between the text and audio data, 
+        but also by errors in the speech recognition (e.g., due to bad
+        quality of input audio file)
+        Mainly: for each JSON sub element in the "segments" session, following 
+        mathes are expected:
+            - "startSec" - same as "startSec" + "lengthSec" of the previous 
+              element;
+            - "lengthSec" - in the common case, is > 0 (except the empty lines)
+            - the time attributes of sub elements in the sub section 
+              "words" are not in use
+            - "paraIx" - is the paragraph index, starting by 0
+        For support, contact the dev team.
+    12.2. Markup issue (text delimiters, title lines)
+            - Correct the markup in the original file `[ABBR]-orig.txt` 
+              and/or the value of shiftTitleLines in the run configuration
+            - Delete files:
+                ./_work/[ABBR]-plain.txt
+                ./_work/[ABBR]-lem.txt
+                ./_work/[ABBR]-segs.json
+            - Restart the call
+    12.3. Typos in the text
+            - Correct the original file [ABBR]-orig.txt
+            - see 10.2. for next processing
+    12.4. Lemmatization issues
+            - Manual correct the local file ./_work/[ABBR]-lem.txt
+            - Delete the file /_work/[ABBR]-segs.json
+            - Restart the call
+    12.5  Translation issues
+            - Decide the best way to correct:
+                a. correct the lemmatization file ./_work/[ABBR]-lem.txt
+                b. enhance the customer dictionary file ./_materials/ru-custom.txt
+                c. (not recommended, only in grave cases) enhance the main 
+                dictionary file ./_materials/ruwiktionary.txt
+            - Delete the file /_work/[ABBR]-segs.json
+            - Restart the call
+</pre>
