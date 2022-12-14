@@ -143,7 +143,7 @@ namespace Tool
             string extension = fi.Extension;
             string name = fi.FullName;
             name = name.Substring(0, name.Length - extension.Length);
-            String now = DateTime.Now.ToString("MM_yyyy_HH_mm_ss");
+            String now = DateTime.Now.ToString("yyyyMMddHHmmss");
             name += "_" + now + extension;
             return name;
         }
