@@ -128,7 +128,9 @@ by itself.
     - Provide a Google commercial account. 
     - Receive the file `ServiceAccountKey.json` from Google.
     - Install it in your local environment.
-4. Copy the file `./ListenClosely.ini.sample` into the installation directory as `./ListenClosely.ini`. Edit it for set the correct local paths to the files:
+4. Copy the file `./ListenClosely.ini.sample` into the installation directory 
+   as `./ListenClosely.ini`. Edit it for set the correct local paths 
+   to the files:
     - `GoogleAppiKeyPath` = [the full path to Google ServiceAccountKey.json file]
     - `FFmpegPath` = [the full path to mmpeg executable, ffmpeg.exe]
 5. Create the mandatory sub folders:
