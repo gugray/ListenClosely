@@ -18,11 +18,11 @@ namespace Tool
         private const string WORK_DIR_PATH = "./_work";
         private const string AUDIO_DIR_PATH = "./_audio";
         private const string OUT_DIR_PATH = "./_out";
-        private const string SCRIPTS_DIR_PATH = "./Scripts";
+        private const string SCRIPTS_DIR_PATH = "./_scripts";
+        private const string RULEM_PY_PATH = SCRIPTS_DIR_PATH + "/rulem_mod.py";
         private const string MATERIALS_OPENR_WORDS_PATH = "./_materials/openrussian/words.csv";
         private const string MATERIALS_OPENR_TRANSL_PATH = "./_materials/openrussian/translations.csv";
         private const string MATERIALS_RUWIKI_PATH = "./_materials/ruwiktionary/ruwiktionary.txt";
-        private const string RULEM_PY_PATH = SCRIPTS_DIR_PATH + "/rulem_mod.py";
         private const string INI_FILE = "ListenClosely.ini";
 
         private const string OVERWRITE = "OVERWRITE";
@@ -400,43 +400,34 @@ namespace Tool
             string abs = toAbsolutePath(WORK_DIR_PATH);
             if (!Directory.Exists(abs))
             {
+                // missing directory
                 throw new FileNotFoundException("Directory not found: '" + abs + "'");
             }
             abs = toAbsolutePath(AUDIO_DIR_PATH);
             if (!Directory.Exists(abs))
             {
-                throw new FileNotFoundException("Directory not found: '" + abs + "'");
-            }
-            abs = toAbsolutePath(SCRIPTS_DIR_PATH);
-            if (!Directory.Exists(abs))
-            {
+                // missing directory
                 throw new FileNotFoundException("Directory not found: '" + abs + "'");
             }
             abs = toAbsolutePath(OUT_DIR_PATH);
             if (!Directory.Exists(abs))
             {
-                throw new FileNotFoundException("Directory not found: '" + abs + "'");
+                // create the missing directory
+                try
+                {
+                    Console.WriteLine("Create directory: '" + abs + "'...");
+                    Directory.CreateDirectory(OUT_DIR_PATH);
+                }
+                catch(Exception e)
+                {
+                    throw new FileNotFoundException("Cannot create the directory '" + abs + "': " + e.Message, e);
+                }
             }
         }
 
         private static void checkPreconditions()
         {
             Console.WriteLine("Check the settings...");
-
-            // Pre-check if the python script exists (except: the lemmas file is already provided and it will be handled)
-            // The possible missing Python installation will be detected directly by call the script
-            if (!File.Exists(LEMS_FILE_PATH) ||
-                (LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
-            {
-                // TODO Actually, we can solve this case by try to recreate the file by write as hard coded data
-                
-
-                // Python required
-                if (!File.Exists(RULEM_PY_PATH))
-                {
-                    throw new FileNotFoundException("File not found: '" + toAbsolutePath(RULEM_PY_PATH) + "'");
-                }
-            }
 
             // Pre-check if the ServiceAccountKey.json is installed (except: the Google file is already provided and will be reused)
             if ((SPEECH_API == GOOGLE_API && !File.Exists(GOOGLE_JSON_FILE_PATH)) ||
@@ -495,6 +486,75 @@ namespace Tool
             }
         }
 
+        /**
+         * Create the temporary Python script direct from the code
+         */
+        private static void createPythonScript()
+        {
+            Console.WriteLine("Create temporary file '" + RULEM_PY_PATH + "'...");
+
+            string abs = toAbsolutePath(SCRIPTS_DIR_PATH);
+            if(!Directory.Exists(abs))
+            try
+            {
+                Directory.CreateDirectory(abs);
+            }
+            catch (Exception e)
+            {
+                throw new FileNotFoundException("Cannot create the directory '" + abs + "': " + e.Message, e);
+            }
+
+            StreamWriter sw = null;
+            try
+            {
+                using (sw = new StreamWriter(RULEM_PY_PATH))
+                {
+                    sw.WriteLine("from pymystem3 import Mystem");
+                    sw.WriteLine("from io import open");
+                    sw.WriteLine("import sys");
+                    sw.WriteLine("import os");
+                    sw.WriteLine("m = Mystem()");
+                    sw.WriteLine("with open(\"" + PLAIN_FILE_PATH + "\", \"r\", encoding=\"utf8\") as f:");
+                    sw.WriteLine("  with open(\"" + LEMS_FILE_PATH + "\", \"w\", encoding=\"utf8\") as g:");
+                    sw.WriteLine("    for line in f:");
+                    sw.WriteLine("      lemmas = m.lemmatize(line)");
+                    sw.WriteLine("      lemmasStr = ''.join(lemmas)");
+                    sw.WriteLine("      g.write(lemmasStr)");
+                    sw.WriteLine("sys.exit()");
+                    sw.Flush();
+                }
+            }
+            catch(Exception e)
+            {
+                throw new FileNotFoundException("Cannot prepare the Python script: '" + RULEM_PY_PATH + "'");
+            }
+            finally
+            {
+                if(sw != null)
+                {
+                    sw.Close();
+                }
+            }
+        }
+
+        /**
+         * After the pytoh call, delete the script
+         */
+        private static void deletePythonScript()
+        {
+            if (File.Exists(RULEM_PY_PATH))
+            {
+                Console.WriteLine("Delete temporary file '" + RULEM_PY_PATH + "'...");
+                try
+                {
+                    File.Delete(RULEM_PY_PATH);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Cannot delete temporary file '" + RULEM_PY_PATH + "'. Please handle manually: " + e.Message);
+                }
+            }
+        }
 
         private static void shiftSegments(Material mat)
         {
@@ -743,11 +803,19 @@ namespace Tool
             // process only if required
             if (!saveByStrategy(LEMS_FILE_PATH, LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY)) return;
 
-            // Option overwrite
-            string arguments = " " + RULEM_PY_PATH + " \"" + PLAIN_FILE_PATH + "\" \"" + LEMS_FILE_PATH + "\"";
-            callProcess("Python based Yandex lemmatizer", "python", arguments, false);
+            // create temporary Python script for call the lemmatizer
+            createPythonScript();
+            try
+            {
+                // Option overwrite
+                callProcess("Python based Yandex lemmatizer", "python", "\"" + RULEM_PY_PATH + "\"", false);
+            }
+            finally
+            {
+                // delete temporary Python script
+                deletePythonScript();
+            }
         }
-
 
         /**
          * Call Google or MS Speech API and handle the output file
@@ -859,6 +927,7 @@ namespace Tool
             Console.WriteLine("Execute the " + processName + " call: '" + fileName + " " + string.Join(" ", args) + "'");
 
             ProcessStartInfo start = new ProcessStartInfo();
+            // start.EnvironmentVariables.Add("pymystem3.constants.MYSTEM_BIN", toAbsolutePath(SCRIPTS_DIR_PATH));
             start.FileName = fileName;
             start.Arguments = args;
             start.UseShellExecute = false;
@@ -927,11 +996,11 @@ namespace Tool
                     "Backup file '" + filePath + "' as '" + newFilePath + "'..." : 
                     "Copy file '" + filePath + "' as '" + newFilePath + "'...";
                 Console.WriteLine(msg);
-                File.Copy(filePath, newFilePath);
+                File.Copy(filePath, newFilePath, true);
             }
             catch(Exception e)
             {
-                string errorMsg = isBackup ? "Error by backup: " : "Error by copy: ";
+                string errorMsg = isBackup ? "Error by backup: " : "Error by copy: " + e.Message;
                 if (!ignoreErrors)
                 {
                     throw new InvalidProgramException(errorMsg + e.Message, e);
