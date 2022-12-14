@@ -125,12 +125,12 @@ by itself.
    Also, ensure you have a working internet connection, 
    which is required for access the Google online service.
 3. At the moment, the tool supports in prod. only the Google API. So: 
-    - Provide a Google commercial account. 
-    - Receive the file `ServiceAccountKey.json` from Google.
-    - Install it in your local environment.
-4. Copy the file `./ListenClosely.ini.sample` into the installation directory 
-   as `./ListenClosely.ini`. Edit it for set the correct local paths 
-   to the files:
+    - Receive a Google commercial account
+    - Receive the the Google service account key `ServiceAccountKey.json`
+    - Install it in your local environment
+4. Copy the delivered file `./ListenClosely.ini.sample` 
+   into the installation directory as `./ListenClosely.ini`. 
+   Edit it for set the correct local paths to the files:
     - `GoogleAppiKeyPath` = [the full path to Google ServiceAccountKey.json file]
     - `FFmpegPath` = [the full path to mmpeg executable, ffmpeg.exe]
 5. Create the mandatory sub folders:
