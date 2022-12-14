@@ -146,7 +146,7 @@ by itself.
         [ABBR].wav / [ABBR].mp3
     Where [ABBR] is the abbreviation.
 Place the audio file into the sub directory ./_audio
-Place the text file into the sub directory ./_work/
+Place the text file into the sub directory ./_work
 7. If you plan to use a customer dictionary: create the initial file, 
    as a copy of the delivered `ru-custom.txt.sample`, and save it 
    into ./_materials/
@@ -157,22 +157,25 @@ By apply the custom changes, follow the instructions in the file.
     8.3. Exact match between the written text and the read audio data
     8.4. If needed, provide the expected markup, e.g., for the line breaks.
     The markup description see in: `ru-custom.txt.sample`
-9. Prepare the run properties file, based on run_configuration.sample.
+9. Prepare the run properties file, based on `run_configuration.sample`.
     Recommended: create the sub folder `_runs` and save the file in this 
     folder as `[ABBR].run`
     Follow the configuration instructions in this file.
 9. In the command line, start the program execution with pass the path 
    to just created run properties file, e.g.:
-    .\ListenClosely.exe "C:\Meine Dateien\ListenClosely\._runs\TST.run"
+    .\ListenClosely.exe "C:\Meine Dateien\ListenClosely\_runs\TST.run"
 10. The program will process following execution steps:
     10.1. Convert the given audio files into the FLAC, M4A and WEBM
           formats, as `[ABBR].flac`, `[ABBR].m4a` and `[ABBR].webm`
-    10.2. Pass the FLAC file to the Google speech regognizing API
+    10.2. Pass the FLAC file to the Google speech API
     10.3. Call the Python based lemmatizer for process the text.
         10.3.1. If the key `postLemmatizingStrategy` is not provided 
-            in the run file or is provided by set to "BREAK": 
-            - stop the work. The manual control and correction of 
-            lemmatization can be done on this point.
+            in the run file or is set to "BREAK": 
+            - stop the work. 
+            The manual control and correction of lemmatization 
+            can be done on this point; then, you can modify the value 
+            of `postLemmatizingStrategy` to "PROCESS" and restart 
+            the program.
         10.3.2. If the key `postLemmatizingStrategy` is provided in the 
             run file by set to "PROCESS", next steps will be done.
     10.4. Compose the file `[ABBR]-segs.json`
@@ -184,23 +187,24 @@ By apply the custom changes, follow the instructions in the file.
     ./_out/[ABBR].m4a
     ./_out/[ABBR].webm
 12. Control the results in a browser. Known issues:
-    12.1. Broken synchronization
+    12.1. Broken synchronization between the text and audio; 
+          broken indication of current paragraph
         This problem requires a complex analyze and fix. The synchronization 
         issue may be caused by the mismatch between the text and audio data, 
         but also by errors in the speech recognition (e.g., due to bad
-        quality of input audio file)
-        Mainly: for each JSON sub element in the "segments" session, following 
-        mathes are expected:
-            - "startSec" - same as "startSec" + "lengthSec" of the previous 
+        quality of input audio file).
+        For support, contact the dev team, provide the [ABBR]-segs.json file.
+        Mainly, in this file: for each JSON sub element in the "segments" 
+        session, following mathes are expected:
+            - "startSec" - same as ("startSec" + "lengthSec") of the previous 
               element;
             - "lengthSec" - in the common case, is > 0 (except the empty lines)
             - the time attributes of sub elements in the sub section 
               "words" are not in use
             - "paraIx" - is the paragraph index, starting by 0
-        For support, contact the dev team.
-    12.2. Markup issue (text delimiters, title lines)
+    12.2. Markup issues (missing or wrong placed text delimiters, title lines)
             - Correct the markup in the original file `[ABBR]-orig.txt` 
-              and/or the value of shiftTitleLines in the run configuration
+              and/or the value of `shiftTitleLines` in the run configuration
             - Delete files:
                 ./_work/[ABBR]-plain.txt
                 ./_work/[ABBR]-lem.txt
@@ -208,7 +212,7 @@ By apply the custom changes, follow the instructions in the file.
             - Restart the call
     12.3. Typos in the text
             - Correct the original file [ABBR]-orig.txt
-            - see 10.2. for next processing
+            - See 12.2. for next processing
     12.4. Lemmatization issues
             - Manual correct the local file ./_work/[ABBR]-lem.txt
             - Delete the file /_work/[ABBR]-segs.json
@@ -216,9 +220,11 @@ By apply the custom changes, follow the instructions in the file.
     12.5  Translation issues
             - Decide the best way to correct:
                 a. correct the lemmatization file ./_work/[ABBR]-lem.txt
-                b. enhance the customer dictionary file ./_materials/ru-custom.txt
-                c. (not recommended, only in grave cases) enhance the main 
-                dictionary file ./_materials/ruwiktionary.txt
-            - Delete the file /_work/[ABBR]-segs.json
-            - Restart the call
+                b. provide/enhance the customer dictionary file
+                c. not recommended, only in grave cases! - if the error is 
+                detected in a source dictionary file, ask dev team for 
+                correct it:
+                    ./_materials/openrussian/translations.csv
+                    ./_materials/ruwiktionary/ruwiktionary.txt
+            - See 12.4. for next processing
 </pre>
