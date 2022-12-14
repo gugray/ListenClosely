@@ -1,0 +1,6 @@
+; INI file for ListenClosely tool
+[Tool]
+; Provide the full path to ServiceAccountKey.json
+GoogleAppiKeyPath = 
+; Provide the full path to ffmpeg.exe
+FFmpegPath = 
