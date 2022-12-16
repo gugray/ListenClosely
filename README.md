@@ -1,16 +1,31 @@
 ﻿## Dev & Prod: environment setup
 
-### Python 3
+### Python 3 instalation
 * Download Python 3 installer from https://www.python.org/downloads/windows/
 * Process the Python 3 installation. During the installation, approve the installation of pip tool. Also, approve adding python to Windows system environment variables.
-    
+
+### Altarnavive: Embedded Python 3 (portable) instalation
+* Download Embedded Python file python-3.10.0-embed-amd64.zip from<br>
+    https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-amd64.zip
+* Unpack the Zip, e.g. under ./_tools/python-3.10.0-embed-amd64
+* In Windows Explorer, navigate to the installation folder of Embedded Python and open the file `python310._pth` for edit. 
+Find the line "#import site". Remove the comment mark ("#"), save and close the file.
+* Download the file `get-pip.py` from<br>
+    https://bootstrap.pypa.io/get-pip.py<br>
+and save it in the same folder as Python
+* Open the command line, navigate to the installation folder of mbedded Python and call:<br>
+    `.\python get-pip.py --no-warn-script-location`
+
 ### pymystem3: Russian lemmatizer by Yandex, see https://pypi.org/project/pymystem3/<br>
-* start the command line and call:<br>
+* Start the command line and call:<br>
   `pip install pymystem3`
-        
+* By use the Embedded Python, start the command line, navigate to the Embedded Python installation path  and call:<br>
+  `.\python -m pip install pymystem3`
+
 ### FFMPEG: Command-line tool for audio conversion <br>
-* download executable (as zip archive) for Windows from https://ffmpeg.org/download.html
-* unpack into a local directory
+* Download executable (as zip archive) for Windows from<br>
+    https://ffmpeg.org/download.html
+* Unpack into a local directory
     
 ### The [OpenRussian](https://de.openrussian.org/) dictionary as a CSV files <br>
 * Note for prod: this is a delivery part. 
