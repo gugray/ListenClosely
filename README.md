@@ -17,7 +17,7 @@ and save it in the same folder as Python
     `.\python get-pip.py --no-warn-script-location`
 
 ### pymystem3: Russian lemmatizer by Yandex, see https://pypi.org/project/pymystem3/<br>
-* Start the command line and call:<br>
+* By use the standard Python, start the command line and call:<br>
   `pip install pymystem3`
 * By use the Embedded Python, start the command line, navigate to the Embedded Python installation path  and call:<br>
   `.\python -m pip install pymystem3`
@@ -30,7 +30,7 @@ and save it in the same folder as Python
 ### The [OpenRussian](https://de.openrussian.org/) dictionary as a CSV files <br>
 * Note for prod: this is a delivery part. 
 * Note for dev: this ais a project part <br>
-  - Specifically, the following files are needed in `_materials\openrussian`:
+  - Specifically, the following files are needed in `_materials\openrussian`:<br>
     - `words.csv`
     - `translations.csv`
   - TODO: download description
