@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{1C25
 		Scripts\deverbs.py = Scripts\deverbs.py
 		Scripts\enlem.py = Scripts\enlem.py
 		Scripts\from-mp3.cmd = Scripts\from-mp3.cmd
+		Scripts\install.cmd = Scripts\install.cmd
 		Scripts\rulem.py = Scripts\rulem.py
 	EndProjectSection
 EndProject
@@ -28,6 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSTranscriber", "MSTranscri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleTranscriber", "GoogleTranscriber\GoogleTranscriber.csproj", "{EB00761F-0A8F-40C2-B1F3-34D680C873FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{0AF8D1DA-2BFB-44DD-BFCF-5269ACCFF0F6}"
+	ProjectSection(SolutionItems) = preProject
+		Samples\ListenClosely.ini.sample = Samples\ListenClosely.ini.sample
+		Samples\ru-custom.txt.sample = Samples\ru-custom.txt.sample
+		Samples\run_configuration.sample = Samples\run_configuration.sample
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,15 +50,16 @@ Global
 		{423A53F7-4649-4404-8725-93940CD533E4}.Debug|x64.Build.0 = Debug|Any CPU
 		{423A53F7-4649-4404-8725-93940CD533E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{423A53F7-4649-4404-8725-93940CD533E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.ActiveCfg = Release|x64
-		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.Build.0 = Release|x64
+		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.ActiveCfg = Release|Any CPU
+		{423A53F7-4649-4404-8725-93940CD533E4}.Release|x64.Build.0 = Release|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|Any CPU.ActiveCfg = Release|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Debug|x64.Build.0 = Debug|Any CPU
 		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.ActiveCfg = Release|x64
-		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.Build.0 = Release|x64
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.ActiveCfg = Release|Any CPU
+		{2022F9D4-6B43-49F8-84E3-CFC195CFC247}.Release|x64.Build.0 = Release|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5B087D7-2790-4082-80B9-00038DDC1F64}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -64,6 +73,7 @@ Global
 		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Debug|x64.Build.0 = Debug|Any CPU
 		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|x64.ActiveCfg = Release|Any CPU
 		{66106E5B-0CB8-40E9-A09B-C795C991AE50}.Release|x64.Build.0 = Release|Any CPU
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Debug|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,6 +81,7 @@ Global
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Debug|x64.Build.0 = Debug|Any CPU
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Release|x64.ActiveCfg = Release|Any CPU
 		{EB00761F-0A8F-40C2-B1F3-34D680C873FA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
