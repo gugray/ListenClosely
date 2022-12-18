@@ -7,19 +7,22 @@ using Google.Cloud.Speech.V1;
 using Google.Cloud.Storage.V1;
 using Google.Apis.Storage.v1.Data;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace GoogleTranscriber
 {
     public class GoogleTranscriber
     {
-        const string projectId = "sylvan-road-817";
-        const string bucketName = "sylvan-road-817-speech-bucket";
-        const string objName = "recog-shite-object";
-        readonly string fnCredential;
+        private readonly string projectId;
+        private readonly string bucketName;
+        private readonly string fnCredential;
+        readonly static string OBJ_NAME = "recog-shite-object";
 
-        public GoogleTranscriber(string fnCredential)
+        public GoogleTranscriber(string fnCredential, string projectId, string bucketName)
         {
             this.fnCredential = fnCredential;
+            this.projectId = projectId;
+            this.bucketName = bucketName;
         }
 
         public void Transcribe(string fnAudio, string langCode, string fnOut)
@@ -29,28 +32,39 @@ namespace GoogleTranscriber
             Bucket bucket = null;
             try
             {
-                sc = StorageClient.Create(GoogleCredential.FromFile(fnCredential));
+                GoogleCredential cred = GoogleCredential.FromFile(fnCredential);
+                sc = StorageClient.Create(cred);
                 // Get out bucket, create on demand
-                var buckets = sc.ListBuckets(projectId);
-                foreach (var x in buckets) if (x.Name == bucketName) bucket = x;
-                if (bucket == null) bucket = sc.CreateBucket(projectId, bucketName);
+                var buckets = sc.ListBuckets(this.projectId);
+                if(buckets.Count() > 0)
+                {
+                    foreach (var x in buckets)
+                    {
+                        if (x.Name == this.bucketName)
+                        {
+                            bucket = x;
+                            break;
+                        }
+                    }
+                }
+                if (bucket == null) bucket = sc.CreateBucket(this.projectId, this.bucketName);
                 // Kill all existing objects
-                var objs = sc.ListObjects(bucketName);
+                var objs = sc.ListObjects(this.bucketName);
                 foreach (var x in objs) sc.DeleteObject(x);
                 // Upload the damned thing
                 using (var f = File.OpenRead(fnAudio))
                 {
-                    sc.UploadObject(bucketName, objName, null, f);
+                    sc.UploadObject(this.bucketName, OBJ_NAME, null, f);
                 }
                 // NOW RECOGNIZE
-                transcribeFromObject("gs://" + bucketName + "/" + objName, langCode, fnOut);
+                transcribeFromObject("gs://" + this.bucketName + "/" + OBJ_NAME, langCode, fnOut);
             }
             finally
             {
                 // Delete all objects in bucket
                 if (bucket != null)
                 {
-                    var objs = sc.ListObjects(bucketName);
+                    var objs = sc.ListObjects(this.bucketName);
                     foreach (var x in objs) sc.DeleteObject(x);
                 }
                 // Adios storage jerk

@@ -59,7 +59,10 @@ namespace Tool
 
         // set by INI
         private static string GOOGLE_API_KEY_PATH;
+        private static string GOOGLE_API_PROJECT_ID;
+        private static string GOOGLE_API_BUCKET_NAME;
         private static string FFMPEG_PATH;
+        private static string PYTHON_PATH;
 
 
         // set by properties file
@@ -368,6 +371,12 @@ namespace Tool
         {
             Console.WriteLine("Read the INI file...");
 
+            GOOGLE_API_KEY_PATH = null;
+            GOOGLE_API_PROJECT_ID = null;
+            GOOGLE_API_BUCKET_NAME = null;
+            FFMPEG_PATH = null;
+            PYTHON_PATH = null;
+
             string dirPath = toAbsolutePath(".");
             try
             {
@@ -380,8 +389,12 @@ namespace Tool
                 );
                 configProvider.Load();
 
-                configProvider.TryGet("Tool:GoogleAppiKeyPath", out GOOGLE_API_KEY_PATH);
                 configProvider.TryGet("Tool:FFmpegPath", out FFMPEG_PATH);
+                configProvider.TryGet("Tool:PythonPath", out PYTHON_PATH);
+
+                configProvider.TryGet("Google:GoogleAppiKeyPath", out GOOGLE_API_KEY_PATH);
+                configProvider.TryGet("Google:GoogleAppiProjectId", out GOOGLE_API_PROJECT_ID);
+                configProvider.TryGet("Google:GoogleAppiBucketName", out GOOGLE_API_BUCKET_NAME);
             }
             catch (Exception e)
             {
@@ -435,11 +448,19 @@ namespace Tool
             {
                 if (GOOGLE_API_KEY_PATH == null)
                 {
-                    throw new InvalidDataException("The mandatory configuration for Google API is missing in the file'" + INI_FILE + "'");
+                    throw new InvalidDataException("The mandatory configuration for Google API Key 'GoogleAppiKeyPath' is missing in the file'" + INI_FILE + "'");
                 }
                 else if (!File.Exists(GOOGLE_API_KEY_PATH))
                 {
                     throw new FileNotFoundException("File not found: '" + toAbsolutePath(GOOGLE_API_KEY_PATH) + "'");
+                }
+                else if (GOOGLE_API_PROJECT_ID == null)
+                {
+                    throw new InvalidProgramException("The mandatory configuration for GoogleAppiProjectId is missing in the file'" + INI_FILE + "'");
+                }
+                else if (GOOGLE_API_BUCKET_NAME == null)
+                {
+                    throw new InvalidProgramException("The mandatory configuration for GoogleAppiBucketName is missing in the file'" + INI_FILE + "'");
                 }
             }
             // Pre-check for MS API ... - ?
@@ -454,7 +475,7 @@ namespace Tool
             {
                 if (FFMPEG_PATH == null)
                 {
-                    throw new InvalidDataException("The mandatory configuration for FFmpeg tool is missing in the file'" + INI_FILE + "'");
+                    throw new InvalidDataException("The mandatory configuration for FFmpeg tool path 'FFmpegPath' is missing in the file'" + INI_FILE + "'");
                 }
                 else 
                 {
@@ -794,6 +815,20 @@ namespace Tool
          */
         private static void callLemmatizer()
         {
+
+            if (PYTHON_PATH != null)
+            {
+                PYTHON_PATH = toAbsolutePath(PYTHON_PATH);
+                if (!File.Exists(PYTHON_PATH))
+                {
+                    throw new FileNotFoundException("File not found: '" + PYTHON_PATH + "'");
+                }
+            }
+            else
+            {
+                PYTHON_PATH = "python";
+            }
+
             // Pre-check if the input file exists
             if (!File.Exists(PLAIN_FILE_PATH))
             {
@@ -808,7 +843,8 @@ namespace Tool
             try
             {
                 // Option overwrite
-                callProcess("Python based Yandex lemmatizer", "python", "\"" + RULEM_PY_PATH + "\"", false);
+                callProcess("Python based Yandex lemmatizer", "\"" + PYTHON_PATH + "\"", 
+                    "\"" + RULEM_PY_PATH + "\"", false);
             }
             finally
             {
@@ -847,7 +883,7 @@ namespace Tool
 
                 // If transcription is missing, get it now
                 // Transcribe text with Google engine
-                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber(GOOGLE_API_KEY_PATH);
+                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber(GOOGLE_API_KEY_PATH, GOOGLE_API_PROJECT_ID, GOOGLE_API_BUCKET_NAME);
                 gt.Transcribe(FLAC_FILE_PATH, "ru", GOOGLE_JSON_FILE_PATH); // ? "../_work/" + abbreviation + "-conv-goog.json"
 
                 // Set title, serialize
@@ -924,7 +960,7 @@ namespace Tool
 
         private static void callProcess(string processName, string fileName, string args, bool skipStdErr)
         {
-            Console.WriteLine("Execute the " + processName + " call: '" + fileName + " " + string.Join(" ", args) + "'");
+            Console.WriteLine("Execute the " + processName + " by call: '" + fileName + " " + string.Join(" ", args) + "'");
 
             ProcessStartInfo start = new ProcessStartInfo();
             // start.EnvironmentVariables.Add("pymystem3.constants.MYSTEM_BIN", toAbsolutePath(SCRIPTS_DIR_PATH));
@@ -1123,6 +1159,7 @@ namespace Tool
         
         static void Main(string[] args)
         {
+            args = new string[] { "C:\\Tools\\Test\\_runs\\AHM_DANTE.txt" };
             try
             {
                 setUp(args);

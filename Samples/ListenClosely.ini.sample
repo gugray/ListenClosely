@@ -1,6 +1,19 @@
 ; INI file for ListenClosely tool
 [Tool]
-; Provide the full path to ServiceAccountKey.json
-GoogleAppiKeyPath = 
 ; Provide the full path to ffmpeg.exe
+; Mandatory
 FFmpegPath = 
+; Provide the full path to python
+; Optional (if not set, the system installation will be used)
+PythonPath =
+
+[Google]
+; Provide the full path to ServiceAccountKey.json
+; Mandatory
+GoogleAppiKeyPath = 
+; Provide the Google project ID
+; Mandatory
+GoogleAppiProjectId =
+; Provide the Google bucket name
+; Mandatory
+GoogleAppiBucketName =
