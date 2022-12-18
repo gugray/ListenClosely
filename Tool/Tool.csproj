@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Clean;Build">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -60,5 +60,23 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>-->
+
+	<Target Name="CompozeDelivery" AfterTargets="Publish">
+		<Exec Command="
+@echo -------------------- Execute tasks after publish of $(AssemblyName) in $(MSBuildProjectDirectory)\$(PublishDir)
+cd /d $(MSBuildProjectDirectory)\$(PublishDir)\
+rmdir /S /Q .\$(AssemblyName)
+mkdir .\$(AssemblyName)
+move  .\$(AssemblyName).exe .\$(AssemblyName)\
+mkdir .\$(AssemblyName)\_work
+mkdir .\$(AssemblyName)\_audio
+mkdir .\$(AssemblyName)\_out
+mkdir .\$(AssemblyName)\_samples
+copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples
+del $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
+powershell Compress-Archive .\$(AssemblyName)\* $(AssemblyName).zip
+echo READY ARCHIVE $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
+        " />
+	</Target>	
 
 </Project>
