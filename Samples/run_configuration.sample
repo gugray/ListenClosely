@@ -24,7 +24,7 @@
 
 ################################################
 # The audio input file format; 
-# currently supported only WAV and MP3
+# currently supported only WAV and MP3, mandatory
 ################################################
 #audioFormat=WAV
 

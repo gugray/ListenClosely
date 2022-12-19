@@ -13,7 +13,7 @@ PythonPath =
 GoogleAppiKeyPath = 
 ; Provide the Google project ID
 ; Mandatory
-GoogleAppiProjectId =
+GoogleAppiProjectId = 
 ; Provide the Google bucket name
 ; Mandatory
-GoogleAppiBucketName =
+GoogleAppiBucketName = 
