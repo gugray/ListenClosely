@@ -6,6 +6,12 @@
 #abbreviation=TST_1
 
 ################################################
+# The audio input file format; 
+# currently supported only WAV and MP3, mandatory
+################################################
+#audioFormat=WAV
+
+################################################
 # The work title, which will be displayed on 
 # the page, mandatory
 ################################################
@@ -21,12 +27,6 @@
 # The path to the custom dictionary, optional
 ################################################
 #customDicPath=.\_materials\ru-custom.txt
-
-################################################
-# The audio input file format; 
-# currently supported only WAV and MP3, mandatory
-################################################
-#audioFormat=WAV
 
 ################################################
 # The flag for mark main text as verses 
