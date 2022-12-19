@@ -57,8 +57,10 @@ mkdir .\$(AssemblyName)\_work
 mkdir .\$(AssemblyName)\_audio
 mkdir .\$(AssemblyName)\_out
 mkdir .\$(AssemblyName)\_samples
+mkdir .\$(AssemblyName)\_materials
 copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples
 copy  $(MSBuildProjectDirectory)\..\Scripts\install.cmd .\$(AssemblyName)
+xcopy /S $(MSBuildProjectDirectory)\..\_materials .\$(AssemblyName)\_materials
 del   $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
 powershell Compress-Archive .\$(AssemblyName)\* $(AssemblyName).zip
 echo READY ARCHIVE $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
