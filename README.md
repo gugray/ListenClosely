@@ -4,7 +4,7 @@
 * Download Python 3 installer from https://www.python.org/downloads/windows/
 * Process the Python 3 installation. During the installation, approve the installation of pip tool. Also, approve adding python to Windows system environment variables.
 
-### Altarnavive: Embedded Python 3 (portable) instalation
+### Alternative: Embedded Python 3 (portable) instalation
 * Download Embedded Python file python-3.10.0-embed-amd64.zip from<br>
     https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-amd64.zip
 * Unpack the Zip, e.g. under ./_tools/python-3.10.0-embed-amd64
@@ -210,7 +210,7 @@ By apply the custom changes, follow the instructions in the file.
         quality of input audio file).
         For support, contact the dev team, provide the [ABBR]-segs.json file.
         Mainly, in this file: for each JSON sub element in the "segments" 
-        session, following mathes are expected:
+        section, following mathes are expected:
             - "startSec" - same as ("startSec" + "lengthSec") of the previous 
               element;
             - "lengthSec" - in the common case, is > 0 (except the empty lines)
