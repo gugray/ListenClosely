@@ -1,11 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Ini;
+﻿using Microsoft.Extensions.Configuration.Ini;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using File = System.IO.File;
@@ -14,6 +10,7 @@ namespace Tool
 {
     class Program
     {
+
         private const string APP_VERSION = "1.0.1";
         private const string APP_NAME = "ListenClosely";
 
@@ -413,15 +410,12 @@ namespace Tool
 
         private static void checkHelpRequest(string[] args)
         {
-            if(args.Length > 0)
+            if(args.Length == 0 || "/?" == args[0] || "-h" == args[0].ToLower() || "--help" == args[0].ToLower())
             {
-                if("/?" == args[0] || "-h" == args[0].ToLower() || "--help" == args[0].ToLower())
-                {
-                    Console.WriteLine(APP_NAME + " : v. " + APP_VERSION);
-                    Console.WriteLine("Call:");
-                    Console.WriteLine("ListenClosely.exe <path to the run file>");
-                    System.Environment.Exit(0);
-                }
+                Console.WriteLine(APP_NAME + " : v. " + APP_VERSION);
+                Console.WriteLine("Call:");
+                Console.WriteLine("ListenClosely.exe <path to the run file>");
+                System.Environment.Exit(0);
             }
         }
 
