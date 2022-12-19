@@ -8,6 +8,7 @@ SET FFMPEG_ZIP_FILENAME=ffmpeg-master-latest-win64-gpl-shared.zip
 SET PYTHON_DOWNLOAD_URL=https://www.python.org/ftp/python/3.10.0/%PYTHON_ZIP_FILENAME%
 SET PIP_DOWNLOAD_URL=https://bootstrap.pypa.io/%PIP_FILENAME%
 SET FFMPEG_DOWNLOAD_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/%FFMPEG_ZIP_FILENAME%
+SET GOOGLE_API_KEY_FILENAME=Intorussian.json
 
 echo Install the ListenClosely Tool into %CURDIR%...
 
@@ -158,12 +159,19 @@ powershell -Command ^
     "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiProjectId =', 'GoogleAppiProjectId = listenclosely' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
 powershell -Command ^
     "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiBucketName =', 'GoogleAppiBucketName = rulit' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+powershell -Command ^
+    "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiKeyPath =', 'GoogleAppiKeyPath = %CURDIR%\%GOOGLE_API_KEY_FILENAME%' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
 
 rem move from _tmp for be able to delete it
 cd /D "%CURDIR%"
 
 echo Delete the directory %CURDIR%\_tmp...
 rmdir /S /Q "%CURDIR%\_tmp"
+
+if not exist "%CURDIR%\%GOOGLE_API_KEY_FILENAME%" (
+    echo THE MISSING MANDATORY FILE "%CURDIR%\%GOOGLE_API_KEY_FILENAME%" MUST BE INSTALLED !!!
+)
+
 
 :ERR
 rem always move to the installation path
