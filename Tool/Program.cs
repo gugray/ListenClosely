@@ -14,6 +14,9 @@ namespace Tool
 {
     class Program
     {
+        private const string APP_VERSION = "1.0.1";
+        private const string APP_NAME = "ListenClosely";
+
         // Installation parts
         private const string WORK_DIR_PATH = "./_work";
         private const string AUDIO_DIR_PATH = "./_audio";
@@ -111,6 +114,8 @@ namespace Tool
         private static void setUp(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            checkHelpRequest(args);
 
             checkEnvironments();
 
@@ -403,6 +408,21 @@ namespace Tool
 
             // Hard coded at the mionemt
             SPEECH_API = GOOGLE_API;
+        }
+
+
+        private static void checkHelpRequest(string[] args)
+        {
+            if(args.Length > 0)
+            {
+                if("/?" == args[0] || "-h" == args[0].ToLower() || "--help" == args[0].ToLower())
+                {
+                    Console.WriteLine(APP_NAME + " : v. " + APP_VERSION);
+                    Console.WriteLine("Call:");
+                    Console.WriteLine("ListenClosely.exe <path to the run file>");
+                    System.Environment.Exit(0);
+                }
+            }
         }
 
         private static void checkEnvironments()
@@ -1159,7 +1179,6 @@ namespace Tool
         
         static void Main(string[] args)
         {
-            args = new string[] { "C:\\Tools\\Test\\_runs\\AHM_DANTE.txt" };
             try
             {
                 setUp(args);
