@@ -23,16 +23,25 @@ if not exist "%CURDIR%\_work" (
     echo Install the directory %CURDIR%\_work...
     mkdir "%CURDIR%\_work"
 )
+if not exist "%CURDIR%\_audio" (
+    rem prepare the _audio directory
+    echo Install the directory %CURDIR%\_audio...
+    mkdir "%CURDIR%\_audio"
+)
 if not exist "%CURDIR%\_runs" (
     rem prepare the _runs directory
     echo Install the directory %CURDIR%\_runs...
     mkdir "%CURDIR%\_runs"
 )
-
+if not exist "%CURDIR%\_out" (
+    rem prepare the _out directory
+    mkdir "%CURDIR%\_out"
+)
 if not exist "%CURDIR%\_tmp" (
     rem prepare the temporary directory
     mkdir "%CURDIR%\_tmp"
 )
+
 
 cd /d "%CURDIR%\_tmp"
 

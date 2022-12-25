@@ -53,9 +53,6 @@ cd /d $(MSBuildProjectDirectory)\$(PublishDir)\
 rmdir /S /Q .\$(AssemblyName)
 mkdir .\$(AssemblyName)
 move  .\$(AssemblyName).exe .\$(AssemblyName)\
-mkdir .\$(AssemblyName)\_work
-mkdir .\$(AssemblyName)\_audio
-mkdir .\$(AssemblyName)\_out
 mkdir .\$(AssemblyName)\_samples
 mkdir .\$(AssemblyName)\_materials
 copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples
