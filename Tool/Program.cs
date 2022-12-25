@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration.Ini;
 using Microsoft.Extensions.FileProviders;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -37,72 +38,135 @@ namespace Tool
         private const string AUDIO_MP3 = "MP3";
         private const string AUDIO_WAV = "WAV";
 
+        // keys to be read from the run properties file
+        private const string PROP_KEY_ABBREVIATION = "abbreviation";
+        private const string PROP_KEY_CUSTOM_DIC = "customDicPath";
+        private const string PROP_KEY_SPEECH_API_OFOS = "speechApiOutFileOverrideStrategy";
+        private const string PROP_KEY_LEMMATIZING_OFOS = "lemmatizingOutFileOverrideStrategy";
+        private const string PROP_KEY_FFMPEG_OFOS = "ffmpegOutFileOverrideStrategy";
+        private const string PROP_KEY_SEGMENTS_OFOS = "segmentsOutFileOverrideStrategy";
+        private const string PROP_KEY_POST_LEMMATIZING_OFOS = "postLemmatizingStrategy";
+        private const string PROP_KEY_TITLE = "title";
+        private const string PROP_KEY_AUDIO_FORMAT = "audioFormat";
+        private const string PROP_KEY_SHIFT_TITLE_LINES = "shiftTitleLines";
+        private const string PROP_KEY_TEMPO_CORRECTION = "tempoCorrection";
+        private const string PROP_KEY_SHIFT = "shift";
+        private const string PROP_KEY_VERSES = "verses";
+
+        // argument keys which can be passed into the program by call
+        // in the format: <--long_key:value> or: <-short_key:value>
+        private const string ARG_KEY_ABBREVIATION_LONG = "--abbreviation:";
+        private const string ARG_KEY_ABBREVIATION_SHORT = "-a:";
+
+        private const string ARG_KEY_CUSTOM_DIC_LONG = "--customDicPath:";
+        private const string ARG_KEY_CUSTOM_DIC_SHORT = "-d:";
+
+        private const string ARG_KEY_SPEECH_API_OFOS_LONG = "--speechApiOutFileOverrideStrategy:";
+        private const string ARG_KEY_SPEECH_API_OFOS_SHORT = "-sos:";
+
+        private const string ARG_KEY_LEMMATIZING_OFOS_LONG = "--lemmatizingOutFileOverrideStrategy:";
+        private const string ARG_KEY_LEMMATIZING_OFOS_SHORT = "-los:";
+
+        private const string ARG_KEY_FFMPEG_OFOS_LONG = "--ffmpegOutFileOverrideStrategy:";
+        private const string ARG_KEY_FFMPEG_OFOS_SHORT = "-fos:";
+
+        private const string ARG_KEY_SEGMENTS_OFOS_LONG = "--segmentsOutFileOverrideStrategy:";
+        private const string ARG_KEY_SEGMENTS_OFOS_SHORT = "-soos:";
+
+        private const string ARG_KEY_POST_LEMMATIZING_OFOS_LONG = "--postLemmatizingStrategy:";
+        private const string ARG_KEY_POST_LEMMATIZING_OFOS_SHORT = "-plos:";
+
+        private const string ARG_KEY_TITLE_LONG = "--title:";
+        private const string ARG_KEY_TITLE_SHORT = "-t:";
+
+        private const string ARG_KEY_AUDIO_FORMAT_LONG = "--audioFormat:";
+        private const string ARG_KEY_AUDIO_FORMAT_SHORT = "-af:";
+
+        private const string ARG_KEY_SHIFT_TITLE_LINES_LONG = "--shiftTitleLines:";
+        private const string ARG_KEY_SHIFT_TITLE_LINES_SHORT = "-stl:";
+
+        private const string ARG_KEY_TEMPO_CORRECTION_LONG = "--tempoCorrection:";
+        private const string ARG_KEY_TEMPO_CORRECTION__SHORT = "-tc:";
+
+        private const string ARG_KEY_SHIFT_LONG = "--shift:";
+        private const string ARG_KEY_SHIFT_SHORT = "-sh:";
+
+        private const string ARG_KEY_VERSES_LONG = "--verses:";
+        private const string ARG_KEY_VERSES_SHORT = "-v:";
+
+        private const string ARG_KEY_PROPERTIES_FILE_LONG = "--propertiesFilePath:";
+        private const string ARG_KEY_PROPERTIES_FILE_SHORT = "-p:";
+
+        private const string ARG_KEY_HELP_LONG = "--help";
+        private const string ARG_KEY_HELP_SHORT = "-h";
+        private const string ARG_KEY_HELP_WIN = "/?";
+
         // Which entries from RuWiki have to be read
-        private static string[] RU_WIKI_LANGUAGES = new string[] { "it", "es", "fr", "de" };
+        private static string[] s_ruWikiLanguages = new string[] { "it", "es", "fr", "de" };
 
         // internal set
-        private static string ORIG_FILE_PATH;
-        private static string PLAIN_FILE_PATH;
-        private static string LEMS_FILE_PATH;
-        private static string ADD_PAR_FILE_PATH;
-        private static string GOOGLE_JSON_FILE_PATH;
-        private static string GOOGLE_TRANS_JSON_FILE_PATH;
-        private static string MS_TRANS_JSON_FILE_PATH;
-        private static string MS_CONV_JSON_FILE_PATH;
-        private static string SEGS_FILE_PATH;
-        private static string FLAC_FILE_PATH;
-        private static string WEBM_FILE_PATH;
-        private static string M4A_FILE_PATH;
-        private static string AUDIO_IN_FILE_PATH;
+        private static string s_origFilePath;
+        private static string s_plainFilePath;
+        private static string s_lemsFilePath;
+        private static string s_addParFilePath;
+        private static string s_googleJsonFilePath;
+        private static string s_gooleTransJsonFilePath;
+        private static string s_msTransJsonFilePath;
+        private static string s_msConvJsonFilePath;
+        private static string s_segsFilePath;
+        private static string s_flacFilePath;
+        private static string s_webmFilePath;
+        private static string s_m4aFilePath;
+        private static string s_audioInFilePath;
 
-        private static string SPEECH_API; // MS/Google
+        private static string s_speechApi; // MS/Google
 
         // set by INI
-        private static string GOOGLE_API_KEY_PATH;
-        private static string GOOGLE_API_PROJECT_ID;
-        private static string GOOGLE_API_BUCKET_NAME;
-        private static string FFMPEG_PATH;
-        private static string PYTHON_PATH;
+        private static string s_googleApiKeyPath;
+        private static string s_gooleApiProjectId;
+        private static string s_googleApiBucketName;
+        private static string s_ffmpegPath;
+        private static string s_pythonPath;
 
 
         // set by properties file
         // Abbreviated name of the work data, mandatory
-        private static string ABBREVIATION;
+        private static string s_abbreviation;
         // The path to the custom dictionary (nullable)
-        private static string CUSTOM_DIC_PATH;
+        private static string s_customDicPath;
         // The work title, which will be displayed on the page, mandatory
-        private static string TITLE;
+        private static string s_title;
         // The audio input file format; currently supported only WAV and MP3
-        private static string AUDIO_FORMAT;
+        private static string s_audioFormat;
         // The first X lines which will be marked as title lines of the text
         // default 0
-        private static int SHIFT_TITLE_LINES; 
+        private static int s_shiftTitleLines;
         // The value to shift the segments timestamps
         // default 0.0
-        private static decimal SHIFT; 
+        private static decimal s_shift;
         // The value for tempo correction(0 if not required)
         // default 0.0
-        private static double TEMPO_CORRECTION; 
+        private static double s_tempoCorrection;
         // The flag for mark main text as verses lines
         // default false
-        private static bool VERSES; 
+        private static bool s_verses;
         // if a speech recognition file found as created by previous run:
         // break / skip [default] / backup / overwrite
-        private static string SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY;
+        private static string s_speechApiOutFileOverrideStrategy;
         // if a lemmatization file found as created by previous run:
         // break / skip [default] / backup / overwrite
-        private static string LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY;
+        private static string s_lemmatizingOutFileIOverrideStrategy;
         // if a FLAC file found as created by previous run:
         // break / skip [default] / backup / overwrite
-        private static string FFMPEG_OUT_FILE_OVERRIDE_STRATEGY;
+        private static string s_ffmpegOutFileOverrideStrategy;
         // if a ready segments output file found as created by previous run:
         // break / skip / backup / overwrite [default]
-        private static string SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY; 
+        private static string s_segmentsOutFileOverrideStrategy;
         // what to do after the lemmatizator did the work:
         // break [default] / process 
-        private static string POST_LEMMATIZING_STRATEGY;
+        private static string s_postLemmatizingStrategy;
 
-        private static string BASE_URL;
+        private static string s_baseUrl;
 
 
         /**
@@ -114,23 +178,23 @@ namespace Tool
 
             checkHelpRequest(args);
 
-            checkEnvironments();
+            checkEnvironment();
 
-            readRunProperties(args);
+            readRunArgs(args);
 
-            ORIG_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-orig.txt");
-            PLAIN_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-plain.txt");
-            LEMS_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-lem.txt");
-            ADD_PAR_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-addpar.txt");
-            GOOGLE_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-conv-goog.json");
-            GOOGLE_TRANS_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-goog.json");
-            MS_TRANS_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-ms.json");
-            MS_CONV_JSON_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-conv-ms.json");
-            SEGS_FILE_PATH = toAbsolutePath(WORK_DIR_PATH + "/" + ABBREVIATION + "-segs.json");
+            s_origFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-orig.txt");
+            s_plainFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-plain.txt");
+            s_lemsFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-lem.txt");
+            s_addParFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-addpar.txt");
+            s_googleJsonFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-conv-goog.json");
+            s_gooleTransJsonFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-goog.json");
+            s_msTransJsonFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-ms.json");
+            s_msConvJsonFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-conv-ms.json");
+            s_segsFilePath = toAbsolutePath(WORK_DIR_PATH + "/" + s_abbreviation + "-segs.json");
 
-            FLAC_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".flac");
-            WEBM_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".webm");
-            M4A_FILE_PATH = toAbsolutePath(AUDIO_DIR_PATH + "/" + ABBREVIATION + ".m4a");
+            s_flacFilePath = toAbsolutePath(AUDIO_DIR_PATH + "/" + s_abbreviation + ".flac");
+            s_webmFilePath = toAbsolutePath(AUDIO_DIR_PATH + "/" + s_abbreviation + ".webm");
+            s_m4aFilePath = toAbsolutePath(AUDIO_DIR_PATH + "/" + s_abbreviation + ".m4a");
 
             readIni();
 
@@ -163,41 +227,253 @@ namespace Tool
         /**
          * Read and validate the run settings from the properties file passed as run argument
          */
-        private static void readRunProperties(string[] args)
+        private static void readRunArgs(string[] args)
         {
             Console.WriteLine("Analyze the call arguments...");
 
-            // At the moment, only the supported processing is to pass a path to properties
-            // file into the application as a single argument
+            // set some default values
+            s_speechApiOutFileOverrideStrategy = SKIP;
+            s_lemmatizingOutFileIOverrideStrategy = SKIP;
+            s_ffmpegOutFileOverrideStrategy = SKIP;
+            s_segmentsOutFileOverrideStrategy = OVERWRITE;
+            s_postLemmatizingStrategy = BREAK;
+            s_shiftTitleLines = 0;
+            s_shift = 0;
+            s_tempoCorrection = 0.0;
+            s_verses = false;
 
-            if (args.Length == 0)
+            s_abbreviation = null;
+            s_customDicPath = null;
+            s_title = null;
+            s_audioFormat = null;
+
+            string readFromFilePath = null;
+            foreach (string a in args)
             {
-                // Print the elp line and finish
-                Console.WriteLine("Please provide a path to the run configuration file");
-                System.Environment.Exit(1);
+                // detect at least one passed argument is pointing to the properties file
+                if (a.StartsWith(ARG_KEY_PROPERTIES_FILE_LONG) ||
+                    a.StartsWith(ARG_KEY_PROPERTIES_FILE_SHORT))
+                {
+                    readFromFilePath = a;
+                    break;
+                }
             }
 
-            string path = args[0];
+            if (readFromFilePath != null)
+            {
+                // read the run properties from a file
+                readRunPropertiesFromFile(readFromFilePath);
+            }
+            else
+            {
+                // read the run properties from arguments
+                List<string> errors = readRunPropertiesFromArgs(args);
+                if(errors.Count > 0)
+                {
+                    // errors detected by call
+                    foreach(string errMsg in errors)
+                    {
+                        // Output into stderr
+                        Console.Error.WriteLine(errMsg);
+                    }
+                    System.Environment.Exit(1);
+                }
+            }
 
+        }
+
+        /**
+         * Read the run configuzration from the passed arguments in format: "-p:<PATH>"
+         */
+        private static List<string> readRunPropertiesFromArgs(string[] args)
+        {
+            Console.WriteLine("Read the run arguments from the command call...");
+
+            // potential error messages collected for frontend
+            List<string> ret = new List<string>();
+
+            foreach (string a in args)
+            {
+                string[] split = a.Split(":");
+                if (split.Length < 2) continue;
+                string key = split[0].Trim();
+                if (key.Length == 0) continue;
+                string[] valueArr = new string[split.Length - 1];
+                Array.Copy(split, 1, valueArr, 0, valueArr.Length);
+                string value = String.Join("", valueArr).Trim();
+                
+                if (value.Length > 0)
+                {
+                    switch (key)
+                    {
+                        case ARG_KEY_ABBREVIATION_LONG:
+                        case ARG_KEY_ABBREVIATION_SHORT:
+                            s_abbreviation = value;
+                            break;
+                        case ARG_KEY_CUSTOM_DIC_LONG:
+                        case ARG_KEY_CUSTOM_DIC_SHORT:
+                            s_customDicPath = value;
+                            break;
+                        case ARG_KEY_SPEECH_API_OFOS_LONG:
+                        case ARG_KEY_SPEECH_API_OFOS_SHORT:
+                            s_speechApiOutFileOverrideStrategy = value.ToUpper();
+                            try
+                            {
+                                checkAllowedValuesBSBO(key, s_speechApiOutFileOverrideStrategy);
+                            }
+                            catch(Exception e)
+                            {
+                                ret.Add(e.Message);
+                            }
+                            break;
+                        case ARG_KEY_LEMMATIZING_OFOS_LONG:
+                        case ARG_KEY_LEMMATIZING_OFOS_SHORT:
+                            s_lemmatizingOutFileIOverrideStrategy = value.ToUpper();
+                            try
+                            {
+                                checkAllowedValuesBSBO(key, s_lemmatizingOutFileIOverrideStrategy);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add(e.Message);
+                            }
+                            break;
+                        case ARG_KEY_FFMPEG_OFOS_LONG:
+                        case ARG_KEY_FFMPEG_OFOS_SHORT:
+                            s_ffmpegOutFileOverrideStrategy = value.ToUpper();
+                            try
+                            {
+                                checkAllowedValuesBSBO(key, s_ffmpegOutFileOverrideStrategy);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add(e.Message);
+                            }
+                            break;
+                        case ARG_KEY_SEGMENTS_OFOS_LONG:
+                        case ARG_KEY_SEGMENTS_OFOS_SHORT:
+                            s_segmentsOutFileOverrideStrategy = value.ToUpper();
+                            try
+                            {
+                                checkAllowedValuesBSBO(key, s_segmentsOutFileOverrideStrategy);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add(e.Message);
+                            }
+                            break;
+                        case ARG_KEY_POST_LEMMATIZING_OFOS_LONG:
+                        case ARG_KEY_POST_LEMMATIZING_OFOS_SHORT:
+                            s_postLemmatizingStrategy = value.ToUpper();
+                            try
+                            {
+                                checkAllowedValuesBP(key, s_postLemmatizingStrategy);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add(e.Message);
+                            }
+                            break;
+                        case ARG_KEY_TITLE_LONG:
+                        case ARG_KEY_TITLE_SHORT:
+                            s_title = value;
+                            break;
+                        case ARG_KEY_AUDIO_FORMAT_LONG:
+                        case ARG_KEY_AUDIO_FORMAT_SHORT:
+                            s_audioFormat = value.ToUpper();
+                            break;
+                        case ARG_KEY_SHIFT_TITLE_LINES_LONG:
+                        case ARG_KEY_SHIFT_TITLE_LINES_SHORT:
+                            try
+                            {
+                                s_shiftTitleLines = int.Parse(value);
+                                if (s_shiftTitleLines < 0)
+                                {
+                                    ret.Add("Cannot read argument '" + key + "' value '" + value + "'. Invalid value");
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add("Cannot read argument '" + key + "' value '" + value + "' as integer: " + e.Message);
+                            }
+                            break;
+                        case ARG_KEY_TEMPO_CORRECTION_LONG:
+                        case ARG_KEY_TEMPO_CORRECTION__SHORT:
+                            try
+                            {
+                                s_tempoCorrection = double.Parse(value);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add("Cannot read argument '" + key + "' value '" + value + "' as double: " + e.Message);
+                            }
+                            break;
+                        case ARG_KEY_SHIFT_LONG:
+                        case ARG_KEY_SHIFT_SHORT:
+                            try
+                            {
+                                s_shift = decimal.Parse(value);
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add("Cannot read argument '" + key + "' value '" + value + "' as decimal: " + e.Message);
+                            }
+                            break;
+                        case ARG_KEY_VERSES_LONG:
+                        case ARG_KEY_VERSES_SHORT:
+                            try
+                            {
+                                s_verses = bool.Parse(value.ToLower());
+                            }
+                            catch (Exception e)
+                            {
+                                ret.Add("Cannot read argument '" + key + "' value '" + value + "' as boolean: " + e.Message);
+                            }
+                            break;
+                    }
+                }
+            }
+
+            if (s_abbreviation == null) ret.Add("The argument '" + ARG_KEY_ABBREVIATION_SHORT + "' or '" + ARG_KEY_ABBREVIATION_LONG + "' is mandatory");
+            if (s_title == null) ret.Add("The argument '" + ARG_KEY_TITLE_SHORT + "' or '" + ARG_KEY_TITLE_LONG + "' is mandatory");
+            if (s_customDicPath != null)
+            {
+                s_customDicPath = toAbsolutePath(s_customDicPath);
+                if (!File.Exists(s_customDicPath))
+                {
+                    ret.Add("File not found: '" + s_customDicPath + "'");
+                }
+            }
+
+            return ret;
+        }
+
+        /**
+         * Read the run configuzration from a file passed as argument in format: "-p:<PATH>"
+         */
+        private static void readRunPropertiesFromFile(string filePath)
+        {
+            Console.WriteLine("Read the run arguments from the properties file...");
+
+            // split for receive the file path
+            string path;
+            if(filePath.StartsWith(ARG_KEY_PROPERTIES_FILE_SHORT))
+            {
+                path = filePath.Substring(ARG_KEY_PROPERTIES_FILE_SHORT.Length);
+            } 
+            else
+            {
+                path = filePath.Substring(ARG_KEY_PROPERTIES_FILE_LONG.Length);
+            }
+            
+            if(path.Length == 0 )
+            {
+                throw new FileNotFoundException("No path to the run property file defined or defined with a blank");
+            }
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException("File not found: '" + toAbsolutePath(path) + "'");
+                throw new FileNotFoundException("File not found: '" + path + "'");
             }
-
-            SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
-            LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
-            FFMPEG_OUT_FILE_OVERRIDE_STRATEGY = SKIP;
-            SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY = OVERWRITE;
-            POST_LEMMATIZING_STRATEGY = BREAK;
-            SHIFT_TITLE_LINES = 0;
-            SHIFT = 0;
-            TEMPO_CORRECTION = 0.0;
-            VERSES = false;
-
-            ABBREVIATION = null;
-            CUSTOM_DIC_PATH = null;
-            TITLE = null;
-            AUDIO_FORMAT = null;
 
             string line;
             using (StreamReader sr = new StreamReader(path))
@@ -215,99 +491,98 @@ namespace Tool
                     Array.Copy(split, 1, valueArr, 0, valueArr.Length);
                     string value = String.Join("", valueArr).Trim();
 
-
                     if (value.Length > 0)
                     {
                         switch (key)
                         {
-                            case "abbreviation":
-                                ABBREVIATION = value;
+                            case PROP_KEY_ABBREVIATION:
+                                s_abbreviation = value;
                                 break;
-                            case "customDicPath":
-                                CUSTOM_DIC_PATH = value;
+                            case PROP_KEY_CUSTOM_DIC:
+                                s_customDicPath = value;
                                 break;
-                            case "speechApiOutFileOverrideStrategy":
-                                SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
-                                checkAllowedValuesBSBO("speechApiOutFileOverrideStrategy", SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY);
+                            case PROP_KEY_SPEECH_API_OFOS:
+                                s_speechApiOutFileOverrideStrategy = value.ToUpper();
+                                checkAllowedValuesBSBO(PROP_KEY_SPEECH_API_OFOS, s_speechApiOutFileOverrideStrategy);
                                 break;
-                            case "lemmatizingOutFileOverrideStrategy":
-                                LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
-                                checkAllowedValuesBSBO("lemmatizingOutFileOverrideStrategy", LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY);
+                            case PROP_KEY_LEMMATIZING_OFOS:
+                                s_lemmatizingOutFileIOverrideStrategy = value.ToUpper();
+                                checkAllowedValuesBSBO(PROP_KEY_LEMMATIZING_OFOS, s_lemmatizingOutFileIOverrideStrategy);
                                 break;
-                            case "ffmpegOutFileOverrideStrategy":
-                                FFMPEG_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
-                                checkAllowedValuesBSBO("ffmpegOutFileOverrideStrategy", FFMPEG_OUT_FILE_OVERRIDE_STRATEGY);
+                            case PROP_KEY_FFMPEG_OFOS:
+                                s_ffmpegOutFileOverrideStrategy = value.ToUpper();
+                                checkAllowedValuesBSBO(PROP_KEY_FFMPEG_OFOS, s_ffmpegOutFileOverrideStrategy);
                                 break;
-                            case "segmentsOutFileOverrideStrategy":
-                                SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY = value.ToUpper();
-                                checkAllowedValuesBSBO("segmentsOutFileOverrideStrategy", SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY);
+                            case PROP_KEY_SEGMENTS_OFOS:
+                                s_segmentsOutFileOverrideStrategy = value.ToUpper();
+                                checkAllowedValuesBSBO(PROP_KEY_SEGMENTS_OFOS, s_segmentsOutFileOverrideStrategy);
                                 break;
-                            case "postLemmatizingStrategy":
-                                POST_LEMMATIZING_STRATEGY = value.ToUpper();
-                                checkAllowedValuesBP("postLemmatizingStrategy", POST_LEMMATIZING_STRATEGY);
+                            case PROP_KEY_POST_LEMMATIZING_OFOS:
+                                s_postLemmatizingStrategy = value.ToUpper();
+                                checkAllowedValuesBP(PROP_KEY_POST_LEMMATIZING_OFOS, s_postLemmatizingStrategy);
                                 break;
-                            case "title":
-                                TITLE = value;
+                            case PROP_KEY_TITLE:
+                                s_title = value;
                                 break;
-                            case "audioFormat":
-                                AUDIO_FORMAT = value.ToUpper();
+                            case PROP_KEY_AUDIO_FORMAT:
+                                s_audioFormat = value.ToUpper();
                                 break;
-                            case "shiftTitleLines":
+                            case PROP_KEY_SHIFT_TITLE_LINES:
                                 try
                                 {
-                                    SHIFT_TITLE_LINES = int.Parse(value);
-                                    if (SHIFT_TITLE_LINES < 0)
+                                    s_shiftTitleLines = int.Parse(value);
+                                    if (s_shiftTitleLines < 0)
                                     {
-                                        throw new InvalidDataException("Cannot read argument 'shiftTitleLines' value '" + value + "'. Invalid value");
+                                        throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + value + "'. Invalid value");
                                     }
                                 }
                                 catch (Exception e)
                                 {
-                                    throw new InvalidDataException("Cannot read argument 'shiftTitleLines' value '" + value + "' as integer", e);
+                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + value + "' as integer", e);
                                 }
                                 break;
-                            case "tempoCorrection":
+                            case PROP_KEY_TEMPO_CORRECTION:
                                 try
                                 {
-                                    TEMPO_CORRECTION = double.Parse(value);
+                                    s_tempoCorrection = double.Parse(value);
                                 }
                                 catch (Exception e)
                                 {
-                                    throw new InvalidDataException("Cannot read argument 'tempoCorrection' value '" + value + "' as double", e);
+                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_TEMPO_CORRECTION + "' value '" + value + "' as double", e);
                                 }
                                 break;
-                            case "shift":
+                            case PROP_KEY_SHIFT:
                                 try
                                 {
-                                    SHIFT = decimal.Parse(value);
+                                    s_shift = decimal.Parse(value);
                                 }
                                 catch (Exception e)
                                 {
-                                    throw new InvalidDataException("Cannot read argument 'shift' value '" + value + "' as decimal", e);
+                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT + "' value '" + value + "' as decimal", e);
                                 }
                                 break;
-                            case "verses":
+                            case PROP_KEY_VERSES:
                                 try
                                 {
-                                    VERSES = bool.Parse(value.ToLower());
+                                    s_verses = bool.Parse(value.ToLower());
                                 }
                                 catch (Exception e)
                                 {
-                                    throw new InvalidDataException("Cannot read argument 'verses' value '" + value + "' as boolean", e);
+                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_VERSES + "' value '" + value + "' as boolean", e);
                                 }
                                 break;
                         }
                     }
                 }
 
-                if (ABBREVIATION == null) throw new InvalidDataException("The argument 'abbreviation' is mandatory");
-                if (TITLE == null) throw new InvalidDataException("The argument 'title' is mandatory");
-                if (CUSTOM_DIC_PATH != null )
+                if (s_abbreviation == null) throw new InvalidDataException("The argument '" + PROP_KEY_ABBREVIATION  + "' is mandatory");
+                if (s_title == null) throw new InvalidDataException("The argument '" + PROP_KEY_TITLE + "' is mandatory");
+                if (s_customDicPath != null)
                 {
-                    CUSTOM_DIC_PATH = toAbsolutePath(CUSTOM_DIC_PATH);
-                    if(!File.Exists(CUSTOM_DIC_PATH))
+                    s_customDicPath = toAbsolutePath(s_customDicPath);
+                    if (!File.Exists(s_customDicPath))
                     {
-                        throw new FileNotFoundException("File not found: '" + CUSTOM_DIC_PATH + "'");
+                        throw new FileNotFoundException("File not found: '" + s_customDicPath + "'");
                     }
                 }
             }
@@ -348,6 +623,7 @@ namespace Tool
             }
         }
 
+
         private static void checkAllowedValuesMW(string key, string value)
         {
             switch (value)
@@ -364,7 +640,6 @@ namespace Tool
             }
         }
 
-
         /**
          * Read and validate the main application settings from the program INI file 'ListenClosely.ini'
          * which is expected in the program installation root
@@ -373,11 +648,11 @@ namespace Tool
         {
             Console.WriteLine("Read the INI file...");
 
-            GOOGLE_API_KEY_PATH = null;
-            GOOGLE_API_PROJECT_ID = null;
-            GOOGLE_API_BUCKET_NAME = null;
-            FFMPEG_PATH = null;
-            PYTHON_PATH = null;
+            s_googleApiKeyPath = null;
+            s_gooleApiProjectId = null;
+            s_googleApiBucketName = null;
+            s_ffmpegPath = null;
+            s_pythonPath = null;
 
             string dirPath = toAbsolutePath(".");
             try
@@ -391,12 +666,12 @@ namespace Tool
                 );
                 configProvider.Load();
 
-                configProvider.TryGet("Tool:FFmpegPath", out FFMPEG_PATH);
-                configProvider.TryGet("Tool:PythonPath", out PYTHON_PATH);
+                configProvider.TryGet("Tool:FFmpegPath", out s_ffmpegPath);
+                configProvider.TryGet("Tool:PythonPath", out s_pythonPath);
 
-                configProvider.TryGet("Google:GoogleAppiKeyPath", out GOOGLE_API_KEY_PATH);
-                configProvider.TryGet("Google:GoogleAppiProjectId", out GOOGLE_API_PROJECT_ID);
-                configProvider.TryGet("Google:GoogleAppiBucketName", out GOOGLE_API_BUCKET_NAME);
+                configProvider.TryGet("Google:GoogleAppiKeyPath", out s_googleApiKeyPath);
+                configProvider.TryGet("Google:GoogleAppiProjectId", out s_gooleApiProjectId);
+                configProvider.TryGet("Google:GoogleAppiBucketName", out s_googleApiBucketName);
             }
             catch (Exception e)
             {
@@ -404,13 +679,28 @@ namespace Tool
             }
 
             // Hard coded at the mionemt
-            SPEECH_API = GOOGLE_API;
+            s_speechApi = GOOGLE_API;
         }
 
 
         private static void checkHelpRequest(string[] args)
         {
-            if(args.Length == 0 || "/?" == args[0] || "-h" == args[0].ToLower() || "--help" == args[0].ToLower())
+            // default
+            bool helpRequested = true;
+            if(args.Length >= 0)
+            {
+                helpRequested = false;
+                foreach (string a in args)
+                {
+                    if (ARG_KEY_HELP_LONG == a || ARG_KEY_HELP_SHORT == a || ARG_KEY_HELP_WIN == a)
+                    {
+                        helpRequested = true;
+                        break;
+                    }
+                }
+            }
+            // no args or the help key detected
+            if(helpRequested)
             {
                 Console.WriteLine(APP_NAME + " : v. " + APP_VERSION);
                 Console.WriteLine("Call:");
@@ -419,7 +709,7 @@ namespace Tool
             }
         }
 
-        private static void checkEnvironments()
+        private static void checkEnvironment()
         {
             Console.WriteLine("Check the environment...");
 
@@ -457,67 +747,67 @@ namespace Tool
             Console.WriteLine("Check the settings...");
 
             // Pre-check if the ServiceAccountKey.json is installed (except: the Google file is already provided and will be reused)
-            if ((SPEECH_API == GOOGLE_API && !File.Exists(GOOGLE_JSON_FILE_PATH)) ||
-               (SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            if ((s_speechApi == GOOGLE_API && !File.Exists(s_googleJsonFilePath)) ||
+               (s_speechApiOutFileOverrideStrategy == BACKUP || s_speechApiOutFileOverrideStrategy == OVERWRITE))
             {
-                if (GOOGLE_API_KEY_PATH == null)
+                if (s_googleApiKeyPath == null)
                 {
                     throw new InvalidDataException("The mandatory configuration for Google API Key 'GoogleAppiKeyPath' is missing in the file'" + INI_FILE + "'");
                 }
-                else if (!File.Exists(GOOGLE_API_KEY_PATH))
+                else if (!File.Exists(s_googleApiKeyPath))
                 {
-                    throw new FileNotFoundException("File not found: '" + toAbsolutePath(GOOGLE_API_KEY_PATH) + "'");
+                    throw new FileNotFoundException("File not found: '" + toAbsolutePath(s_googleApiKeyPath) + "'");
                 }
-                else if (GOOGLE_API_PROJECT_ID == null)
+                else if (s_gooleApiProjectId == null)
                 {
                     throw new InvalidProgramException("The mandatory configuration for GoogleAppiProjectId is missing in the file'" + INI_FILE + "'");
                 }
-                else if (GOOGLE_API_BUCKET_NAME == null)
+                else if (s_googleApiBucketName == null)
                 {
                     throw new InvalidProgramException("The mandatory configuration for GoogleAppiBucketName is missing in the file'" + INI_FILE + "'");
                 }
             }
             // Pre-check for MS API ... - ?
-            else if ((SPEECH_API == MS_API && !File.Exists(MS_CONV_JSON_FILE_PATH)) ||
-                (SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            else if ((s_speechApi == MS_API && !File.Exists(s_msConvJsonFilePath)) ||
+                (s_speechApiOutFileOverrideStrategy == BACKUP || s_speechApiOutFileOverrideStrategy == OVERWRITE))
             {
                 // TODO - check something is required?
             }
 
             // Pre-check if the FFMpeg installation script exists (except: the audio files are already provided and will be reused
-            if (!File.Exists(FLAC_FILE_PATH) || (FFMPEG_OUT_FILE_OVERRIDE_STRATEGY == BACKUP || FFMPEG_OUT_FILE_OVERRIDE_STRATEGY == OVERWRITE))
+            if (!File.Exists(s_flacFilePath) || (s_ffmpegOutFileOverrideStrategy == BACKUP || s_ffmpegOutFileOverrideStrategy == OVERWRITE))
             {
-                if (FFMPEG_PATH == null)
+                if (s_ffmpegPath == null)
                 {
                     throw new InvalidDataException("The mandatory configuration for FFmpeg tool path 'FFmpegPath' is missing in the file'" + INI_FILE + "'");
                 }
                 else 
                 {
-                    FFMPEG_PATH = toAbsolutePath(FFMPEG_PATH);
-                    if (!File.Exists(FFMPEG_PATH))
+                    s_ffmpegPath = toAbsolutePath(s_ffmpegPath);
+                    if (!File.Exists(s_ffmpegPath))
                     {
-                        throw new FileNotFoundException("File not found: '" + FFMPEG_PATH + "'");
+                        throw new FileNotFoundException("File not found: '" + s_ffmpegPath + "'");
                     }
                 }
 
-                if (AUDIO_FORMAT == null) throw new InvalidDataException("The argument 'audioFormat' is mandatory");
-                checkAllowedValuesMW("audioFormat", AUDIO_FORMAT);
+                if (s_audioFormat == null) throw new InvalidDataException("The argument 'audioFormat' is mandatory");
+                checkAllowedValuesMW("audioFormat", s_audioFormat);
 
                 // Pre-check the input audio file exists
                 // Only the formats WAV and MP3 are supported, yet
-                AUDIO_IN_FILE_PATH = AUDIO_DIR_PATH + "/" + ABBREVIATION + ".";
-                if (AUDIO_FORMAT == AUDIO_WAV) AUDIO_IN_FILE_PATH += "wav";
-                else AUDIO_IN_FILE_PATH += "mp3";
-                AUDIO_IN_FILE_PATH = toAbsolutePath(AUDIO_IN_FILE_PATH);
-                if (!File.Exists(AUDIO_IN_FILE_PATH))
+                s_audioInFilePath = AUDIO_DIR_PATH + "/" + s_abbreviation + ".";
+                if (s_audioFormat == AUDIO_WAV) s_audioInFilePath += "wav";
+                else s_audioInFilePath += "mp3";
+                s_audioInFilePath = toAbsolutePath(s_audioInFilePath);
+                if (!File.Exists(s_audioInFilePath))
                 {
-                    throw new FileNotFoundException("File not found: '" + AUDIO_IN_FILE_PATH + "'");
+                    throw new FileNotFoundException("File not found: '" + s_audioInFilePath + "'");
                 }
             }
 
-            if(!File.Exists(ORIG_FILE_PATH))
+            if(!File.Exists(s_origFilePath))
             {
-                throw new FileNotFoundException("File not found: '" + ORIG_FILE_PATH + "'");
+                throw new FileNotFoundException("File not found: '" + s_origFilePath + "'");
             }
         }
 
@@ -549,8 +839,8 @@ namespace Tool
                     sw.WriteLine("import sys");
                     sw.WriteLine("import os");
                     sw.WriteLine("m = Mystem()");
-                    sw.WriteLine("with open(\"" + PLAIN_FILE_PATH + "\", \"r\", encoding=\"utf8\") as f:");
-                    sw.WriteLine("  with open(\"" + LEMS_FILE_PATH + "\", \"w\", encoding=\"utf8\") as g:");
+                    sw.WriteLine("with open(\"" + s_plainFilePath + "\", \"r\", encoding=\"utf8\") as f:");
+                    sw.WriteLine("  with open(\"" + s_lemsFilePath + "\", \"w\", encoding=\"utf8\") as g:");
                     sw.WriteLine("    for line in f:");
                     sw.WriteLine("      lemmas = m.lemmatize(line)");
                     sw.WriteLine("      lemmasStr = ''.join(lemmas)");
@@ -595,7 +885,7 @@ namespace Tool
         {
             foreach (var segm in mat.Segments)
             {
-                if (segm.StartSec > 0) segm.StartSec += SHIFT;
+                if (segm.StartSec > 0) segm.StartSec += s_shift;
             }
         }
 
@@ -609,12 +899,12 @@ namespace Tool
         {
             foreach (var segm in mat.Segments)
             {
-                segm.StartSec = (decimal)((double)segm.StartSec * TEMPO_CORRECTION);
-                segm.LengthSec = (decimal)((double)segm.LengthSec * TEMPO_CORRECTION);
+                segm.StartSec = (decimal)((double)segm.StartSec * s_tempoCorrection);
+                segm.LengthSec = (decimal)((double)segm.LengthSec * s_tempoCorrection);
                 foreach (var wd in segm.Words)
                 {
-                    wd.StartSec = (decimal)((double)segm.StartSec * TEMPO_CORRECTION);
-                    wd.LengthSec = (decimal)((double)wd.LengthSec * TEMPO_CORRECTION);
+                    wd.StartSec = (decimal)((double)segm.StartSec * s_tempoCorrection);
+                    wd.LengthSec = (decimal)((double)wd.LengthSec * s_tempoCorrection);
                 }
             }
         }
@@ -700,7 +990,7 @@ namespace Tool
          */
         private static void shiftTitleSegments(Material mat)
         {
-            shiftSegments(mat, SHIFT_TITLE_LINES, true);
+            shiftSegments(mat, s_shiftTitleLines, true);
         }
 
         /**
@@ -723,7 +1013,7 @@ namespace Tool
          */
         private static void shiftAdditionalParas(Material mat)
         {
-            if (!File.Exists(ADD_PAR_FILE_PATH))
+            if (!File.Exists(s_addParFilePath))
             {
                 return;
             }
@@ -731,7 +1021,7 @@ namespace Tool
             AdditionalLines addPars = new AdditionalLines();
 
             String line;
-            using (StreamReader sr = new StreamReader(ADD_PAR_FILE_PATH))
+            using (StreamReader sr = new StreamReader(s_addParFilePath))
             {
                 while ((line = sr.ReadLine()) != null)
                 {
@@ -751,7 +1041,7 @@ namespace Tool
             {
                 AdditionalLines.AdditionalLine al = addPars.Lines[i];
                 int addPar = al.Idx;
-                if (SHIFT_TITLE_LINES > 0) addPar++;
+                if (s_shiftTitleLines > 0) addPar++;
                 addPar += i;
 
                 shiftSegments(mat, addPar, al.HiddenText, false);
@@ -790,10 +1080,10 @@ namespace Tool
         */
         private static void saveSegmentsFile(Material mOrig)
         {
-            if (saveByStrategy(SEGS_FILE_PATH, SEGMENTS_OUT_FILE_OVERRIDE_STRATEGY))
+            if (saveByStrategy(s_segsFilePath, s_segmentsOutFileOverrideStrategy))
             {
-                Console.WriteLine("Save the segments file '" + SEGS_FILE_PATH + "'...");
-                mOrig.SaveJson(SEGS_FILE_PATH);
+                Console.WriteLine("Save the segments file '" + s_segsFilePath + "'...");
+                mOrig.SaveJson(s_segsFilePath);
             }
         }
 
@@ -802,24 +1092,24 @@ namespace Tool
          */
         private static void distibuteFiles()
         {
-            copyFile(WEBM_FILE_PATH, false, true);
-            copyFile(M4A_FILE_PATH, false, true);
-            copyFile(SEGS_FILE_PATH, false, true);
+            copyFile(s_webmFilePath, false, true);
+            copyFile(s_m4aFilePath, false, true);
+            copyFile(s_segsFilePath, false, true);
         }
 
         private static void printInfoForPublish()
         {
-            Console.WriteLine("<!-- DOWNLOAD FILE ENTRIES FOR: " + TITLE + " -->");
+            Console.WriteLine("<!-- DOWNLOAD FILE ENTRIES FOR: " + s_title + " -->");
 
-            Console.WriteLine("<b>" + TITLE + "</b>");
-            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + "-segs.json\">JSON</a>");
-            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + ".m4a\">M4A</a>");
-            Console.WriteLine("<a href = \"" + BASE_URL + "/media/" + ABBREVIATION + ".webm\">WEBM</a>");
+            Console.WriteLine("<b>" + s_title + "</b>");
+            Console.WriteLine("<a href = \"" + s_baseUrl + "/media/" + s_abbreviation + "-segs.json\">JSON</a>");
+            Console.WriteLine("<a href = \"" + s_baseUrl + "/media/" + s_abbreviation + ".m4a\">M4A</a>");
+            Console.WriteLine("<a href = \"" + s_baseUrl + "/media/" + s_abbreviation + ".webm\">WEBM</a>");
 
-            Console.WriteLine("<!-- INDEX ENTRY FOR: " + TITLE + " -->");
+            Console.WriteLine("<!-- INDEX ENTRY FOR: " + s_title + " -->");
 
             Console.WriteLine("<li class=\"title\">");
-            Console.WriteLine("<a href=\"" + BASE_URL + "/prose/player.html?ep=" + ABBREVIATION + "\">" + TITLE + "</a>");
+            Console.WriteLine("<a href=\"" + s_baseUrl + "/prose/player.html?ep=" + s_abbreviation + "\">" + s_title + "</a>");
             Console.WriteLine("</li>");
         }
 
@@ -830,34 +1120,34 @@ namespace Tool
         private static void callLemmatizer()
         {
 
-            if (PYTHON_PATH != null)
+            if (s_pythonPath != null)
             {
-                PYTHON_PATH = toAbsolutePath(PYTHON_PATH);
-                if (!File.Exists(PYTHON_PATH))
+                s_pythonPath = toAbsolutePath(s_pythonPath);
+                if (!File.Exists(s_pythonPath))
                 {
-                    throw new FileNotFoundException("File not found: '" + PYTHON_PATH + "'");
+                    throw new FileNotFoundException("File not found: '" + s_pythonPath + "'");
                 }
             }
             else
             {
-                PYTHON_PATH = "python";
+                s_pythonPath = "python";
             }
 
             // Pre-check if the input file exists
-            if (!File.Exists(PLAIN_FILE_PATH))
+            if (!File.Exists(s_plainFilePath))
             {
-                throw new FileNotFoundException("File not found: '" + PLAIN_FILE_PATH + "'");
+                throw new FileNotFoundException("File not found: '" + s_plainFilePath + "'");
             }
 
             // process only if required
-            if (!saveByStrategy(LEMS_FILE_PATH, LEMMATIZING_OUT_FILE_OVERRIDE_STRATEGY)) return;
+            if (!saveByStrategy(s_lemsFilePath, s_lemmatizingOutFileIOverrideStrategy)) return;
 
             // create temporary Python script for call the lemmatizer
             createPythonScript();
             try
             {
                 // Option overwrite
-                callProcess("Python based Yandex lemmatizer", "\"" + PYTHON_PATH + "\"", 
+                callProcess("Python based Yandex lemmatizer", "\"" + s_pythonPath + "\"", 
                     "\"" + RULEM_PY_PATH + "\"", false);
             }
             finally
@@ -875,33 +1165,33 @@ namespace Tool
         {
             string transJson = null;
             string convertedJson = null;
-            if (SPEECH_API == GOOGLE_API)
+            if (s_speechApi == GOOGLE_API)
             {
-                transJson = GOOGLE_TRANS_JSON_FILE_PATH;
-                convertedJson = GOOGLE_JSON_FILE_PATH;
+                transJson = s_gooleTransJsonFilePath;
+                convertedJson = s_googleJsonFilePath;
             }
             else
             {
-                transJson = MS_TRANS_JSON_FILE_PATH;
-                convertedJson = MS_CONV_JSON_FILE_PATH;
+                transJson = s_msTransJsonFilePath;
+                convertedJson = s_msConvJsonFilePath;
             }
 
-            if (!saveByStrategy(convertedJson, SPEECH_API_OUT_FILE_OVERRIDE_STRATEGY)) return transJson;
+            if (!saveByStrategy(convertedJson, s_speechApiOutFileOverrideStrategy)) return transJson;
 
             Material trans = null;
 
             // Using Google?
-            if (SPEECH_API == GOOGLE_API)
+            if (s_speechApi == GOOGLE_API)
             {
                 Console.WriteLine("Call the Google speech API...");
 
                 // If transcription is missing, get it now
                 // Transcribe text with Google engine
-                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber(GOOGLE_API_KEY_PATH, GOOGLE_API_PROJECT_ID, GOOGLE_API_BUCKET_NAME);
-                gt.Transcribe(FLAC_FILE_PATH, "ru", GOOGLE_JSON_FILE_PATH); // ? "../_work/" + abbreviation + "-conv-goog.json"
+                GoogleTranscriber.GoogleTranscriber gt = new GoogleTranscriber.GoogleTranscriber(s_googleApiKeyPath, s_gooleApiProjectId, s_googleApiBucketName);
+                gt.Transcribe(s_flacFilePath, "ru", s_googleJsonFilePath); // ? "../_work/" + abbreviation + "-conv-goog.json"
 
                 // Set title, serialize
-                trans = Material.fromGoogle(GOOGLE_JSON_FILE_PATH);
+                trans = Material.fromGoogle(s_googleJsonFilePath);
             }
             // Using MS?
             else
@@ -910,14 +1200,14 @@ namespace Tool
 
                 // -conv-ms.json is the direct output of the MS service
                 // It is nout our own Material class serialized
-                trans = Material.FromMS(MS_CONV_JSON_FILE_PATH);
+                trans = Material.FromMS(s_msConvJsonFilePath);
             }
 
             // We have a new transcription: save it
             if (trans != null && transJson != null)
             {
                 // Set title, serialize
-                trans.Title = TITLE;
+                trans.Title = s_title;
                 trans.SaveJson(transJson);
                 return transJson;
             }
@@ -932,43 +1222,43 @@ namespace Tool
          */
         private static void callFfmpeg()
         {
-            if (!saveByStrategy(FLAC_FILE_PATH, FFMPEG_OUT_FILE_OVERRIDE_STRATEGY)) return;
+            if (!saveByStrategy(s_flacFilePath, s_ffmpegOutFileOverrideStrategy)) return;
 
             // FLAC
-            Console.WriteLine("Create a FLAC file '" + FLAC_FILE_PATH + "'...");
-            string arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
+            Console.WriteLine("Create a FLAC file '" + s_flacFilePath + "'...");
+            string arguments = " -i \"" + s_audioInFilePath + "\""
                 + " -af aformat=s16:16000 -ac 1 -start_at_zero -copytb 1 "
-                + "\"" + FLAC_FILE_PATH + "\" -y";
-            callProcess("convert audio to FLAC", FFMPEG_PATH, arguments, true);
-            Console.WriteLine("The FLAC file stored in '" + FLAC_FILE_PATH + "'");
+                + "\"" + s_flacFilePath + "\" -y";
+            callProcess("convert audio to FLAC", s_ffmpegPath, arguments, true);
+            Console.WriteLine("The FLAC file stored in '" + s_flacFilePath + "'");
 
             try
             {
                 // WEBM
-                Console.WriteLine("Create a WEBM file '" + WEBM_FILE_PATH + "'...");
-                arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
-                    + " -vn -dash 1 \"" + WEBM_FILE_PATH + "\" -y";
-                callProcess("convert audio to WEBM", FFMPEG_PATH, arguments, true);
-                Console.WriteLine("The WEBM file stored in '" + WEBM_FILE_PATH + "'");
+                Console.WriteLine("Create a WEBM file '" + s_webmFilePath + "'...");
+                arguments = " -i \"" + s_audioInFilePath + "\""
+                    + " -vn -dash 1 \"" + s_webmFilePath + "\" -y";
+                callProcess("convert audio to WEBM", s_ffmpegPath, arguments, true);
+                Console.WriteLine("The WEBM file stored in '" + s_webmFilePath + "'");
             }
             catch (Exception e)
             {
                 // ignore the errors, WEBM and M4A are optional for this processing
-                Console.WriteLine("Error by saving WEBM file in '" + WEBM_FILE_PATH + "': " + e.Message);
+                Console.WriteLine("Error by saving WEBM file in '" + s_webmFilePath + "': " + e.Message);
             }
             try
             {
                 // M4A
-                Console.WriteLine("Create a M4A file '" + M4A_FILE_PATH + "'...");
-                arguments = " -i \"" + AUDIO_IN_FILE_PATH + "\""
-                    + " -vn -codec:a aac \"" + M4A_FILE_PATH + "\" -y";
-                callProcess("convert audio to M4A", FFMPEG_PATH, arguments, true);
-                Console.WriteLine("The M4A file stored in '" + M4A_FILE_PATH + "'");
+                Console.WriteLine("Create a M4A file '" + s_m4aFilePath + "'...");
+                arguments = " -i \"" + s_audioInFilePath + "\""
+                    + " -vn -codec:a aac \"" + s_m4aFilePath + "\" -y";
+                callProcess("convert audio to M4A", s_ffmpegPath, arguments, true);
+                Console.WriteLine("The M4A file stored in '" + s_m4aFilePath + "'");
             }
             catch (Exception e)
             {
                 // ignore the errors, WEBM and M4A are optional for this processing
-                Console.WriteLine("Error by saving M4A file in '" + M4A_FILE_PATH + "': " + e.Message);
+                Console.WriteLine("Error by saving M4A file in '" + s_m4aFilePath + "': " + e.Message);
             }
         }
 
@@ -1075,16 +1365,16 @@ namespace Tool
 
             // Re-load - just to make it easier to uncomment part above independently
             var mTrans = Material.LoadJson(transJson);
-            mTrans.Title = TITLE;
+            mTrans.Title = s_title;
 
             // Read original text and segment paragraphs
             Console.WriteLine("Read original text and segment paragraphs...");
-            var mOrig = Material.FromPlainText(ABBREVIATION, true);
-            mOrig.Title = TITLE;
+            var mOrig = Material.FromPlainText(s_abbreviation, true);
+            mOrig.Title = s_title;
 
             // Save as plain text, for lemmatization
             Console.WriteLine("Save as plain text, for lemmatization...");
-            mOrig.SavePlain(PLAIN_FILE_PATH);
+            mOrig.SavePlain(s_plainFilePath);
 
             // Align, and infuse timestamps
             TimeFuser fs = new TimeFuser(mTrans, mOrig);
@@ -1097,7 +1387,7 @@ namespace Tool
             shiftSegments(mOrig);
 
             // Read lemmas to JSON from lemmatized text file
-            mOrig.AddLemmasRu(LEMS_FILE_PATH);
+            mOrig.AddLemmasRu(s_lemsFilePath);
 
             Console.WriteLine("Prepare translations based on Open Ruissian dictionary...");
 
@@ -1107,15 +1397,15 @@ namespace Tool
             Console.WriteLine("Prepare translations based on RuWiki dictionary...");
 
             // Additionally, read from RuWiki dictionary
-            dict.UpdateFromRuWiktionary(MATERIALS_RUWIKI_PATH, false, RU_WIKI_LANGUAGES);
+            dict.UpdateFromRuWiktionary(MATERIALS_RUWIKI_PATH, false, s_ruWikiLanguages);
 
             // Finally, read fom customer dictionary if any
-            if (CUSTOM_DIC_PATH != null)
+            if (s_customDicPath != null)
             {
-                Console.WriteLine("Prepare translations based on customer dictionary '" + CUSTOM_DIC_PATH + "'...");
+                Console.WriteLine("Prepare translations based on customer dictionary '" + s_customDicPath + "'...");
 
                 // Extend/override the dictionary by additional customized dictionary
-                dict.UpdateFromCustomList(CUSTOM_DIC_PATH);
+                dict.UpdateFromCustomList(s_customDicPath);
             }
 
             // Sort the dictionary entries by language, for each header
@@ -1128,7 +1418,7 @@ namespace Tool
             dict.FillDict(mOrig);
 
             // Workaround for mark the title lines if required
-            if(SHIFT_TITLE_LINES > 0)
+            if(s_shiftTitleLines > 0)
             {
                 shiftTitleSegments(mOrig);
             }
@@ -1137,13 +1427,13 @@ namespace Tool
             shiftAdditionalParas(mOrig);
 
             // set the IsVerse attribute to true (may be used iun JavaScript for markup purposes)
-            if (VERSES)
+            if (s_verses)
             {
                 markVerses(mOrig);
             }
 
             // if tempo correction requested
-            if (TEMPO_CORRECTION != 0.0)
+            if (s_tempoCorrection != 0.0)
             {
                 changeSegmentsForTempo(mOrig);
             }
