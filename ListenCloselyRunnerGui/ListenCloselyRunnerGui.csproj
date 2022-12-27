@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <StartupObject>ListenCloselyRunnerGui.App</StartupObject>
+    <AssemblyName>ListenCloselyRunner</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tool\Tool.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+	<Target Name="CompozeDelivery" AfterTargets="Publish">
+		<Exec Command="
+@echo -------------------- Execute tasks after publish of $(AssemblyName) in $(MSBuildProjectDirectory)\$(PublishDir)
+cd /d $(MSBuildProjectDirectory)\$(PublishDir)\
+rmdir /S /Q .\$(AssemblyName)
+mkdir .\$(AssemblyName)
+move  .\$(AssemblyName).exe .\$(AssemblyName)\
+mkdir .\$(AssemblyName)\_samples
+mkdir .\$(AssemblyName)\_materials
+copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples
+copy  $(MSBuildProjectDirectory)\..\Scripts\install.cmd .\$(AssemblyName)
+xcopy /S $(MSBuildProjectDirectory)\..\_materials .\$(AssemblyName)\_materials
+del   $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
+powershell Compress-Archive .\$(AssemblyName)\* $(AssemblyName).zip
+echo READY ARCHIVE $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
+        " />
+	</Target>	
+
+</Project>

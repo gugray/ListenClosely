@@ -12,6 +12,9 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyName>ListenClosely</AssemblyName>
+    <UseWPF>True</UseWPF>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
