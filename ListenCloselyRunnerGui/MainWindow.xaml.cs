@@ -362,6 +362,10 @@ namespace Tool
                         selectedAbbreviation = sabw.getAbbreviation();
                     }
                 }
+                else
+                {
+                    showInfo("No work files found");
+                }
             }
             catch(Exception ex)
             {
@@ -558,6 +562,14 @@ namespace Tool
             MessageBoxImage icon = MessageBoxImage.Error;
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
         }
+
+        private void showInfo(string messageBoxText)
+        {
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            MessageBox.Show(messageBoxText, "INFORMATION", button, icon, MessageBoxResult.OK);
+        }
+
         private void showWarning(string messageBoxText)
         {
             MessageBoxButton button = MessageBoxButton.OK;
