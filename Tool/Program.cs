@@ -1,18 +1,24 @@
-﻿using Microsoft.Extensions.Configuration.Ini;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration.Ini;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.VisualBasic;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Shapes;
 using File = System.IO.File;
 
 namespace Tool
 {
     public class Program
     {
+
         private const string APP_VERSION = "1.0.2";
         private const string APP_NAME = "ListenClosely";
 
@@ -21,6 +27,7 @@ namespace Tool
         private const string AUDIO_DIR_PATH = "./_audio";
         private const string OUT_DIR_PATH = "./_out";
         private const string SCRIPTS_DIR_PATH = "./_scripts";
+        private const string RUNS_DIR_PATH = "./_runs";
         private const string RULEM_PY_PATH = SCRIPTS_DIR_PATH + "/rulem_mod.py";
         private const string MATERIALS_OPENR_WORDS_PATH = "./_materials/openrussian/words.csv";
         private const string MATERIALS_OPENR_TRANSL_PATH = "./_materials/openrussian/translations.csv";
@@ -40,19 +47,19 @@ namespace Tool
         public const string AUDIO_WAV = "WAV";
 
         // keys to be read from the run properties file
-        private const string PROP_KEY_ABBREVIATION = "abbreviation";
-        private const string PROP_KEY_CUSTOM_DIC = "customDicPath";
-        private const string PROP_KEY_SPEECH_API_OFOS = "speechApiOutFileOverrideStrategy";
-        private const string PROP_KEY_LEMMATIZING_OFOS = "lemmatizingOutFileOverrideStrategy";
-        private const string PROP_KEY_FFMPEG_OFOS = "ffmpegOutFileOverrideStrategy";
-        private const string PROP_KEY_SEGMENTS_OFOS = "segmentsOutFileOverrideStrategy";
-        private const string PROP_KEY_POST_LEMMATIZING_OFOS = "postLemmatizingStrategy";
-        private const string PROP_KEY_TITLE = "title";
-        private const string PROP_KEY_AUDIO_FORMAT = "audioFormat";
-        private const string PROP_KEY_SHIFT_TITLE_LINES = "shiftTitleLines";
-        private const string PROP_KEY_TEMPO_CORRECTION = "tempoCorrection";
-        private const string PROP_KEY_SHIFT = "shift";
-        private const string PROP_KEY_VERSES = "verses";
+        public const string PROP_KEY_ABBREVIATION = "abbreviation";
+        public const string PROP_KEY_CUSTOM_DIC = "customDicPath";
+        public const string PROP_KEY_SPEECH_API_OFOS = "speechApiOutFileOverrideStrategy";
+        public const string PROP_KEY_LEMMATIZING_OFOS = "lemmatizingOutFileOverrideStrategy";
+        public const string PROP_KEY_FFMPEG_OFOS = "ffmpegOutFileOverrideStrategy";
+        public const string PROP_KEY_SEGMENTS_OFOS = "segmentsOutFileOverrideStrategy";
+        public const string PROP_KEY_POST_LEMMATIZING_OFOS = "postLemmatizingStrategy";
+        public const string PROP_KEY_TITLE = "title";
+        public const string PROP_KEY_AUDIO_FORMAT = "audioFormat";
+        public const string PROP_KEY_SHIFT_TITLE_LINES = "shiftTitleLines";
+        public const string PROP_KEY_TEMPO_CORRECTION = "tempoCorrection";
+        public const string PROP_KEY_SHIFT = "shift";
+        public const string PROP_KEY_VERSES = "verses";
 
         // argument keys which can be passed into the program by call
         // in the format: <--long_key:value> or: <-short_key:value>
@@ -168,6 +175,7 @@ namespace Tool
         private string PostLemmatizingStrategy;
 
         private static string OUT_DIR;
+        private static string RUNS_DIR;
 
         private string BaseUrl;
 
@@ -217,25 +225,66 @@ namespace Tool
             checkPreconditions();
         }
 
-        /**
-         * For the given abbreviation, try to detect the text and audio files in the environment.
-         * Return a string array: 
-         * [0][0]=expected file path for original file, [0][1]='1' if found else '0'
-         * [1][0]=expected file path for mp3 file, [1][1]='1' if found else '0'
-         * [2][0]=expected file path for wav file, [2][1]='1' if found else '0'
-         */
-        public static string[][] checkInputFilesByAbbreviation(string abbreviation)
+
+
+        public class LocalWorkDataBundle
         {
-            string[][] ret = new string[3][];
-            ret[0] = new string[2];
-            ret[1] = new string[2];
-            ret[2] = new string[2];
-            ret[0][0] = toAbsolutePath(WORK_DIR_PATH + "/" + abbreviation + "-orig.txt");
-            ret[1][0] = toAbsolutePath(AUDIO_DIR_PATH + "/" + abbreviation + "." + AUDIO_MP3);
-            ret[2][0] = toAbsolutePath(AUDIO_DIR_PATH + "/" + abbreviation + "." + AUDIO_WAV);
-            ret[0][1] = File.Exists(ret[0][0]) ? "1" : "0";
-            ret[1][1] = File.Exists(ret[1][0]) ? "1" : "0";
-            ret[2][1] = File.Exists(ret[2][0]) ? "1" : "0";
+            public string Abbreviation;
+            public string OrigTextPath;
+            public string Mp3Path;
+            public string WavPath;
+            public LocalWorkDataBundle()
+            {
+                Abbreviation = null;
+                OrigTextPath = null;
+                Mp3Path = null;
+                WavPath = null;
+            }
+        }
+
+
+        public static List<LocalWorkDataBundle> getInputFiles()
+        {
+            List <LocalWorkDataBundle> ret = new List<LocalWorkDataBundle>();
+            DirectoryInfo workDir = new DirectoryInfo(toAbsolutePath(WORK_DIR_PATH));
+            string audioDir = toAbsolutePath(AUDIO_DIR_PATH);
+            if(!workDir.Exists )
+            {
+                throw new Exception("Evnironment error. Mising work directory '" + workDir.FullName  + "'");
+            }
+            if (!Directory.Exists(audioDir))
+            {
+                throw new Exception("Evnironment error. Mising audi directory '" + audioDir + "'");
+            }
+
+
+            foreach (string f in Directory.EnumerateFiles(workDir.FullName, "*-orig.txt"))
+            {
+                FileInfo fi = new FileInfo(f);
+                string abbr = fi.Name.Substring(0, fi.Name.Length - "-orig.txt".Length);
+                
+                LocalWorkDataBundle wd= new LocalWorkDataBundle() { Abbreviation = abbr.ToUpper(), OrigTextPath = f };
+
+                string mp3Path = audioDir + "\\" + abbr + "." + AUDIO_MP3;
+                if (!File.Exists(mp3Path)) mp3Path = null;
+
+                string wavPath = audioDir + "\\" + abbr + "." + AUDIO_WAV;
+                if (!File.Exists(wavPath)) wavPath = null;
+
+                if(mp3Path != null || wavPath != null)
+                {
+                    wd.Mp3Path = mp3Path;
+                    wd.WavPath = wavPath;
+
+                    ret.Add(wd);
+                }
+                else
+                {
+                    wd = null;
+                }
+
+            }
+
             return ret;
         }
 
@@ -314,7 +363,7 @@ namespace Tool
                 // TODO - check something is required?
             }
 
-            // Pre-check if the FFMpeg installation script exists (except: the audio files are already provided and will be reused
+            // Pre-check if the FFMpeg installation script exists (except: the audio files are already provided and will be reused)
             if (!File.Exists(FlacFilePath) || (FfmpegOutFileOverrideStrategy == BACKUP || FfmpegOutFileOverrideStrategy == OVERWRITE))
             {
                 if (FfmpegPath == null)
@@ -382,6 +431,13 @@ namespace Tool
 
             // Call the lemmatization
             callLemmatizer();
+
+            if(PostLemmatizingStrategy == BREAK)
+            {
+                // break work after lemmatizing
+                WriteLine("Stop work after lemmatizing...");
+                return;
+            }
 
             // Shift all segment timestamps... Don't ask why
             shiftSegments(mOrig);
@@ -716,11 +772,120 @@ namespace Tool
             {
                 throw new FileNotFoundException("No path to the run property file defined or defined with a blank");
             }
+
+            // read arguments as an array with pre-defined order
+            string[] args = readRunPropertiesArrayFromFile(path);
+
+            Abbreviation = args[0];
+            if (Abbreviation == null) throw new InvalidDataException("The argument '" + PROP_KEY_ABBREVIATION + "' is mandatory");
+
+            Title = args[1];
+            if (Title == null) throw new InvalidDataException("The argument '" + PROP_KEY_TITLE + "' is mandatory");
+
+            if(args[2] != null)
+            {
+                AudioFormat = args[2].ToUpper();
+            }
+
+            if (args[3] != null)
+            {
+                try
+                {
+                    ShiftTitleLines = int.Parse(args[3]);
+                    if (ShiftTitleLines < 0 || ShiftTitleLines > 10)
+                    {
+                        throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + args[3] + "'. Invalid value (allowed: 0-10)");
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + args[3] + "' as integer", e);
+                }
+            }
+
+            if (args[4] != null)
+            {
+                try
+                {
+                    Verses = bool.Parse(args[4].ToLower());
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_VERSES + "' value '" + args[4] + "' as boolean", e);
+                }
+            }
+
+            CustomDicPath = args[5];
+            if (CustomDicPath != null)
+            {
+                CustomDicPath = toAbsolutePath(CustomDicPath);
+                if (!File.Exists(CustomDicPath))
+                {
+                    throw new FileNotFoundException("File not found: '" + CustomDicPath + "'");
+                }
+            }
+
+            if(args[6] != null)
+            {
+                PostLemmatizingStrategy = args[6].ToUpper();
+                checkAllowedValuesBP(PROP_KEY_POST_LEMMATIZING_OFOS, PostLemmatizingStrategy);
+            }
+
+            if (args[7] != null)
+            {
+                FfmpegOutFileOverrideStrategy = args[7].ToUpper();
+                checkAllowedValuesBSBO(PROP_KEY_FFMPEG_OFOS, FfmpegOutFileOverrideStrategy);
+            }
+
+            if (args[8] != null)
+            {
+                SpeechApiOutFileOverrideStrategy = args[8].ToUpper();
+                checkAllowedValuesBSBO(PROP_KEY_SPEECH_API_OFOS, SpeechApiOutFileOverrideStrategy);
+            }
+
+            if (args[9] != null)
+            {
+                LemmatizingOutFileIOverrideStrategy = args[9].ToUpper();
+                checkAllowedValuesBSBO(PROP_KEY_LEMMATIZING_OFOS, LemmatizingOutFileIOverrideStrategy);
+            }
+            if (args[10] != null)
+            {
+                SegmentsOutFileOverrideStrategy = args[10].ToUpper();
+                checkAllowedValuesBSBO(PROP_KEY_SEGMENTS_OFOS, SegmentsOutFileOverrideStrategy);
+            }
+            if (args[11] != null)
+            {
+                try
+                {
+                    TempoCorrection = double.Parse(args[11]);
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_TEMPO_CORRECTION + "' value '" + args[11] + "' as double", e);
+                }
+            }
+            if (args[12] != null)
+            {
+                try
+                {
+                    Shift = decimal.Parse(args[12]);
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT + "' value '" + args[12] + "' as decimal", e);
+                }
+            }
+        }
+
+        public static string[] readRunPropertiesArrayFromFile(string path)
+        {
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException("File not found: '" + path + "'");
             }
 
+            string[] ret = new string[13];
+            Array.Fill(ret, null);
             string line;
             using (StreamReader sr = new StreamReader(path))
             {
@@ -737,101 +902,51 @@ namespace Tool
                     Array.Copy(split, 1, valueArr, 0, valueArr.Length);
                     string value = String.Join(":", valueArr).Replace("\"", "").Trim();
 
-                    if (value.Length > 0)
+                    switch (key)
                     {
-                        switch (key)
-                        {
-                            case PROP_KEY_ABBREVIATION:
-                                Abbreviation = value;
-                                break;
-                            case PROP_KEY_CUSTOM_DIC:
-                                CustomDicPath = value;
-                                break;
-                            case PROP_KEY_SPEECH_API_OFOS:
-                                SpeechApiOutFileOverrideStrategy = value.ToUpper();
-                                checkAllowedValuesBSBO(PROP_KEY_SPEECH_API_OFOS, SpeechApiOutFileOverrideStrategy);
-                                break;
-                            case PROP_KEY_LEMMATIZING_OFOS:
-                                LemmatizingOutFileIOverrideStrategy = value.ToUpper();
-                                checkAllowedValuesBSBO(PROP_KEY_LEMMATIZING_OFOS, LemmatizingOutFileIOverrideStrategy);
-                                break;
-                            case PROP_KEY_FFMPEG_OFOS:
-                                FfmpegOutFileOverrideStrategy = value.ToUpper();
-                                checkAllowedValuesBSBO(PROP_KEY_FFMPEG_OFOS, FfmpegOutFileOverrideStrategy);
-                                break;
-                            case PROP_KEY_SEGMENTS_OFOS:
-                                SegmentsOutFileOverrideStrategy = value.ToUpper();
-                                checkAllowedValuesBSBO(PROP_KEY_SEGMENTS_OFOS, SegmentsOutFileOverrideStrategy);
-                                break;
-                            case PROP_KEY_POST_LEMMATIZING_OFOS:
-                                PostLemmatizingStrategy = value.ToUpper();
-                                checkAllowedValuesBP(PROP_KEY_POST_LEMMATIZING_OFOS, PostLemmatizingStrategy);
-                                break;
-                            case PROP_KEY_TITLE:
-                                Title = value;
-                                break;
-                            case PROP_KEY_AUDIO_FORMAT:
-                                AudioFormat = value.ToUpper();
-                                break;
-                            case PROP_KEY_SHIFT_TITLE_LINES:
-                                try
-                                {
-                                    ShiftTitleLines = int.Parse(value);
-                                    if (ShiftTitleLines < 0)
-                                    {
-                                        throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + value + "'. Invalid value");
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT_TITLE_LINES + "' value '" + value + "' as integer", e);
-                                }
-                                break;
-                            case PROP_KEY_TEMPO_CORRECTION:
-                                try
-                                {
-                                    TempoCorrection = double.Parse(value);
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_TEMPO_CORRECTION + "' value '" + value + "' as double", e);
-                                }
-                                break;
-                            case PROP_KEY_SHIFT:
-                                try
-                                {
-                                    Shift = decimal.Parse(value);
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_SHIFT + "' value '" + value + "' as decimal", e);
-                                }
-                                break;
-                            case PROP_KEY_VERSES:
-                                try
-                                {
-                                    Verses = bool.Parse(value.ToLower());
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new InvalidDataException("Cannot read argument '" + PROP_KEY_VERSES + "' value '" + value + "' as boolean", e);
-                                }
-                                break;
-                        }
-                    }
-                }
-
-                if (Abbreviation == null) throw new InvalidDataException("The argument '" + PROP_KEY_ABBREVIATION  + "' is mandatory");
-                if (Title == null) throw new InvalidDataException("The argument '" + PROP_KEY_TITLE + "' is mandatory");
-                if (CustomDicPath != null)
-                {
-                    CustomDicPath = toAbsolutePath(CustomDicPath);
-                    if (!File.Exists(CustomDicPath))
-                    {
-                        throw new FileNotFoundException("File not found: '" + CustomDicPath + "'");
+                        case PROP_KEY_ABBREVIATION:
+                            ret[0] = value;
+                            break;
+                        case PROP_KEY_AUDIO_FORMAT:
+                            ret[1] = value;
+                            break;
+                        case PROP_KEY_TITLE:
+                            ret[2] = value;
+                            break;
+                        case PROP_KEY_SHIFT_TITLE_LINES:
+                            ret[3] = value;
+                            break;
+                        case PROP_KEY_VERSES:
+                            ret[4] = value;
+                            break;
+                        case PROP_KEY_CUSTOM_DIC:
+                            ret[5] = value;
+                            break;
+                        case PROP_KEY_POST_LEMMATIZING_OFOS:
+                            ret[6] = value;
+                            break;
+                        case PROP_KEY_FFMPEG_OFOS:
+                            ret[7] = value;
+                            break;
+                        case PROP_KEY_SPEECH_API_OFOS:
+                            ret[8] = value;
+                            break;
+                        case PROP_KEY_LEMMATIZING_OFOS:
+                            ret[9] = value;
+                            break;
+                        case PROP_KEY_SEGMENTS_OFOS:
+                            ret[10] = value;
+                            break;
+                        case PROP_KEY_TEMPO_CORRECTION:
+                            ret[11] = value;
+                            break;
+                        case PROP_KEY_SHIFT:
+                            ret[12] = value;
+                            break;
                     }
                 }
             }
+            return ret;
         }
 
         private void checkAllowedValuesBSBO(string key, string value)
@@ -983,13 +1098,17 @@ namespace Tool
             {
                 using (sw = new StreamWriter(RULEM_PY_PATH))
                 {
+
+                    string correctedPlainFilePath = PlainFilePath.Replace("\\\\", "\\").Replace("\\", "/");
+                    string correctedLemsFilePath = LemsFilePath.Replace("\\\\", "\\").Replace("\\", "/");
+
                     sw.WriteLine("from pymystem3 import Mystem");
                     sw.WriteLine("from io import open");
                     sw.WriteLine("import sys");
                     sw.WriteLine("import os");
                     sw.WriteLine("m = Mystem()");
-                    sw.WriteLine("with open(\"" + PlainFilePath + "\", \"r\", encoding=\"utf8\") as f:");
-                    sw.WriteLine("  with open(\"" + LemsFilePath + "\", \"w\", encoding=\"utf8\") as g:");
+                    sw.WriteLine("with open(\"" + correctedPlainFilePath + "\", \"r\", encoding=\"utf8\") as f:");
+                    sw.WriteLine("  with open(\"" + correctedLemsFilePath + "\", \"w\", encoding=\"utf8\") as g:");
                     sw.WriteLine("    for line in f:");
                     sw.WriteLine("      lemmas = m.lemmatize(line)");
                     sw.WriteLine("      lemmasStr = ''.join(lemmas)");
@@ -1271,6 +1390,8 @@ namespace Tool
          */
         private void callLemmatizer()
         {
+            // process only if required
+            if (!saveByStrategy(LemsFilePath, LemmatizingOutFileIOverrideStrategy)) return;
 
             if (PythonPath != null)
             {
@@ -1291,11 +1412,10 @@ namespace Tool
                 throw new FileNotFoundException("File not found: '" + PlainFilePath + "'");
             }
 
-            // process only if required
-            if (!saveByStrategy(LemsFilePath, LemmatizingOutFileIOverrideStrategy)) return;
 
             // create temporary Python script for call the lemmatizer
             createPythonScript();
+
             try
             {
                 // Option overwrite
@@ -1508,12 +1628,18 @@ namespace Tool
             return OUT_DIR;
         }
 
+        public static string getRunsDirPath()
+        {
+            if (RUNS_DIR == null) RUNS_DIR = toAbsolutePath(RUNS_DIR_PATH);
+            return RUNS_DIR;
+        }
+
         private void WriteLine(string line)
         {
             if (StaticRun) Console.WriteLine(line);
             else if (GuiOutField != null)
             {
-                GuiOutField.Text += (Environment.NewLine + line);
+                GuiOutField.Text = line;
                 GuiOutField.UpdateLayout();
 
             }
@@ -1532,7 +1658,6 @@ namespace Tool
             WriteLine("READY");
         }
 
-        
         public static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
