@@ -6,7 +6,19 @@
     <UseWPF>true</UseWPF>
     <StartupObject>ListenCloselyRunnerGui.App</StartupObject>
     <AssemblyName>ListenCloselyRunner</AssemblyName>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\logo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tool\Tool.csproj" />
@@ -40,21 +52,7 @@
   </ItemGroup>
 
 	<Target Name="CompozeDelivery" AfterTargets="Publish">
-		<Exec Command="
-@echo -------------------- Execute tasks after publish of $(AssemblyName) in $(MSBuildProjectDirectory)\$(PublishDir)
-cd /d $(MSBuildProjectDirectory)\$(PublishDir)\
-rmdir /S /Q .\$(AssemblyName)
-mkdir .\$(AssemblyName)
-move  .\$(AssemblyName).exe .\$(AssemblyName)\
-mkdir .\$(AssemblyName)\_samples
-mkdir .\$(AssemblyName)\_materials
-copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples
-copy  $(MSBuildProjectDirectory)\..\Scripts\install.cmd .\$(AssemblyName)
-xcopy /S $(MSBuildProjectDirectory)\..\_materials .\$(AssemblyName)\_materials
-del   $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
-powershell Compress-Archive .\$(AssemblyName)\* $(AssemblyName).zip
-echo READY ARCHIVE $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip
-        " />
+		<Exec Command="&#xD;&#xA;@echo -------------------- Execute tasks after publish of $(AssemblyName) in $(MSBuildProjectDirectory)\$(PublishDir)&#xD;&#xA;cd /d $(MSBuildProjectDirectory)\$(PublishDir)\&#xD;&#xA;rmdir /S /Q .\$(AssemblyName)&#xD;&#xA;mkdir .\$(AssemblyName)&#xD;&#xA;move  .\$(AssemblyName).exe .\$(AssemblyName)\&#xD;&#xA;mkdir .\$(AssemblyName)\_samples&#xD;&#xA;mkdir .\$(AssemblyName)\_materials&#xD;&#xA;copy  $(MSBuildProjectDirectory)\..\Samples\*.sample .\$(AssemblyName)\_samples&#xD;&#xA;copy  $(MSBuildProjectDirectory)\..\Scripts\install.cmd .\$(AssemblyName)&#xD;&#xA;xcopy /S $(MSBuildProjectDirectory)\..\_materials .\$(AssemblyName)\_materials&#xD;&#xA;del   $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip&#xD;&#xA;powershell Compress-Archive .\$(AssemblyName)\* $(AssemblyName).zip&#xD;&#xA;echo READY ARCHIVE $(MSBuildProjectDirectory)\$(PublishDir)\$(AssemblyName).zip&#xD;&#xA;        " />
 	</Target>	
 
 </Project>

@@ -11,13 +11,16 @@
         MinWidth="200" 
         MinHeight="130" 
         MaxWidth="200" 
-        MaxHeight="130">
+        MaxHeight="130"
+        ResizeMode="NoResize" 
+        Icon="/Resources/logo.ico">
     <Grid 
     Width="200" 
     HorizontalAlignment="Center" Height="91" VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="3.498"/>
+            <ColumnDefinition Width="96.502"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -30,10 +33,10 @@
         <TextBlock 
             Grid.Row="0"
             Grid.ColumnSpan="2"
-            Grid.Column="0"
+            Grid.Column="1"
             Width="90"
             HorizontalAlignment="Left" 
-            Margin="55,0,0,0"
+            Margin="52,0,0,0"
             FontSize="12"
             >Abbreviations:</TextBlock>
 
@@ -42,11 +45,11 @@
             AutomationProperties.Name="CMB_AELECTABBR" 
             AutomationProperties.AutomationId="CMB_AELECTABBR"            
             HorizontalAlignment="Left" 
-            Margin="10,10,0,0" 
+            Margin="7,10,0,0" 
             VerticalAlignment="Top" 
             Grid.Row="1"
             Grid.ColumnSpan="2"
-            Grid.Column="0" 
+            Grid.Column="1" 
             Width="180" 
             Height="20"/>
 
@@ -57,13 +60,13 @@
             AutomationProperties.AutomationId="B_CANCEL"
             Content="Cancel"
             Grid.Row="2"
-            Grid.Column="0" 
+            Grid.Column="1" 
             Width="60" 
             Height="20"
             VerticalAlignment="Top" 
             HorizontalAlignment="Right"
             Padding="0,0,0,4"
-            Margin="0,0,5,20"
+            Margin="0,0,5,0"
             FontSize="11"          
             FontWeight="Bold"
             Click="B_CANCEL_Click"
@@ -75,7 +78,7 @@
             AutomationProperties.AutomationId="B_OK"
             Content="OK"
             Grid.Row="2"
-            Grid.Column="1" 
+            Grid.Column="2" 
             Width="60" 
             Height="20"
              VerticalAlignment="Top" 

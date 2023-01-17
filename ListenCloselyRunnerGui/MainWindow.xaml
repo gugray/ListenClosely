@@ -13,7 +13,7 @@
         MinHeight="290" 
         MaxWidth="600" 
         MaxHeight="290" 
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" Icon="/Resources/logo.ico">
     <Grid 
     Height="250" 
     Width="550" 
