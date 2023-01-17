@@ -15,7 +15,7 @@ namespace Tool
             InitializeComponents(inputFiles, selectedValue);
             commit = false;
 
-            this.SourceInitialized += (x, y) =>
+            SourceInitialized += (x, y) =>
             {
                 this.HideMinimizeAndMaximizeButtons();
             };
@@ -32,9 +32,9 @@ namespace Tool
             {
                 string abbr = db.Abbreviation.ToUpper();
                 CMB_AELECTABBR.Items.Add(getListItem(db.Abbreviation.ToUpper()));
-                if(abbr == selectedValue)
+                if (abbr == selectedValue)
                 {
-                    CMB_AELECTABBR.SelectedIndex= i;
+                    CMB_AELECTABBR.SelectedIndex = i;
                 }
                 i++;
             }

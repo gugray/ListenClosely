@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 
 namespace Tool
 {
@@ -436,6 +435,8 @@ namespace Tool
             args[3] = Program.ARG_KEY_SHIFT_TITLE_LINES_SHORT + quote(lastArgs[3]);
             lastArgs[4] = "" +C_VERSES.IsChecked;
             args[4] = Program.ARG_KEY_VERSES_SHORT + lastArgs[4];
+            lastArgs[5] = "";
+            args[5] = "";
             if (C_SELECTDIC.IsChecked == true) {
                 lastArgs[5] = Program.toAbsolutePath(F_CUSDIC.Text).Replace("\\\\", "\\");
                 args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote(lastArgs[5].Replace("\\", "\\\\"));
@@ -459,13 +460,10 @@ namespace Tool
             args[2] = Program.ARG_KEY_TITLE_SHORT + quote(F_TITLE.Text);
             args[3] = Program.ARG_KEY_SHIFT_TITLE_LINES_SHORT + quote(CMB_TITLE_LINES_CNT.Text);
             args[4] = Program.ARG_KEY_VERSES_SHORT + C_VERSES.IsChecked;
+            args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote("");
             if (C_SELECTDIC.IsChecked == true)
             {
                 args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote(Program.toAbsolutePath(F_CUSDIC.Text).Replace("\\", "\\\\"));
-            }
-            else
-            {
-                args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote("");
             }
 
             args[6] = Program.ARG_KEY_POST_LEMMATIZING_OFOS_SHORT + quote(CMB_POST_LEMMATIZING_OFOS.Text);
