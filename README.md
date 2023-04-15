@@ -52,7 +52,7 @@ and save it in the same folder as Python
         - https://dumps.wikimedia.org/ruwiktionary/#
       * Find a link to the newest dump folder and navigate into
       * On the page, find the link to the single dump file, named `ruwiktionary-[DUMP_DATE]-pages-articles.xml.bz2`<br>
-      where DUMP_DATE is the date of dump; e.g.: `ruwiktionary-20221120-pages-articles.xml.bz2`
+      where DUMP_DATE is the date of dump; e.g.: `ruwiktionary-20221120-pages-articles.xml.bz2`. Download this file (size, typically: ~ 240 MB)
     - For convert this file:
 ruwiktionary-20221120-pages-articles.xml.bz2 231.6
 
