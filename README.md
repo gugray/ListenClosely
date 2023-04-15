@@ -44,12 +44,13 @@ and save it in the same folder as Python
 ### The [RuWiktionary](https://ru.wiktionary.org/) dictionary as txt file <br>
 * Note for prod: this is a delivery part. 
 * Note for dev: this is not a repository part, data must be downloaded and converted <br>
-    - Especially, you need to download the single Ruwictionary dump file (named )
+    - Especially, you need to download the single Ruwiktionary dump file
     - After download, the file must be converted
-    - The result of this conversion is the file `ruwiktionary.txt` which has to be finally provide to customer
+    - The result of this conversion is the file `ruwiktionary.txt` which has to be finally provided to end user
     - For download:
       * Download the file (size, typically, about 250 MB or more): 
         - https://dumps.wikimedia.org/ruwiktionary/latest/ruwiktionary-latest-pages-articles.xml.bz2
+    - Extract the content, as single file `ruwiktionary-*-pages-articles.xml` (size, typically, 5 GB or more)
     - For convert this file:
     - TODO: how-to
 
