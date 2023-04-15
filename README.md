@@ -29,23 +29,32 @@ and save it in the same folder as Python
     
 ### The [OpenRussian](https://de.openrussian.org/) dictionary as a CSV files <br>
 * Note for prod: this is a delivery part. 
-* Note for dev: this ais a project part <br>
-  - Specifically, the following files are needed in `_materials\openrussian`:<br>
+* Note for dev: this is not a repository part, data must be downloaded <br>
+  - Especially, the following files are needed in `_materials\openrussian`:<br>
     - `words.csv`
     - `translations.csv`
-  - For download of 'words':
+  - For download:
     * Navigate to:
       - https://app.togetherdb.com/db/fwoedz5fvtwvq03v/russian3/words
       - https://app.togetherdb.com/db/fwoedz5fvtwvq03v/russian3/translations
     * The data is represented as many tables, each one in a separate tab
-    * In the tab head, klick on the symbol "⁝" (right of "🔒") and select "Export table". Apply the tabulation as separator
-    * Rename the files locally to "words.csv" and "translations.csv"
+    * In the tab head, klick on the symbol `⁝` (right of `🔒`) and select `Export table`. Apply the tabulation as separator
+  - After download, rename the files locally to `words.csv` and `translations.csv`
     
 ### The [RuWiktionary](https://ru.wiktionary.org/) dictionary as txt file <br>
 * Note for prod: this is a delivery part. 
-* Note for dev: this ais a project part <br>
-    - TODO: download description for https://dumps.wikimedia.org/ruwiktionary/
-
+* Note for dev: this is not a repository part, data must be downloaded and converted <br>
+    - Especially, you need to download the single Ruwictionary dump file (named )
+    - After download, the file must be converted
+    - The result of this conversion is the file `ruwiktionary.txt` which has to be finally provide to customer
+    - For download:
+      * Navigate to: 
+        - https://dumps.wikimedia.org/ruwiktionary/#
+      * Find a link to the newest dump folder and navigate into
+      * On the page, find the link to the single dump file, named `ruwiktionary-[DUMP_DATE]-pages-articles.xml.bz2`<br>
+      where DUMP_DATE is the date of dump; e.g.: `ruwiktionary-20221120-pages-articles.xml.bz2`
+    - For convert this file:
+ruwiktionary-20221120-pages-articles.xml.bz2 231.6
 
 ## Dev: Setup MS Visual Studio
 
