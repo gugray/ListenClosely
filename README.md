@@ -48,13 +48,10 @@ and save it in the same folder as Python
     - After download, the file must be converted
     - The result of this conversion is the file `ruwiktionary.txt` which has to be finally provide to customer
     - For download:
-      * Navigate to: 
-        - https://dumps.wikimedia.org/ruwiktionary/#
-      * Find a link to the newest dump folder and navigate into
-      * On the page, find the link to the single dump file, named `ruwiktionary-[DUMP_DATE]-pages-articles.xml.bz2`<br>
-      where DUMP_DATE is the date of dump; e.g.: `ruwiktionary-20221120-pages-articles.xml.bz2`. Download this file (size, typically: ~ 240 MB)
+      * Download the file (size, typically, about 250 MB or more): 
+        - https://dumps.wikimedia.org/ruwiktionary/latest/ruwiktionary-latest-pages-articles.xml.bz2
     - For convert this file:
-ruwiktionary-20221120-pages-articles.xml.bz2 231.6
+    - TODO: how-to
 
 ## Dev: Setup MS Visual Studio
 
