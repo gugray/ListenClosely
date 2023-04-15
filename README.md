@@ -33,7 +33,13 @@ and save it in the same folder as Python
   - Specifically, the following files are needed in `_materials\openrussian`:<br>
     - `words.csv`
     - `translations.csv`
-  - TODO: download description
+  - For download of 'words':
+    * Navigate to:
+      - https://app.togetherdb.com/db/fwoedz5fvtwvq03v/russian3/words
+      - https://app.togetherdb.com/db/fwoedz5fvtwvq03v/russian3/translations
+    * The data is represented as many tables, each one in a separate tab
+    * In the tab head, klick on the symbol "⁝" (right of "🔒") and select "Export table". Apply the tabulation as separator
+    * Rename the files locally to "words.csv" and "translations.csv"
     
 ### The [RuWiktionary](https://ru.wiktionary.org/) dictionary as txt file <br>
 * Note for prod: this is a delivery part. 
