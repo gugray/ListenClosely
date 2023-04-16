@@ -40,7 +40,7 @@ namespace WiktionaryParser
         {
             string baseDirFiles = Path.Combine(workDir, DUMP_PAGES_EXTRACT_DIR);
             string line;
-            int pagesCountTotal = 0;
+            int totalPagesCount= 0;
             using (StreamReader sr = new StreamReader(fnDump))
             {
                 // only single-line property entries are supported!
@@ -48,12 +48,12 @@ namespace WiktionaryParser
                 {
                     if(line.ToLower().Contains(START_PAGE_PATTERN))
                     {
-                        pagesCountTotal++;
+                        totalPagesCount++;
                     }
                 }
             }
 
-            Console.WriteLine("Extracting " + pagesCountTotal + " pages into files...");
+            Console.WriteLine("Extracting " + totalPagesCount + " pages into files...");
             int pageCount = 0;
             string mapFileName = Path.Combine(baseDirFiles, PAGEMAP_FILE);
             if (!Directory.Exists(baseDirFiles)) Directory.CreateDirectory(baseDirFiles);
@@ -66,8 +66,8 @@ namespace WiktionaryParser
                 {
                     if (pageCount > 0 && pageCount % 500 == 0)
                     {
-                        double percentage = Math.Round(((double)pageCount / (double)pagesCountTotal * 100D), 2);
-                        Console.Write("\rExtracted " + pageCount + " pages of " + pagesCountTotal + " (" + percentage + " % ready)");
+                        double percentage = Math.Round(((double)pageCount / (double)totalPagesCount * 100D), 2);
+                        Console.Write("\rExtracted " + pageCount + " pages of " + totalPagesCount + " (" + percentage + " % ready)");
                     }
                     string subDirNameRel = (pageCount / PAGES_PER_DIR).ToString("0000");
                     string subDirName = Path.Combine(baseDirFiles, subDirNameRel);
@@ -83,7 +83,7 @@ namespace WiktionaryParser
                     ++pageCount;
                 }
             }
-            Console.WriteLine("\rFinished; total pages extracted: " + pageCount);
+            Console.WriteLine("\rFinished; total pages extracted: " + pageCount + " of " + totalPagesCount);
         }
 
         private static int parsePage(string title, string fnPage, StreamWriter swOut, dynamic parser)
@@ -101,11 +101,13 @@ namespace WiktionaryParser
             string fnMap = Path.Combine(baseDirFiles, PAGEMAP_FILE);
 
             string tmpWorkDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
-            string fnEntries = Path.Combine(tmpWorkDir, ENTRIES_FILE); 
+            string fnEntries = Path.Combine(tmpWorkDir, ENTRIES_FILE);
+
+            if (!Directory.Exists(tmpWorkDir)) Directory.CreateDirectory(tmpWorkDir);
 
             Console.WriteLine("Parsing Wiktionary pages...");
             string pageBasePath = Path.GetDirectoryName(fnMap);
-            int totalPageCount = 0;
+            int totalPagesCount = 0;
             int pagesWithEntry = 0;
             int entryCount = 0;
             string msg;
@@ -116,9 +118,9 @@ namespace WiktionaryParser
                 string mapLine;
                 while ((mapLine = sr.ReadLine()) != null)
                 {
-                    if (totalPageCount % 500 == 0)
+                    if (totalPagesCount % 500 == 0)
                     {
-                        msg = string.Format("\rParsed {0} pages; {1} with our language; {2} entries", totalPageCount, pagesWithEntry, entryCount);
+                        msg = string.Format("\rParsed {0} pages; {1} with our language; {2} entries", totalPagesCount, pagesWithEntry, entryCount);
                         Console.Write(msg);
                     }
                     var parts = mapLine.Split("\t");
@@ -126,10 +128,10 @@ namespace WiktionaryParser
                     int nEntries = parsePage(parts[0], fnPage, sw, parser);
                     if (nEntries > 0) ++pagesWithEntry;
                     entryCount += nEntries;
-                    ++totalPageCount;
+                    ++totalPagesCount;
                 }
             }
-            msg = string.Format("\rDone! Parsed {0} pages; {1} with our language; {2} entries", totalPageCount, pagesWithEntry, entryCount);
+            msg = string.Format("\rDone! Parsed {0} pages; {1} with our language; {2} entries", totalPagesCount, pagesWithEntry, entryCount);
             Console.Write(msg);
         }
 
@@ -351,8 +353,6 @@ namespace WiktionaryParser
             string fnToLem = Path.Combine(tmpWorkDir, CLEANUP_PLAIN_FILE);
             string fnLems = Path.Combine(tmpWorkDir, CLEANUP_LEM_FILE);
 
-            if (!Directory.Exists(tmpWorkDir)) Directory.CreateDirectory(tmpWorkDir);
-
             ProcessStartInfo start = new ProcessStartInfo();
             // start.EnvironmentVariables.Add("pymystem3.constants.MYSTEM_BIN", toAbsolutePath(SCRIPTS_DIR_PATH));
             start.FileName = "\"" + mystemPath + "\"";
@@ -389,10 +389,12 @@ namespace WiktionaryParser
 
         static void Main(string[] args)
         {
+            // TODO: set as per arguments
+
             // The main work directory
             string workDir = new FileInfo(MATERIALS_DIR_PATH).FullName;
-            // Path to Ruwiktionary import file nane
-            string dumpFile         = "C:/Projekte/ListenClosely/_materials/ruwiktionary-20221120-pages-articles.xml";
+            // Path to Ruwiktionary import file name
+            string dumpFile         = "C:/Projekte/ListenClosely/_materials/ruwiktionary-latest-pages-articles.xml";
             // Absolute path to executable mystem.exe (part of Yandex MyStem)
             string mystemPath       = "C:/Projekte/ListenClosely/Scripts/mystem.exe";
 
