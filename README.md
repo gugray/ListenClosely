@@ -44,15 +44,20 @@ and save it in the same folder as Python
 ### The [RuWiktionary](https://ru.wiktionary.org/) dictionary as txt file <br>
 * Note for prod: this is a delivery part. 
 * Note for dev: this is not a repository part, data must be downloaded and converted <br>
+    - Pre-condition: the Yandex MyStem tool is installed (see above)
     - Especially, you need to download the single Ruwiktionary dump file
     - After download, the file must be converted
     - The result of this conversion is the file `ruwiktionary.txt` which has to be finally provided to end user
     - For download:
       * Download the file (size, typically, about 250 MB or more): 
         - https://dumps.wikimedia.org/ruwiktionary/latest/ruwiktionary-latest-pages-articles.xml.bz2
+    - Historical dumps can be found also under https://dumps.wikimedia.org/ruwiktionary/
     - Extract the content, as single file `ruwiktionary-*-pages-articles.xml` (size, typically, 5 GB or more)
     - For convert this file:
-    - TODO: how-to
+    - Save the downloaded file locally
+    - Detect the absolute path to executable `mystem.exe`
+    - The current implementation is still done as a call from  MS Visual Studio IDE (work in progress). Open Program.cs of the project WiktionaryParser, navigate to the main method, set the required variables (see comments) and execute the program. It will extract the data from RuWiktionary dump and create a dictionary file `ruwiktionary.txt. Note this work requires many gigabytes free disk space and about 5 hours of work time.
+    - TODO: provide as execurable
 
 ## Dev: Setup MS Visual Studio
 
