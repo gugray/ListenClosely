@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -8,13 +10,52 @@ namespace WiktionaryParser
 {
     class Program
     {
-        const int pagesPerDir = 1000;
+        // The main work directory
+        private const string MATERIALS_DIR_PATH = "_materials";
+        // Directory for save the extracted pages data
+        private const string DUMP_PAGES_EXTRACT_DIR = "ruwiktionary-pages";
+        // directory for save the temporary work data
+        private const string DUMP_TMP_WORK_DIR = "ruwiktionary-work";
 
-        static void dumpToFiles(string fnDump, string baseDirFiles)
+        // Pagemap file name
+        private const string PAGEMAP_FILE = "pagemap.txt";
+        // The file name for save the entries
+        private const string ENTRIES_FILE = "01.txt";
+        // This file part is used for creation the woirk files:
+        // "02-curly-poss.txt", "02-curly-meanings.txt", "02-curly-en.txt", "02-curly-de.txt");
+        private const string ENTRIES_OUT_FILES_BASENAME = "02";
+        // The cleanup work file
+        private const string CLEANUP_FILE = "03.txt";
+        // The work file used for lemmatization
+        private const string CLEANUP_PLAIN_FILE = "03-plain.txt";
+        // The lemmatization output work file containing lemmas
+        private const string CLEANUP_LEM_FILE = "03-lem.txt";
+        // The final export filename
+        private const string RUWIKTIONARY_EXPORT_FILE = "ruwiktionary.txt";
+
+        private const int PAGES_PER_DIR = 1000;
+        private const string START_PAGE_PATTERN = "<page>";
+
+        private static void dumpToFiles(string fnDump, string workDir)
         {
-            Console.WriteLine("Extracting pages into files...");
+            string baseDirFiles = Path.Combine(workDir, DUMP_PAGES_EXTRACT_DIR);
+            string line;
+            int pagesCountTotal = 0;
+            using (StreamReader sr = new StreamReader(fnDump))
+            {
+                // only single-line property entries are supported!
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if(line.ToLower().Contains(START_PAGE_PATTERN))
+                    {
+                        pagesCountTotal++;
+                    }
+                }
+            }
+
+            Console.WriteLine("Extracting " + pagesCountTotal + " pages into files...");
             int pageCount = 0;
-            string mapFileName = Path.Combine(baseDirFiles, "pagemap.txt");
+            string mapFileName = Path.Combine(baseDirFiles, PAGEMAP_FILE);
             if (!Directory.Exists(baseDirFiles)) Directory.CreateDirectory(baseDirFiles);
             string currSubDir = null;
             using (var dpr = new DumpPageReader(fnDump))
@@ -23,8 +64,12 @@ namespace WiktionaryParser
                 DumpPage page;
                 while ((page = dpr.GetNextPage()) != null)
                 {
-                    if (pageCount % 500 == 0) Console.Write("\rExtracted " + pageCount + " pages");
-                    string subDirNameRel = (pageCount / pagesPerDir).ToString("0000");
+                    if (pageCount > 0 && pageCount % 500 == 0)
+                    {
+                        double percentage = Math.Round(((double)pageCount / (double)pagesCountTotal * 100D), 2);
+                        Console.Write("\rExtracted " + pageCount + " pages of " + pagesCountTotal + " (" + percentage + " % ready)");
+                    }
+                    string subDirNameRel = (pageCount / PAGES_PER_DIR).ToString("0000");
                     string subDirName = Path.Combine(baseDirFiles, subDirNameRel);
                     if (currSubDir != subDirName)
                     {
@@ -41,7 +86,7 @@ namespace WiktionaryParser
             Console.WriteLine("\rFinished; total pages extracted: " + pageCount);
         }
 
-        static int parsePage(string title, string fnPage, StreamWriter swOut, dynamic parser)
+        private static int parsePage(string title, string fnPage, StreamWriter swOut, dynamic parser)
         {
             string text = File.ReadAllText(fnPage);
             List<WiktEntry> entries = parser.GetEntries(title, text);
@@ -49,8 +94,15 @@ namespace WiktionaryParser
             return entries.Count;
         }
 
-        static void pagesToEntries(string fnMap, string fnEntries, dynamic parser)
+
+        private static void pagesToEntries(string workDir, dynamic parser)
         {
+            string baseDirFiles = Path.Combine(workDir, DUMP_PAGES_EXTRACT_DIR);
+            string fnMap = Path.Combine(baseDirFiles, PAGEMAP_FILE);
+
+            string tmpWorkDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
+            string fnEntries = Path.Combine(tmpWorkDir, ENTRIES_FILE); 
+
             Console.WriteLine("Parsing Wiktionary pages...");
             string pageBasePath = Path.GetDirectoryName(fnMap);
             int totalPageCount = 0;
@@ -81,7 +133,7 @@ namespace WiktionaryParser
             Console.Write(msg);
         }
 
-        static void entriesToDictDe(string fnEntries, string fnJson)
+        private static void entriesToDictDe(string fnEntries, string fnJson)
         {
             List<Entry> entries = new List<Entry>();
             var xformer = new WiktEntryTransformerDe();
@@ -113,8 +165,12 @@ namespace WiktionaryParser
             }
         }
 
-        static void getMarkupRu(string fnEntries, string fnBaseOut)
+        private static void getMarkupRu(string workDir)
         {
+            string entriesDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
+            string fnEntries = Path.Combine(entriesDir, ENTRIES_FILE);
+            string fnBaseOut = Path.Combine(entriesDir, ENTRIES_OUT_FILES_BASENAME);
+
             var poss = new Dictionary<string, int>();
             var meaningCurly = new Dictionary<string, int>();
             var enCurly = new Dictionary<string, int>();
@@ -144,7 +200,7 @@ namespace WiktionaryParser
             writeMarkupCounts(deCurly, fnBaseOut + "-curly-de.txt");
         }
 
-        static void writeMarkupCounts(Dictionary<string, int> counts, string fn)
+        private static void writeMarkupCounts(Dictionary<string, int> counts, string fn)
         {
             List<string> lst = new List<string>();
             foreach (var x in counts) lst.Add(x.Key);
@@ -156,22 +212,23 @@ namespace WiktionaryParser
             }
         }
 
-        static void inc(Dictionary<string, int> counter, string itm)
+        private static void inc(Dictionary<string, int> counter, string itm)
         {
             if (counter.ContainsKey(itm)) ++counter[itm];
             else counter[itm] = 1;
         }
 
-        static Regex reCurly = new Regex(@"{{[^}]+}}");
-
-        static void getMarkupRu(WiktEntry we, 
+        private static void getMarkupRu(WiktEntry we, 
             Dictionary<string, int> poss, 
             Dictionary<string, int> meaningCurly, 
             Dictionary<string, int> enCurly, 
             Dictionary<string, int> deCurly)
         {
+            Regex reCurly = new Regex(@"{{[^}]+}}");
+            
             inc(poss, we.PoS);
             MatchCollection mm;
+
             foreach (var meaning in we.Meanings)
             {
                 mm = reCurly.Matches(meaning);
@@ -185,8 +242,14 @@ namespace WiktionaryParser
             }
         }
 
-        static void cleanupRu(string fnIn, string fnOut, string fnToLem)
+        private static void cleanupRu(string workDir)
         {
+            string tmpWorkDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
+            string fnIn = Path.Combine(tmpWorkDir, ENTRIES_FILE);
+            string fnOut = Path.Combine(tmpWorkDir, CLEANUP_FILE);
+            string fnToLem = Path.Combine(tmpWorkDir, CLEANUP_PLAIN_FILE);
+
+
             int cntIn = 0, cntKept = 0, cntTrans = 0, cntSpacee = 0;
             RuEntryCleaner cleaner = new RuEntryCleaner();
             string line;
@@ -224,8 +287,15 @@ namespace WiktionaryParser
             Console.WriteLine(cntIn + " entries / " + cntKept + " kept / " + cntTrans + " with translations / " + cntSpacee + " multiword");
         }
 
-        static void mergeLemsRu(string fnIn, string fnPlain, string fnLems, string fnOut)
+        private static void mergeLemsRu(string workDir)
         {
+            string tmpWorkDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
+            string fnIn = Path.Combine(tmpWorkDir, CLEANUP_FILE);
+            string fnPlain = Path.Combine(tmpWorkDir, CLEANUP_PLAIN_FILE);
+            string fnLems = Path.Combine(tmpWorkDir, CLEANUP_LEM_FILE);
+            string fnOut = Path.Combine(workDir, RUWIKTIONARY_EXPORT_FILE);
+
+
             Dictionary<string, string> plainToLem = new Dictionary<string, string>();
             string l1, l2;
             using (StreamReader srPlain = new StreamReader(fnPlain))
@@ -270,41 +340,77 @@ namespace WiktionaryParser
             }
         }
 
+
+        /**
+         * Call Yandex mystem lemmatizer as system process with:
+         * mystem.exe -c [workDir]/ruwiktionary-work/03-plain.txt [workDir]/_materials/ruwiktionary-work/03-lem.txt
+         */
+        private static void callMyStem(string mystemPath, string workDir)
+        {
+            string tmpWorkDir = Path.Combine(workDir, DUMP_TMP_WORK_DIR);
+            string fnToLem = Path.Combine(tmpWorkDir, CLEANUP_PLAIN_FILE);
+            string fnLems = Path.Combine(tmpWorkDir, CLEANUP_LEM_FILE);
+
+            if (!Directory.Exists(tmpWorkDir)) Directory.CreateDirectory(tmpWorkDir);
+
+            ProcessStartInfo start = new ProcessStartInfo();
+            // start.EnvironmentVariables.Add("pymystem3.constants.MYSTEM_BIN", toAbsolutePath(SCRIPTS_DIR_PATH));
+            start.FileName = "\"" + mystemPath + "\"";
+            start.Arguments = " -c \"" + fnToLem + "\" \"" + fnLems + "\"";
+            start.UseShellExecute = false;
+            start.CreateNoWindow = true;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+
+            try
+            {
+                using (Process process = Process.Start(start))
+                {
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        string stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from program
+                        string result = reader.ReadToEnd(); // Here is the result of StdOut
+
+                        if (stderr != null && stderr.Length > 0)
+                        {
+                            throw new InvalidProgramException("Errors occured by run 'Mystem': " + stderr);
+                        }
+                    }
+                }
+            }
+            catch (Win32Exception e)
+            {
+                throw new InvalidProgramException("Cannot run 'Mystem': " + e.Message, e);
+            }
+
+
+        }
+
+
         static void Main(string[] args)
         {
-            //dumpToEntries("_materials/dewiktionary-20200201-pages-articles.xml", "_work/_dewiktionary-01.txt", new MDParserDe());
-            //entriesToDictDe("_work/_dewiktionary-01.txt", "_materials/dewiktionary.json");
+            // The main work directory
+            string workDir = new FileInfo(MATERIALS_DIR_PATH).FullName;
+            // Path to Ruwiktionary import file nane
+            string dumpFile         = "C:/Projekte/ListenClosely/_materials/ruwiktionary-20221120-pages-articles.xml";
+            // Absolute path to executable mystem.exe (part of Yandex MyStem)
+            string mystemPath       = "C:/Projekte/ListenClosely/Scripts/mystem.exe";
 
-            // dumpToFiles("_materials/ruwiktionary-source/ruwiktionary-20211101-pages-articles.xml", "_materials/ruwiktionary-pages");
-            // pagesToEntries("_materials/ruwiktionary-pages/pagemap.txt", "_materials/ruwiktionary-work/01.txt", new MDParserRu());
-            // getMarkupRu("_materials/ruwiktionary-work/01.txt", "_materials/ruwiktionary-work/02");
-            // cleanupRu("_materials/ruwiktionary-work/01.txt", "_materials/ruwiktionary-work/03.txt", "_materials/ruwiktionary-work/03-plain.txt");
+            // IN -> 01
+            dumpToFiles(dumpFile, workDir);
+            // 
+            pagesToEntries(workDir, new MDParserRu());
+            // 01 -> 02
+            getMarkupRu(workDir);
+            // 02 -> 03
+            cleanupRu(workDir);
+
             // Manual step: lemmatize multi-word heads
             // mystem.exe -c ../_materials/ruwiktionary-work/03-plain.txt ../_materials/ruwiktionary-work/03-lem.txt
-            mergeLemsRu("_materials/ruwiktionary-work/03.txt", "_materials/ruwiktionary-work/03-plain.txt", "_materials/ruwiktionary-work/03-lem.txt", "_materials/ruwiktionary.txt");
-          
-            // Console.WriteLine("Press Enter to exit.");
-            // Console.ReadLine();
+            callMyStem(mystemPath, workDir);
 
-            // DBG: Test conversion of one page
-            // string fnOut = "test-odin";
-            // string title = "один";
-            // string fnPage = "0495/0495167";
-            // string fnOut = "test-ottuda";
-            // string title = "оттуда";
-            // string fnPage = "0138/0138883";
-            // string fnOut = "test-nesti-ahineyu";
-            // string title = "нести ахинею";
-            // string fnPage = "0457/0457227";
-            // string fnOut = "test-ahineya";
-            // string title = "ахинея";
-            // string fnPage = "0000/0000060";
-            // using (var sw = new StreamWriter("_materials/ruwiktionary-work/" + fnOut + ".txt"))
-            // {
-            //     parsePage(title, "_materials/ruwiktionary-pages/" + fnPage + ".txt", sw, new MDParserRu());
-            // }
-            // getMarkupRu("_materials/ruwiktionary-work/" + fnOut + ".txt", "_materials/ruwiktionary-work/test-02");
-            // cleanupRu("_materials/ruwiktionary-work/" + fnOut + ".txt", "_materials/ruwiktionary-work/test-03.txt", "_materials/ruwiktionary-work/test-03-plain.txt");
+            // 03 -> OUT
+            mergeLemsRu(workDir);
 
         }
     }

@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <StartupObject></StartupObject>
+    <StartupObject>WiktionaryParser.Program</StartupObject>
+    <Title>RuWiktionaryDumpConverter</Title>
   </PropertyGroup>
 
   <ItemGroup>
