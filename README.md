@@ -57,7 +57,7 @@ and save it in the same folder as Python
     - Save the downloaded file locally
     - Detect the absolute path to executable `mystem.exe`
     - The current implementation is still done as a call from  MS Visual Studio IDE (work in progress). Open Program.cs of the project WiktionaryParser, navigate to the main method, set the required variables (see comments) and execute the program. It will extract the data from RuWiktionary dump and create a dictionary file `ruwiktionary.txt. Note this work requires many gigabytes free disk space and about 5 hours of work time.
-    - TODO: provide as execurable
+    - TODO: provide as executable
 
 ## Dev: Setup MS Visual Studio
 
