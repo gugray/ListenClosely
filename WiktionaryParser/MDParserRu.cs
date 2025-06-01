@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace WiktionaryParser
@@ -9,7 +7,7 @@ namespace WiktionaryParser
     {
         static readonly string acuteAccent = char.ConvertFromUtf32(0x0301);
         static readonly string doubleGrave = char.ConvertFromUtf32(0x030f);
-       
+
         const string kMorf = "=== Морфологические и синтаксические свойства ===";
         const string kPron = "=== Произношение ===";
         const string kExpr = "=== Тип и синтаксические свойства сочетания ===";

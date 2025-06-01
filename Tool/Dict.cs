@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Transactions;
+using static Grpc.Core.Metadata;
 
 // Openrussian: разоряться -> └ throw away
 
@@ -11,6 +14,9 @@ namespace Tool
         const string srcOpenRussian = "openrussian";
         const string srcCustom = "custom";
         const string srcWiktionary = "wiktionary";
+
+        public static readonly string acuteAccent = char.ConvertFromUtf32(0x0301);
+
 
         /// <summary>
         /// One meaning of a headword in one language
@@ -62,7 +68,7 @@ namespace Tool
                 // other lang == null; move up
                 if (compLangBlank && !myLangBlank) return 1;
                 // both Lang not null
-                if(!myLangBlank && !compLangBlank)
+                if (!myLangBlank && !compLangBlank)
                 {
                     int cmp = Lang.CompareTo(comparePart.Lang);
                     // my Lang is "de"; move up
@@ -107,23 +113,6 @@ namespace Tool
             public List<Meaning> Meanings = new List<Meaning>();
         }
 
-        /// <summary>
-        /// Maps headwords (lemmas) to their dictionary entries.
-        /// </summary>
-        Dictionary<string, List<Entry>> headToEntries = new Dictionary<string, List<Entry>>();
-
-        /// <summary>
-        /// Key is a multi-word headword; value is each of the constituent words.
-        /// </summary>
-        Dictionary<string, List<string>> wdToMultiHeads = new Dictionary<string, List<string>>();
-
-        /// <summary>
-        /// Maps alternatives to thei canonical form.
-        /// </summary>
-        Dictionary<string, string> alts = new Dictionary<string, string>();
-
-        public static readonly string acuteAccent = char.ConvertFromUtf32(0x0301);
-
         class OpenRussianWord
         {
             public string DisplayHead;
@@ -131,102 +120,28 @@ namespace Tool
         }
 
         /// <summary>
-        /// Parses OpenRussian from CSV source and constructs dictionary.
+        /// Public constructor
         /// </summary>
-        public static Dict FromOpenRussian(string fnWords, string fnTrans)
+        public Dict()
         {
-            //TODO: └  ┘
-            Dict dict = new Dict();
-            Dictionary<string, List<OpenRussianWord>> headToORWords = new Dictionary<string, List<OpenRussianWord>>();
-            Dictionary<string, string> alts = new Dictionary<string, string>();
-            Dictionary<int, List<string>> idToTransDe = new Dictionary<int, List<string>>();
-            Dictionary<int, List<string>> idToTransEn = new Dictionary<int, List<string>>();
-            string line;
-            using (StreamReader sr = new StreamReader(fnWords))
-            {
-                sr.ReadLine();
-                while ((line = sr.ReadLine()) != null)
-                {
-                    string[] parts = line.Split('\t');
-                    if (parts.Length < 5) continue;
-                    string head = parts[2];
-                    string displayHead = parts[3].Replace("'", acuteAccent);
-                    List<OpenRussianWord> orWords;
-                    if (headToORWords.ContainsKey(head)) orWords = headToORWords[head];
-                    else
-                    {
-                        orWords = new List<OpenRussianWord>();
-                        headToORWords[head] = orWords;
-                    }
-                    try
-                    {
-                        orWords.Add(new OpenRussianWord { DisplayHead = displayHead, Id = int.Parse(parts[0]) });
-                        string alt = head.Replace("ё", "е");
-                        if (alt != head) alts[alt] = head;
-                    }
-                    catch (Exception e)
-                    {
-                        // Console.WriteLine("Error by parse as int the first part of line, split by tabs: '" + line + "' ('" + parts[0] + "')");
-                    }
-                }
-            }
-            using (StreamReader sr = new StreamReader(fnTrans))
-            {
-                sr.ReadLine();
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.IndexOfAny(new[] {'└', '┘'}) != -1)
-                    {
-                        line = line.Replace("└", "");
-                        line = line.Replace("┘", "");
-                    }
-                    string[] parts = line.Split('\t');
-                    if (parts.Length < 5) continue;
-                    Dictionary<int, List<string>> idToTrans;
-
-                    if (parts[1] == "en") idToTrans = idToTransEn;
-                    else if (parts[1] == "de") idToTrans = idToTransDe;
-                    else throw new Exception("Unexpected language code: " + parts[1] + " detected in Openrussion file translations.csv");
-
-                    int id = int.Parse(parts[2]);
-                    List<string> trans;
-                    if (idToTrans.ContainsKey(id)) trans = idToTrans[id];
-                    else
-                    {
-                        trans = new List<string>();
-                        idToTrans[id] = trans;
-                    }
-                    trans.Add(parts[4]);
-                }
-            }
-            foreach (var orItm in headToORWords)
-            {
-                string head = orItm.Key;
-                foreach (var orWord in orItm.Value)
-                {
-                    if (idToTransDe.ContainsKey(orWord.Id))
-                    {
-                        var meanings = new List<Meaning>();
-                        foreach (var y in idToTransDe[orWord.Id])
-                            meanings.Add(new Meaning { Translation = y, Src = srcOpenRussian, Lang = "de" });
-                        var entry = dict.addOrGetEntry(head, orWord.DisplayHead);
-                        entry.Meanings.AddRange(meanings);
-                    }
-                    if (idToTransEn.ContainsKey(orWord.Id))
-                    {
-                        var meanings = new List<Meaning>();
-                        foreach (var y in idToTransEn[orWord.Id])
-                            meanings.Add(new Meaning { Translation = y, Src = srcOpenRussian, Lang = "en" });
-                        var entry = dict.addOrGetEntry(head, orWord.DisplayHead);
-                        entry.Meanings.AddRange(meanings);
-                    }
-                }
-            }
-            foreach (var x in alts) dict.alts[x.Key] = x.Value;
-            return dict;
         }
 
-        Entry addOrGetEntry(string head, string displayHead)
+        /// <summary>
+        /// Maps headwords (lemmas) to their dictionary entries.
+        /// </summary>
+        private Dictionary<string, List<Entry>> headToEntries = new Dictionary<string, List<Entry>>();
+
+        /// <summary>
+        /// Key is a multi-word headword; value is each of the constituent words.
+        /// </summary>
+        private Dictionary<string, List<string>> wdToMultiHeads = new Dictionary<string, List<string>>();
+
+        /// <summary>
+        /// Maps alternatives to thei canonical form.
+        /// </summary>
+        private Dictionary<string, string> alts = new Dictionary<string, string>();
+
+        private Entry addOrGetEntry(string head, string displayHead)
         {
             if (!headToEntries.ContainsKey(head))
             {
@@ -246,16 +161,16 @@ namespace Tool
             return x;
         }
 
-        void addCustomMeaning(string rawHead, string line, bool isIdiom)
+        private void addCustomMeaning(string rawHead, string line, bool isIdiom)
         {
             string displayHead = rawHead.Replace("'", acuteAccent);
             string head = rawHead.Replace("'", "");
 
             string lang = "";
-            if(line.StartsWith("["))
+            if (line.StartsWith("["))
             {
-                string [] split = line.Split("]");
-                if(split.Length > 1)
+                string[] split = line.Split("]");
+                if (split.Length > 1)
                 {
                     lang = split[0].Substring(1);
                     line = line.Substring(line.IndexOf("]") + 1);
@@ -297,7 +212,7 @@ namespace Tool
             entry.Meanings.AddRange(meanings);
         }
 
-        void removeRawHead(string rawHead)
+        private void removeRawHead(string rawHead)
         {
             string displayHead = rawHead.Replace("'", acuteAccent);
             string head = rawHead.Replace("'", "");
@@ -312,9 +227,193 @@ namespace Tool
             }
         }
 
+        /// <summary>
+        /// Parses OpenRussian from CSV source and constructs dictionary.
+        /// <param name="fnWords">The path to OpenRussian file 'words.csv'.</param>
+        /// <param name="fnTrans">The path to OpenRussian file 'translations.csv'.</param>
+        /// </summary>
+        public void UpdateFromOpenRussian(string fnWords, string fnTrans)
+        {
+            Dictionary<string, List<OpenRussianWord>> headToORWords = new Dictionary<string, List<OpenRussianWord>>();
+            //Dictionary<string, string> alts = new Dictionary<string, string>();
+            Dictionary<int, List<string>> idToTransDe = new Dictionary<int, List<string>>();
+            Dictionary<int, List<string>> idToTransEn = new Dictionary<int, List<string>>();
+            string line;
+            using (StreamReader sr = new StreamReader(fnWords))
+            {
+                sr.ReadLine();
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] parts = line.Split('\t');
+                    if (parts.Length < 5) continue;
+                    string head = parts[2];
+                    string displayHead = parts[3].Replace("'", acuteAccent);
+                    List<OpenRussianWord> orWords;
+                    if (headToORWords.ContainsKey(head)) orWords = headToORWords[head];
+                    else
+                    {
+                        orWords = new List<OpenRussianWord>();
+                        headToORWords[head] = orWords;
+                    }
+                    try
+                    {
+                        orWords.Add(new OpenRussianWord { DisplayHead = displayHead, Id = int.Parse(parts[0]) });
+                        string alt = head.Replace("ё", "е");
+                        if (alt != head) alts[alt] = head;
+                    }
+                    catch (Exception e)
+                    {
+                        // Console.WriteLine("Error by parse as int the first part of line, split by tabs: '" + line + "' ('" + parts[0] + "')");
+                    }
+                }
+            }
+            using (StreamReader sr = new StreamReader(fnTrans))
+            {
+                sr.ReadLine();
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.IndexOfAny(new[] { '└', '┘' }) != -1)
+                    {
+                        line = line.Replace("└", "");
+                        line = line.Replace("┘", "");
+                    }
+                    string[] parts = line.Split('\t');
+                    if (parts.Length < 5) continue;
+                    Dictionary<int, List<string>> idToTrans;
+
+                    if (parts[1] == "en") idToTrans = idToTransEn;
+                    else if (parts[1] == "de") idToTrans = idToTransDe;
+                    else throw new Exception("Unexpected language code: " + parts[1] + " detected in Openrussion file translations.csv");
+
+                    int id = int.Parse(parts[2]);
+                    List<string> trans;
+                    if (idToTrans.ContainsKey(id)) trans = idToTrans[id];
+                    else
+                    {
+                        trans = new List<string>();
+                        idToTrans[id] = trans;
+                    }
+                    trans.Add(parts[4]);
+                }
+            }
+
+            foreach (var orItm in headToORWords)
+            {
+                string head = orItm.Key;
+                foreach (var orWord in orItm.Value)
+                {
+                    if (idToTransDe.ContainsKey(orWord.Id))
+                    {
+                        var entry = addOrGetEntry(head, orWord.DisplayHead);
+                        var meanings = new List<Meaning>();
+
+                        foreach (var y in idToTransDe[orWord.Id])
+                        {
+                            AddMeaningToEntry(entry, new Meaning { Translation = y, Src = srcOpenRussian, Lang = "de" });
+                        }
+                    }
+
+                    if (idToTransEn.ContainsKey(orWord.Id))
+                    {
+                        var entry = addOrGetEntry(head, orWord.DisplayHead);
+                        var meanings = new List<Meaning>();
+                        foreach (var y in idToTransEn[orWord.Id])
+                        {
+                            AddMeaningToEntry(entry, new Meaning { Translation = y, Src = srcOpenRussian, Lang = "en" });
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds further target languages to dictionary from the pre-processed Wiktionary dump.
+        /// </summary>
+        /// <param name="fnDict">Pre-processed Wiktionary dump file name.</param>
+        /// <param name="russian">If true, also adds Russian definitions.</param>
+        /// <param name="langs">List of languages to extract.</param>
+        public void UpdateFromRuWiktionary(string fnDict, bool russian, string[] langs)
+        {
+            string line;
+            List<string> entryLines = new List<string>();
+            using (var sr = new StreamReader(fnDict))
+            {
+                while ((line = sr.ReadLine()) != null)
+                {
+                    // Empty line separates entries
+                    if (line != "" || entryLines.Count == 0)
+                    {
+                        entryLines.Add(line);
+                        continue;
+                    }
+
+                    // Get wiktionary entry, create dictionary entry
+                    var we = WiktEntry.FromLinesRu(entryLines);
+                    var displayHead = we.Pron == "" ? we.Lemma : we.Pron;
+                    // New entry begins
+                    entryLines.Clear();
+
+                    // Got translations?
+                    var translations = new List<string>();
+                    foreach (var trans in we.Translations)
+                    {
+                        if (trans.Length < 3) continue;
+                        string lc = trans.Substring(0, 2);
+                        if (Array.IndexOf(langs, lc) == -1) continue;
+                        translations.Add(trans);
+                    }
+                    if (!russian && translations.Count == 0) continue;
+
+                    string head = we.Lemma;
+                    Entry entry = addOrGetEntry(head, displayHead);
+                    // Retrieve translations
+                    foreach (var trans in translations)
+                    {
+                        // Only care about requested languages
+                        string lang = trans.Substring(0, 2);
+
+                        int ix = trans.IndexOf('\t');
+                        ix = trans.IndexOf('\t', ix + 1);
+                        if (ix == -1) continue;
+                        string translation = trans.Substring(ix + 1);
+
+                        AddMeaningToEntry(entry, new Meaning { Translation = translation, Src = srcWiktionary, Lang = lang });
+                    }
+
+                    // Retrieve Russian glosses
+                    if (russian)
+                    {
+                        foreach (var mean in we.Meanings)
+                        {
+                            if (mean.Length < 3) continue;
+                            AddMeaningToEntry(entry, new Meaning { Translation = mean.Substring(2), Src = srcWiktionary, Lang = "ru" });
+                        }
+                    }
+
+                    // Multi-word head: file separately
+                    if (head.IndexOf(' ') != -1)
+                    {
+                        string[] wds = head.Split(' ');
+                        foreach (var wd in wds)
+                        {
+                            if (!wdToMultiHeads.ContainsKey(wd)) wdToMultiHeads[wd] = new List<string>();
+                            wdToMultiHeads[wd].Add(head);
+                        }
+                    }
+                    string alt = head.Replace("ё", "е");
+                    if (alt != head) alts[alt] = head;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Adds translations from customer dictionary.
+        /// </summary>
+        /// <param name="fnCustDictPath">The path to the customer dictionary file.</param>
         public void UpdateFromCustomList(string fnCustDictPath)
         {
-            if(!File.Exists(fnCustDictPath))
+            if (!File.Exists(fnCustDictPath))
             {
                 throw new FileNotFoundException("File not found: '" + fnCustDictPath + "'");
             }
@@ -381,12 +480,123 @@ namespace Tool
                 }
             }
         }
+        private void AddMeaningToEntry(Entry entry, Meaning meaning)
+        {
+            // sort out excact duplicates
+            // moved to PostFilterTranslationsByLang
+            // if (entry.Meanings.Find(x => x.Translation.ToUpper() == meaning.Translation.ToUpper()) != null) return;
+
+            // add translations from RuWiki for the language always (may cause duplicates)
+            entry.Meanings.Add(meaning);
+        }
+
+
+        /// <summary>
+        /// Filter out translations (for "en" an "de" langueges only) as per source.
+        /// Reason: the de and en Translations are provided in both used dictionaries.
+        /// If AddOnlyMissing is False, we simple collect translations for EN & DE from both sources.
+        /// If AddOnlyMissing is True, we compair number of translation for each language, DE and EN, 
+        /// found in one source, with the number of translations found in the second one. 
+        /// Translations from the source hawing less entries will be ignored. 
+        /// If the same number of teranslations found, we will compare the sum of lengths of translations.
+        /// It this number is also the same, the OpenRussian wins.
+        /// </summary>
+        /// <param name="AddOnlyMissing">The flag for handle the translationd in "en" an "de" as per source.</param>
+        public void FilterBySourceAndLang(bool AddOnlyMissing)
+        {
+            foreach (string head in headToEntries.Keys)
+            {
+                List<Entry> entries4head = headToEntries[head]; 
+                foreach (Entry entry in entries4head)
+                {
+                    List<Meaning> DeMeanings = new List<Meaning>();
+                    List<Meaning> EnMeanings = new List<Meaning>();
+                    // translations in other languages than de / en
+                    List<Meaning> other_meanings = entry.Meanings.Where(m => m.Lang != "de" && m.Lang != "en").ToList();
+
+
+                    List<Meaning> PreferredDeMeanings = new List<Meaning>();
+                    List<Meaning> PreferredEnMeanings = new List<Meaning>();
+                    if (AddOnlyMissing)
+                    {
+                        // srcOpenRussian
+                        // translations for language "de" from srcOpenRussian
+                        List<Meaning> OpenRussianDeMeanings = entry.Meanings.Where(m => m.Src == srcOpenRussian && m.Lang == "de").ToList();
+                        long OpenRussianDeMeaningsCount = OpenRussianDeMeanings.Count;
+                        // total length of all translations in language "de" from srcOpenRussian
+                        long OpenRussianDeMeaningsLength = 0;
+                        foreach (Meaning m in OpenRussianDeMeanings) { OpenRussianDeMeaningsLength += m.Translation.Length; }
+
+                        // translations for language "en" from srcOpenRussian
+                        List<Meaning> OpenRussianEnMeanings = entry.Meanings.Where(m => m.Src == srcOpenRussian && m.Lang == "en").ToList();
+                        long OpenRussianEnMeaningsCount = OpenRussianEnMeanings.Count;
+                        // total length of all translations in language "en" from srcOpenRussian
+                        long OpenRussianEnMeaningsLength = 0;
+                        foreach (Meaning m in OpenRussianEnMeanings) { OpenRussianEnMeaningsLength += m.Translation.Length; }
+
+                        // srcWiktionary
+                        // translations for language "de" from srcWiktionary
+                        List<Meaning> RuWikiDeMeanings = entry.Meanings.Where(m => m.Src == srcWiktionary && m.Lang == "de").ToList();
+                        long RuWikiDeMeaningsCount = RuWikiDeMeanings.Count;
+                        // total length of all translations in language "de" from srcWiktionary
+                        long RusWikiDeMeaningsLength = 0;
+                        foreach (Meaning m in RuWikiDeMeanings) { RusWikiDeMeaningsLength += m.Translation.Length; }
+
+                        // translations for language "en" from srcWiktionary
+                        List<Meaning> RuWikiEnMeanings = entry.Meanings.Where(m => m.Src == srcWiktionary && m.Lang == "en").ToList();
+                        long RuWikiEnMeaningsCount = RuWikiEnMeanings.Count;
+                        // total length of all translations in language "en" from srcWiktionary
+                        long RusWikiEnMeaningsLength = 0;
+                        foreach (Meaning m in RuWikiEnMeanings) { RusWikiEnMeaningsLength += m.Translation.Length; }
+
+                        PreferredDeMeanings =
+                            OpenRussianDeMeaningsCount < RuWikiDeMeaningsCount ? RuWikiDeMeanings :
+                            OpenRussianDeMeaningsCount > RuWikiDeMeaningsCount ? OpenRussianDeMeanings :
+                            OpenRussianDeMeaningsLength < RusWikiDeMeaningsLength ? RuWikiDeMeanings :
+                            OpenRussianDeMeanings;
+                        PreferredEnMeanings =
+                            OpenRussianEnMeaningsCount < RuWikiEnMeaningsCount ? RuWikiEnMeanings :
+                            OpenRussianEnMeaningsCount > RuWikiEnMeaningsCount ? OpenRussianEnMeanings :
+                            OpenRussianEnMeaningsLength < RusWikiEnMeaningsLength ? RuWikiEnMeanings :
+                            OpenRussianEnMeanings;
+                    }
+                    else
+                    {
+                        PreferredDeMeanings = entry.Meanings.Where(m => m.Lang == "de" ).ToList();
+                        PreferredEnMeanings = entry.Meanings.Where(m => m.Lang == "en").ToList();
+                    }
+
+
+                    foreach (Meaning meaning in PreferredDeMeanings)
+                    {
+                        // sort out excact duplicates
+                        if (DeMeanings.Find(x => x.Translation.ToUpper() == meaning.Translation.ToUpper()) != null) continue;
+                        DeMeanings.Add(meaning);
+                    }
+                    foreach (Meaning meaning in PreferredEnMeanings)
+                    {
+                        // sort out excact duplicates
+                        if (EnMeanings.Find(x => x.Translation.ToUpper() == meaning.Translation.ToUpper()) != null) continue;
+                        EnMeanings.Add(meaning);
+                    }
+
+                    // Overwrite collected meanings in the entry after rebuild the list
+                    entry.Meanings.Clear();
+                    entry.Meanings.AddRange(DeMeanings);
+                    entry.Meanings.AddRange(EnMeanings);
+                    entry.Meanings.AddRange(other_meanings);
+
+                    // custom sort entries by Lang
+                    entry.Meanings.Sort();
+                }
+            }
+        }
 
         /// <summary>
         /// Provide an additional sort of translations by Lang: 
-        /// - first, place the entries without a language mark; 
-        /// - then, the entries with "de"
-        /// - the, sorted by Lang alphabetically
+        /// - first, place the entries without a language mark if any; 
+        /// - then, the entries with "DE"
+        /// - then, sorted by Lang alphabetically
         /// </summary>
         public void SortByLang()
         {
@@ -400,86 +610,6 @@ namespace Tool
                 }
             }
         }
-
-        /// <summary>
-        /// Adds further target languages to dictionary from the pre-processed Wiktionary dump.
-        /// </summary>
-        /// <param name="fnDict">Pre-processed Wiktionary dump file name.</param>
-        /// <param name="russian">If true, also adds Russian definitions.</param>
-        /// <param name="langs">List of languages to extract.</param>
-        public void UpdateFromRuWiktionary(string fnDict, bool russian, string[] langs)
-        {
-            string line;
-            List<string> entryLines = new List<string>();
-            using (var sr = new StreamReader(fnDict))
-            {
-                while ((line = sr.ReadLine()) != null)
-                {
-                    // Empty line separates entries
-                    if (line != "" || entryLines.Count == 0)
-                    {
-                        entryLines.Add(line);
-                        continue;
-                    }
-
-                    // Get wiktionary entry, create dictionary entry
-                    var we = WiktEntry.FromLinesRu(entryLines);
-                    var displayHead = we.Pron == "" ? we.Lemma : we.Pron;
-                    // New entry begins
-                    entryLines.Clear();
-
-                    // Got translations?
-                    var translations = new List<string>();
-                    foreach (var trans in we.Translations)
-                    {
-                        if (trans.Length < 3) continue;
-                        string lc = trans.Substring(0, 2);
-                        if (Array.IndexOf(langs, lc) == -1) continue;
-                        translations.Add(trans);
-                    }
-                    if (!russian && translations.Count == 0) continue;
-
-                    string head = we.Lemma;
-                    Entry entry = addOrGetEntry(head, displayHead);
-                    // Retrieve translations
-                    foreach (var trans in translations)
-                    {
-                        // Only care about requested languages
-                        string lc = trans.Substring(0, 2);
-                        int ix = trans.IndexOf('\t');
-                        ix = trans.IndexOf('\t', ix + 1);
-                        if (ix == -1) continue;
-                        string trg = trans.Substring(ix + 1);
-                        if (entry.Meanings.Find(x => x.Translation == trg) != null) continue;
-                        entry.Meanings.Add(new Meaning { Translation = trg, Src = srcWiktionary, Lang = lc });
-                    }
-
-                    // Retrieve Russian glosses
-                    if (russian)
-                    {
-                        foreach (var mean in we.Meanings)
-                        {
-                            if (mean.Length < 3) continue;
-                            entry.Meanings.Add(new Meaning { Translation = mean.Substring(2), Src = srcWiktionary, Lang = "ru" });
-                        }
-                    }
-
-                    // Multi-word head: file separately
-                    if (head.IndexOf(' ') != -1)
-                    {
-                        string[] wds = head.Split(' ');
-                        foreach (var wd in wds)
-                        {
-                            if (!wdToMultiHeads.ContainsKey(wd)) wdToMultiHeads[wd] = new List<string>();
-                            wdToMultiHeads[wd].Add(head);
-                        }
-                    }
-                    string alt = head.Replace("ё", "е");
-                    if (alt != head) alts[alt] = head;
-                }
-            }
-        }
-
 
         public void indexDisplayedHeaders()
         {
@@ -518,7 +648,7 @@ namespace Tool
          * Detect collocations
          * @mwHead as collocation
          */
-        bool isMWHit(Segment segm, string mwHead)
+        private bool isMWHit(Segment segm, string mwHead)
         {
             string[] expr = mwHead.Split(' ');
             int segmIx = 0, exprIx = 0;
@@ -561,10 +691,10 @@ namespace Tool
                 foreach (var word in segm.Words)
                 {
                     string wdText = word.Lemma;
-                    if (!string.IsNullOrEmpty(word.AccentedLemma) && (!word.AccentedLemma.Equals(wdText) || word.AccentedLemma.Contains("ё")) )
+                    if (!string.IsNullOrEmpty(word.AccentedLemma) && (!word.AccentedLemma.Equals(wdText) || word.AccentedLemma.Contains("ё")))
                     {
                         wdText = word.AccentedLemma;
-                    } 
+                    }
                     else
                     {
                         // Russian normalization
@@ -583,7 +713,7 @@ namespace Tool
             }
         }
 
-        static void addToWord(Word word, string head, List<Entry> hits,
+        private void addToWord(Word word, string head, List<Entry> hits,
             List<DictEntry> entries, Dictionary<string, List<int>> headToIx)
         {
             foreach (var hit in hits)
@@ -597,7 +727,7 @@ namespace Tool
                     de.Senses.Add(ds);
                 }
                 int ix = entries.Count;
-                if(!headToIx.ContainsKey(head))
+                if (!headToIx.ContainsKey(head))
                 {
                     headToIx[head] = new List<int>();
                 }
@@ -607,7 +737,7 @@ namespace Tool
             }
         }
 
-        void annotateWord(Segment segm, Word word, List<DictEntry> entries, Dictionary<string, List<int>> headToIx,
+        private void annotateWord(Segment segm, Word word, List<DictEntry> entries, Dictionary<string, List<int>> headToIx,
             string wdText, string wdLo)
         {
             // Text

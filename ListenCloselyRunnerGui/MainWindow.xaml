@@ -8,17 +8,18 @@
         mc:Ignorable="d"
         Title="ListenClosely" 
         Width="600" 
-        Height="290" 
+        Height="330" 
         MinWidth="600" 
-        MinHeight="290" 
+        MinHeight="330" 
         MaxWidth="600" 
-        MaxHeight="290" 
-        ResizeMode="NoResize" Icon="/Resources/logo.ico">
+        MaxHeight="330" 
+        ResizeMode="NoResize" 
+        Icon="/Resources/logo.ico">
     <Grid 
-    Height="250" 
-    Width="550" 
+    Height="287" 
+    Width="540" 
     HorizontalAlignment="Center" 
-    VerticalAlignment="Top">
+    VerticalAlignment="Center">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="40"/>
@@ -29,6 +30,8 @@
             <ColumnDefinition Width="90"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -48,7 +51,7 @@
             Margin="10,5,0,5"
             FontSize="12"
             >Abbreviation:</TextBlock>
-        
+
         <TextBox 
             x:Name="F_ABBREVIATION" 
             AutomationProperties.Name="F_ABBREVIATION" 
@@ -252,7 +255,7 @@
             Margin="10,5,0,5"
             FontSize="12"
             >Title:</TextBlock>
-        
+
         <TextBox 
             x:Name="F_TITLE" 
             AutomationProperties.Name="F_TITLE" 
@@ -321,6 +324,28 @@
             />
 
         <TextBlock 
+            Grid.Row="6"
+            Grid.Column="0"
+            FontWeight="Bold" 
+            Width="200"
+            HorizontalAlignment="Left" 
+            Margin="10,5,0,5"
+            FontSize="12"
+            >Only missing:</TextBlock>        
+        
+        <CheckBox 
+            x:Name="C_ADD_IF_MISSING" 
+            AutomationProperties.Name="C_ADD_IF_MISSING" 
+            AutomationProperties.AutomationId="C_ADD_IF_MISSING"
+            Grid.Row="6"
+            Grid.Column="1" 
+            Width="20" 
+            HorizontalAlignment="Left" 
+            IsChecked="True"
+            Margin="0,5,0,5"
+            />        
+        
+        <TextBlock 
             x:Name="L_STATE" 
             AutomationProperties.Name="L_STATE" 
             AutomationProperties.AutomationId="L_STATE"
@@ -333,7 +358,7 @@
             Width="430"
             Padding="5,5,5,5"
             VerticalAlignment="Center" 
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.ColumnSpan="6"
             Grid.Column="1"
             Background="black"
@@ -346,7 +371,7 @@
             AutomationProperties.Name="B_LOADRUN" 
             AutomationProperties.AutomationId="B_LOADRUN"
             Content="Load"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="2" 
             FontSize="11"      
             Width="60" 
@@ -364,7 +389,7 @@
             AutomationProperties.Name="B_RUN" 
             AutomationProperties.AutomationId="B_RUN"
             Content="Start"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="3" 
             FontSize="11"      
             Width="60" 
@@ -382,7 +407,7 @@
             AutomationProperties.Name="B_GOTO" 
             AutomationProperties.AutomationId="B_GOTO"
             Content="Out"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="4" 
             Width="60" 
             HorizontalAlignment="Left"
@@ -398,7 +423,7 @@
             AutomationProperties.Name="B_SAVERUN" 
             AutomationProperties.AutomationId="B_SAVERUN"
             Content="Save"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="5" 
             Width="70" 
             HorizontalAlignment="Left"
@@ -410,13 +435,13 @@
             Click="B_SAVERUN_Click"
             IsEnabled="False"
             />
-        
+
         <Button 
             x:Name="B_CLOSE" 
             AutomationProperties.Name="B_CLOSE" 
             AutomationProperties.AutomationId="B_CLOSE"
             Content="Close"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="6" 
             Width="70" 
             HorizontalAlignment="Left"

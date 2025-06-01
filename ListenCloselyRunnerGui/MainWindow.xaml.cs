@@ -19,22 +19,22 @@ namespace Tool
 
 
         private string lastSelectedRoot = Program.toAbsolutePath(".\\");
-        private string [] lastArgs = null;
+        private string[] lastArgs = null;
 
         public MainWindow()
         {
-           InitializeComponent();
-           InitializeComponents();
+            InitializeComponent();
+            InitializeComponents();
 
-           this.SourceInitialized += (x, y) =>
-           {
-               this.HideMinimizeAndMaximizeButtons();
-           };
+            this.SourceInitialized += (x, y) =>
+            {
+                this.HideMinimizeAndMaximizeButtons();
+            };
         }
-        
+
         private void InitializeComponents()
         {
-            L_STATE.Text = "Not started...";
+            L_STATE.Text = "Not started..."; 
             F_CUSDIC.IsEnabled = false;
             B_SELECTDIC.IsEnabled = false;
 
@@ -56,7 +56,7 @@ namespace Tool
 
             {
                 // count of title lines select box
-                for (int i=0; i <= 10; i++)
+                for (int i = 0; i <= 10; i++)
                 {
                     CMB_TITLE_LINES_CNT.Items.Add(getListItem("" + i));
                 }
@@ -77,7 +77,7 @@ namespace Tool
                 CMB_POST_FFMPEG_OFOS.Items.Add(getListItem(Program.SKIP));
                 CMB_POST_FFMPEG_OFOS.Items.Add(getListItem(Program.OVERWRITE));
                 CMB_POST_FFMPEG_OFOS.Items.Add(getListItem(Program.BACKUP));
-                CMB_POST_FFMPEG_OFOS.Items.Add(getListItem(Program.BREAK)); 
+                CMB_POST_FFMPEG_OFOS.Items.Add(getListItem(Program.BREAK));
 
                 CMB_POST_FFMPEG_OFOS.SelectedIndex = 0;
             }
@@ -138,7 +138,7 @@ namespace Tool
             {
                 saveRunSettings();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 showError("ERROR BY SAVE RUN FILE", ex.Message);
             }
@@ -152,7 +152,8 @@ namespace Tool
         private void B_GOTO_Click(object sender, RoutedEventArgs e)
         {
             string outDirPath = Program.getOutDirPath();
-            if (Directory.Exists(outDirPath)) { 
+            if (Directory.Exists(outDirPath))
+            {
                 Process.Start("explorer.exe", @outDirPath);
             }
         }
@@ -173,28 +174,45 @@ namespace Tool
 
             if (openFileDialog.ShowDialog() == true)
             {
-                string [] args = Program.readRunPropertiesArrayFromFile(openFileDialog.FileName);
-                if (args[0] != null) F_ABBREVIATION.Text = args[0];
-                if (args[1] != null) CMB_AUDIO_FORMAT.Text = args[1].ToLower();
-                if (args[2] != null) F_TITLE.Text = args[2];
-                if (args[3] != null) CMB_TITLE_LINES_CNT.Text = args[3];
-                if (args[4] != null) {
-                    try { C_VERSES.IsChecked = bool.Parse(args[4]); } 
-                    catch (Exception ex) { C_VERSES.IsChecked = false;  }
-                }
-                if (args[5] != null)
+                F_ABBREVIATION.Text = "";
+                CMB_AUDIO_FORMAT.Text = "";
+                F_TITLE.Text = "";
+                CMB_TITLE_LINES_CNT.Text = "0";
+                C_VERSES.IsChecked = false;
+                C_ADD_IF_MISSING.IsChecked = true;
+                C_SELECTDIC.IsChecked = false;
+                F_CUSDIC.Text = "";
+
+                Dictionary<string, string> args = Program.readRunPropertiesArrayFromFile(openFileDialog.FileName);
+                if (args[Program.PROP_KEY_ABBREVIATION] != null) F_ABBREVIATION.Text = args[Program.PROP_KEY_ABBREVIATION];
+                if (args[Program.PROP_KEY_AUDIO_FORMAT] != null) CMB_AUDIO_FORMAT.Text = args[Program.PROP_KEY_AUDIO_FORMAT].ToLower();
+                if (args[Program.PROP_KEY_TITLE] != null) F_TITLE.Text = args[Program.PROP_KEY_TITLE];
+                if (args[Program.PROP_KEY_SHIFT_TITLE_LINES] != null)
                 {
-                    C_SELECTDIC.IsChecked = true; 
-                    F_CUSDIC.Text = args[5];
+                    try { CMB_TITLE_LINES_CNT.Text = "" + int.Parse(args[Program.PROP_KEY_SHIFT_TITLE_LINES]); }
+                    catch (Exception ex) { CMB_TITLE_LINES_CNT.Text = "0"; }
                 }
-                if (args[6] != null) CMB_POST_LEMMATIZING_OFOS.Text = args[6].ToLower();
-                if (args[7] != null) CMB_POST_FFMPEG_OFOS.Text = args[7].ToLower();
-                if (args[8] != null) CMB_SPEECH_API_OFOS.Text = args[8].ToLower();
-                if (args[9] != null) CMB_LEMMATIZING_OFOS.Text = args[9].ToLower();
+                if (args[Program.PROP_KEY_VERSES] != null)
+                {
+                    try { C_VERSES.IsChecked = bool.Parse(args[Program.PROP_KEY_VERSES]); }
+                    catch (Exception ex) { C_VERSES.IsChecked = false; }
+                }
+                if (args[Program.PROP_KEY_ADD_ONLY_MISSING] != null)
+                {
+                    try { C_ADD_IF_MISSING.IsChecked = bool.Parse(args[Program.PROP_KEY_ADD_ONLY_MISSING]); }
+                    catch (Exception ex) { C_ADD_IF_MISSING.IsChecked = true; }
+                }
+                if (args[Program.PROP_KEY_CUSTOM_DIC] != null)
+                {
+                    C_SELECTDIC.IsChecked = true;
+                    F_CUSDIC.Text = args[Program.PROP_KEY_CUSTOM_DIC];
+                }
+                if (args[Program.PROP_KEY_POST_LEMMATIZING_OFOS] != null) CMB_POST_LEMMATIZING_OFOS.Text = args[Program.PROP_KEY_POST_LEMMATIZING_OFOS].ToLower();
+                if (args[Program.PROP_KEY_FFMPEG_OFOS] != null) CMB_POST_FFMPEG_OFOS.Text = args[Program.PROP_KEY_FFMPEG_OFOS].ToLower();
+                if (args[Program.PROP_KEY_SPEECH_API_OFOS] != null) CMB_SPEECH_API_OFOS.Text = args[Program.PROP_KEY_SPEECH_API_OFOS].ToLower();
+                if (args[Program.PROP_KEY_LEMMATIZING_OFOS] != null) CMB_LEMMATIZING_OFOS.Text = args[Program.PROP_KEY_LEMMATIZING_OFOS].ToLower();
             }
             // Open the run file and take over the settings
-                
-
         }
 
         /**
@@ -202,7 +220,7 @@ namespace Tool
          */
         private void saveRunSettings()
         {
-            if(lastArgs == null)
+            if (lastArgs == null)
             {
                 showError("ERROR BY SAVE RUN SETTINGS", "No collected arguments found");
                 return;
@@ -244,11 +262,11 @@ namespace Tool
                             {
                                 while ((line = sr.ReadLine()) != null)
                                 {
-                                    if(line.Trim().Length == 0) 
+                                    if (line.Trim().Length == 0)
                                     {
                                         line = "#";
                                     }
-                                    else if(!line.StartsWith("#"))
+                                    else if (!line.StartsWith("#"))
                                     {
                                         line = "# " + line;
                                     }
@@ -272,23 +290,24 @@ namespace Tool
                     sw.WriteLine(Program.PROP_KEY_TITLE + "=" + lastArgs[2]);
                     sw.WriteLine(Program.PROP_KEY_SHIFT_TITLE_LINES + "=" + lastArgs[3]);
                     sw.WriteLine(Program.PROP_KEY_VERSES + "=" + lastArgs[4]);
-                    sw.WriteLine(Program.PROP_KEY_CUSTOM_DIC + "=" + lastArgs[5]);
-                    sw.WriteLine(Program.PROP_KEY_POST_LEMMATIZING_OFOS + "=" + lastArgs[6]);
-                    sw.WriteLine(Program.PROP_KEY_FFMPEG_OFOS + "=" + lastArgs[7]);
-                    sw.WriteLine(Program.PROP_KEY_SPEECH_API_OFOS + "=" + lastArgs[8]);
-                    sw.WriteLine(Program.PROP_KEY_LEMMATIZING_OFOS + "=" + lastArgs[9]);
+                    sw.WriteLine(Program.PROP_KEY_ADD_ONLY_MISSING + "=" + lastArgs[5]);
+                    sw.WriteLine(Program.PROP_KEY_CUSTOM_DIC + "=" + lastArgs[6]);
+                    sw.WriteLine(Program.PROP_KEY_POST_LEMMATIZING_OFOS + "=" + lastArgs[7]);
+                    sw.WriteLine(Program.PROP_KEY_FFMPEG_OFOS + "=" + lastArgs[8]);
+                    sw.WriteLine(Program.PROP_KEY_SPEECH_API_OFOS + "=" + lastArgs[9]);
+                    sw.WriteLine(Program.PROP_KEY_LEMMATIZING_OFOS + "=" + lastArgs[10]);
                     sw.Flush();
                 }
 
                 // rename the temporary file to the run file
                 File.Move(fileNameTmp, fileName, true);
-              }
+            }
             finally
             {
                 // same as if(sw!=null)
                 sw?.Close();
             }
-          }
+        }
 
         /**
          * Provide a file select dialog for select the customer dictionary file
@@ -303,20 +322,21 @@ namespace Tool
                 FileInfo fi = new FileInfo(F_CUSDIC.Text);
                 try
                 {
-                    if(Directory.Exists(fi.FullName))
+                    if (Directory.Exists(fi.FullName))
                     {
                         root = fi.FullName;
                     }
                     else
                     {
                         DirectoryInfo di = fi.Directory;
-                        if(di.Exists)
+                        if (di.Exists)
                         {
                             root = di.FullName;
                         }
                     }
                 }
-                catch(Exception ex) {
+                catch (Exception ex)
+                {
                 }
             }
 
@@ -346,17 +366,17 @@ namespace Tool
             List<Program.LocalWorkDataBundle> inputFiles = null;
             SelectAbbreviationWindow sabw = null;
             try
-            { 
+            {
                 inputFiles = Program.getInputFiles();
                 // show a selection for select an existing abbreviation
 
-                if(inputFiles.Count > 0)
+                if (inputFiles.Count > 0)
                 {
                     sabw = new SelectAbbreviationWindow(inputFiles, selectedAbbreviation);
-                    sabw.Top = (this.Top + this.Height / 2) - sabw.Height/2;
+                    sabw.Top = (this.Top + this.Height / 2) - sabw.Height / 2;
                     sabw.Left = (this.Left + this.Width / 2) - sabw.Width / 2;
                     sabw.ShowDialog();
-                    if(sabw.isCommit() && sabw.getAbbreviation() != null)
+                    if (sabw.isCommit() && sabw.getAbbreviation() != null)
                     {
                         selectedAbbreviation = sabw.getAbbreviation();
                     }
@@ -366,7 +386,7 @@ namespace Tool
                     showInfo("No work files found");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 showWarning(ex.Message);
                 return;
@@ -378,7 +398,7 @@ namespace Tool
 
             foreach (Program.LocalWorkDataBundle db in inputFiles)
             {
-                if(selectedAbbreviation == db.Abbreviation)
+                if (selectedAbbreviation == db.Abbreviation)
                 {
                     if (db.Mp3Path != null)
                     {
@@ -402,12 +422,12 @@ namespace Tool
             if (C_SELECTDIC.IsChecked == true)
             {
                 F_CUSDIC.Text = F_CUSDIC.Text.Trim();
-                if(F_CUSDIC.Text.Length == 0)
+                if (F_CUSDIC.Text.Length == 0)
                 {
                     throw new Exception("Please set the path to custom dictionary or uncheck the checkbox!");
                 }
                 F_CUSDIC.Text = Program.toAbsolutePath(F_CUSDIC.Text);
-                if(!File.Exists(F_CUSDIC.Text))
+                if (!File.Exists(F_CUSDIC.Text))
                 {
                     // TODO clone the sample under the given name???
                     throw new Exception("Please set the correct path to an existing custom dictionary or uncheck the checkbox!");
@@ -419,8 +439,8 @@ namespace Tool
         {
             validateArgs();
 
-            string[] args = new string[10];
-            lastArgs = new string[10];
+            string[] args = new string[11];
+            lastArgs = new string[11];
 
             Array.Fill(args, null);
             Array.Fill(lastArgs, null);
@@ -433,43 +453,28 @@ namespace Tool
             args[2] = Program.ARG_KEY_TITLE_SHORT + quote(lastArgs[2]);
             lastArgs[3] = CMB_TITLE_LINES_CNT.Text;
             args[3] = Program.ARG_KEY_SHIFT_TITLE_LINES_SHORT + quote(lastArgs[3]);
-            lastArgs[4] = "" +C_VERSES.IsChecked;
+            lastArgs[4] = "" + C_VERSES.IsChecked;
             args[4] = Program.ARG_KEY_VERSES_SHORT + lastArgs[4];
-            lastArgs[5] = "";
-            args[5] = "";
-            if (C_SELECTDIC.IsChecked == true) {
-                lastArgs[5] = Program.toAbsolutePath(F_CUSDIC.Text).Replace("\\\\", "\\");
-                args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote(lastArgs[5].Replace("\\", "\\\\"));
-            }
-            lastArgs[6] = CMB_POST_LEMMATIZING_OFOS.Text;
-            args[6] = Program.ARG_KEY_POST_LEMMATIZING_OFOS_SHORT + quote(lastArgs[6]);
-            lastArgs[7] = CMB_POST_FFMPEG_OFOS.Text;
-            args[7] = Program.ARG_KEY_FFMPEG_OFOS_SHORT + quote(lastArgs[7]);
-            lastArgs[8] = CMB_SPEECH_API_OFOS.Text;
-            args[8] = Program.ARG_KEY_SPEECH_API_OFOS_SHORT + quote(lastArgs[8]);
-            lastArgs[9] = CMB_LEMMATIZING_OFOS.Text;
-            args[9] = Program.ARG_KEY_LEMMATIZING_OFOS_SHORT + quote(lastArgs[9]);
-
-            return args;
-        }
-
-        private void readArgs(string[] args)
-        {
-            args[0] = Program.ARG_KEY_ABBREVIATION_SHORT + quote(F_ABBREVIATION.Text.ToUpper());
-            args[1] = Program.ARG_KEY_AUDIO_FORMAT_SHORT + quote(CMB_AUDIO_FORMAT.Text);
-            args[2] = Program.ARG_KEY_TITLE_SHORT + quote(F_TITLE.Text);
-            args[3] = Program.ARG_KEY_SHIFT_TITLE_LINES_SHORT + quote(CMB_TITLE_LINES_CNT.Text);
-            args[4] = Program.ARG_KEY_VERSES_SHORT + C_VERSES.IsChecked;
-            args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote("");
+            lastArgs[5] = "" + C_ADD_IF_MISSING.IsChecked;
+            args[5] = Program.ARG_KEY_ADD_ONLY_MISSING_SHORT + lastArgs[5];
+            lastArgs[6] = "";
+            args[6] = "";
             if (C_SELECTDIC.IsChecked == true)
             {
-                args[5] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote(Program.toAbsolutePath(F_CUSDIC.Text).Replace("\\", "\\\\"));
+                lastArgs[6] = Program.toAbsolutePath(F_CUSDIC.Text).Replace("\\\\", "\\");
+                args[6] = Program.ARG_KEY_CUSTOM_DIC_SHORT + quote(lastArgs[6].Replace("\\", "\\\\"));
             }
+            lastArgs[7] = CMB_POST_LEMMATIZING_OFOS.Text;
+            args[7] = Program.ARG_KEY_POST_LEMMATIZING_OFOS_SHORT + quote(lastArgs[7]);
+            lastArgs[8] = CMB_POST_FFMPEG_OFOS.Text;
+            args[8] = Program.ARG_KEY_FFMPEG_OFOS_SHORT + quote(lastArgs[8]);
+            lastArgs[9] = CMB_SPEECH_API_OFOS.Text;
+            args[9] = Program.ARG_KEY_SPEECH_API_OFOS_SHORT + quote(lastArgs[9]);
+            lastArgs[10] = CMB_LEMMATIZING_OFOS.Text;
+            args[10] = Program.ARG_KEY_LEMMATIZING_OFOS_SHORT + quote(lastArgs[10]);
 
-            args[6] = Program.ARG_KEY_POST_LEMMATIZING_OFOS_SHORT + quote(CMB_POST_LEMMATIZING_OFOS.Text);
-            args[7] = Program.ARG_KEY_FFMPEG_OFOS_SHORT + quote(CMB_POST_FFMPEG_OFOS.Text);
-            args[8] = Program.ARG_KEY_SPEECH_API_OFOS_SHORT + quote(CMB_SPEECH_API_OFOS.Text);
-            args[9] = Program.ARG_KEY_LEMMATIZING_OFOS_SHORT + quote(CMB_LEMMATIZING_OFOS.Text);
+
+            return args;
         }
 
 

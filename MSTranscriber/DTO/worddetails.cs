@@ -5,8 +5,8 @@
 
 namespace MSTranscriber
 {
-    using System;
     using Newtonsoft.Json;
+    using System;
 
     public class WordDetails
     {

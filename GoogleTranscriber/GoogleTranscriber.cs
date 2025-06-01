@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Speech.V1;
 using Google.Cloud.Storage.V1;
-using Google.Apis.Storage.v1.Data;
 using Newtonsoft.Json;
+using System.IO;
 using System.Linq;
 
 namespace GoogleTranscriber
@@ -36,7 +33,7 @@ namespace GoogleTranscriber
                 sc = StorageClient.Create(cred);
                 // Get out bucket, create on demand
                 var buckets = sc.ListBuckets(this.projectId);
-                if(buckets.Count() > 0)
+                if (buckets.Count() > 0)
                 {
                     foreach (var x in buckets)
                     {

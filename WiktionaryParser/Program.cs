@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace WiktionaryParser
 {
@@ -40,13 +40,13 @@ namespace WiktionaryParser
         {
             string baseDirFiles = Path.Combine(workDir, DUMP_PAGES_EXTRACT_DIR);
             string line;
-            int totalPagesCount= 0;
+            int totalPagesCount = 0;
             using (StreamReader sr = new StreamReader(fnDump))
             {
                 // only single-line property entries are supported!
                 while ((line = sr.ReadLine()) != null)
                 {
-                    if(line.ToLower().Contains(START_PAGE_PATTERN))
+                    if (line.ToLower().Contains(START_PAGE_PATTERN))
                     {
                         totalPagesCount++;
                     }
@@ -220,14 +220,14 @@ namespace WiktionaryParser
             else counter[itm] = 1;
         }
 
-        private static void getMarkupRu(WiktEntry we, 
-            Dictionary<string, int> poss, 
-            Dictionary<string, int> meaningCurly, 
-            Dictionary<string, int> enCurly, 
+        private static void getMarkupRu(WiktEntry we,
+            Dictionary<string, int> poss,
+            Dictionary<string, int> meaningCurly,
+            Dictionary<string, int> enCurly,
             Dictionary<string, int> deCurly)
         {
             Regex reCurly = new Regex(@"{{[^}]+}}");
-            
+
             inc(poss, we.PoS);
             MatchCollection mm;
 
@@ -394,9 +394,9 @@ namespace WiktionaryParser
             // The main work directory
             string workDir = new FileInfo(MATERIALS_DIR_PATH).FullName;
             // Path to Ruwiktionary import file name
-            string dumpFile         = "C:/Projekte/ListenClosely/_materials/ruwiktionary-latest-pages-articles.xml";
+            string dumpFile = "C:/Projekte/ListenClosely/_materials/ruwiktionary-latest-pages-articles.xml";
             // Absolute path to executable mystem.exe (part of Yandex MyStem)
-            string mystemPath       = "C:/Projekte/ListenClosely/Scripts/mystem.exe";
+            string mystemPath = "C:/Projekte/ListenClosely/Scripts/mystem.exe";
 
             // IN -> 01
             dumpToFiles(dumpFile, workDir);

@@ -9,8 +9,8 @@
     <Copyright>Gábor Ugray 2022</Copyright>
     <PackageProjectUrl>https://github.com/gugray/ListenClosely</PackageProjectUrl>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <FileVersion>1.0.2</FileVersion>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
     <AssemblyName>ListenClosely</AssemblyName>
     <UseWPF>True</UseWPF>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Google.Cloud.Speech.V1;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Google.Cloud.Speech.V1;
 
 namespace Tool
 {
@@ -353,7 +353,7 @@ namespace Tool
                     for (int i = 0; i < lemmas.Count; ++i)
                     {
                         if (lemmas[i].Lead != segm.Words[i].Lead)
-                            throw new Exception("The current lemma lead '" + lemmas[i].Lead + "' is not the same as the current word lead '" + segm.Words[i].Lead  + "'");
+                            throw new Exception("The current lemma lead '" + lemmas[i].Lead + "' is not the same as the current word lead '" + segm.Words[i].Lead + "'");
                         if (lemmas[i].Text == "" && segm.Words[i].Text != "")
                             throw new Exception("The current lemma text is empty but the current word text is '" + segm.Words[i].Text + "'");
                         if (lemmas[i].Text != "" && segm.Words[i].Text == "")
@@ -414,7 +414,7 @@ namespace Tool
                 segs.Add(seg);
                 prev = "";
                 if (m.Groups[2].Value.TrimStart() != "") prev += m.Groups[2].Value.TrimStart();
-                prev+= m.Groups[3].Value;
+                prev += m.Groups[3].Value;
                 start = m.Index + m.Length;
             }
             segs.Add(prev + para.Substring(start));
@@ -542,13 +542,13 @@ namespace Tool
 
         public AdditionalLines()
         {
-            this.Lines = new List<AdditionalLine>(); 
+            this.Lines = new List<AdditionalLine>();
         }
         public bool hasHiddenText()
         {
-            foreach  (AdditionalLine line in this.Lines)
+            foreach (AdditionalLine line in this.Lines)
             {
-                if(line.hasHiddenText())
+                if (line.hasHiddenText())
                 {
                     return true;
                 }
@@ -581,7 +581,7 @@ namespace Tool
                 parse(line);
                 IsLineBreakRequired = true;
             }
-            
+
             public int Idx = -1;
             public string HiddenText = "";
 

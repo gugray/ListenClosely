@@ -82,8 +82,8 @@ mkdir "%CURDIR%\_tools\python"
 rem unzip Python
 echo Install Python into %CURDIR%\_tools\python...
 powershell Expand-Archive ^
-        -Path %CURDIR%\_tmp\%PYTHON_ZIP_FILENAME% ^
-        -DestinationPath %CURDIR%\_tools\python ^
+        -Path "'%CURDIR%\_tmp\%PYTHON_ZIP_FILENAME%'" ^
+        -DestinationPath "'%CURDIR%\_tools\python'" ^
         -Force
 
 if not exist "%CURDIR%\_tools\python\python.exe" (
@@ -93,7 +93,7 @@ if not exist "%CURDIR%\_tools\python\python.exe" (
 
 rem edit the original Python file python310._pth for uncomment the line #import site
 powershell ^
-    "(gc '%CURDIR%\_tools\python\python310._pth') -replace '#import site', 'import site' | Out-File -encoding ASCII %CURDIR%\_tools\python\python310._pth"
+    "(gc "'%CURDIR%\_tools\python\python310._pth'") -replace '#import site', 'import site' | Out-File -encoding ASCII "'%CURDIR%\_tools\python\python310._pth'""
 
 cd /d "%CURDIR%\_tools\python\"
 
@@ -139,8 +139,8 @@ mkdir "%CURDIR%\_tools\ffmpeg"
 rem unzip FFMpeg
 echo Install FFmpeg into %CURDIR%\_tools\ffmpeg...
 powershell Expand-Archive ^
-        -Path %CURDIR%\_tmp\%FFMPEG_ZIP_FILENAME% ^
-        -DestinationPath %CURDIR%\_tools\ffmpeg ^
+        -Path "'%CURDIR%\_tmp\%FFMPEG_ZIP_FILENAME%'" ^
+        -DestinationPath "'%CURDIR%\_tools\ffmpeg'" ^
         -Force
 
 if not exist "%CURDIR%\_tools\ffmpeg\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" (
@@ -161,15 +161,15 @@ copy "%CURDIR%\_samples\ListenClosely.ini.sample" "%CURDIR%\ListenClosely.ini"
 rem append paths to the ini file
 echo Enhance installation paths in %CURDIR%\ListenClosely.ini...
 powershell -Command ^
-    "(gc '%CURDIR%\ListenClosely.ini') -replace 'FFmpegPath =', 'FFmpegPath = %CURDIR%\_tools\ffmpeg\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+    "(gc "'%CURDIR%\ListenClosely.ini'") -replace 'FFmpegPath =', 'FFmpegPath = "%CURDIR%\_tools\ffmpeg\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe"' | Out-File -encoding ASCII "'%CURDIR%\ListenClosely.ini'""
 powershell -Command ^
-    "(gc '%CURDIR%\ListenClosely.ini') -replace 'PythonPath =', 'PythonPath = %CURDIR%\_tools\python\python.exe' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+    "(gc "'%CURDIR%\ListenClosely.ini'") -replace 'PythonPath =', 'PythonPath = "%CURDIR%\_tools\python\python.exe"' | Out-File -encoding ASCII "'%CURDIR%\ListenClosely.ini'""
 powershell -Command ^
-    "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiProjectId =', 'GoogleAppiProjectId = listenclosely' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+    "(gc "'%CURDIR%\ListenClosely.ini'") -replace 'GoogleAppiProjectId =', 'GoogleAppiProjectId = listenclosely' | Out-File -encoding ASCII "'%CURDIR%\ListenClosely.ini'""
 powershell -Command ^
-    "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiBucketName =', 'GoogleAppiBucketName = rulit' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+    "(gc "'%CURDIR%\ListenClosely.ini'") -replace 'GoogleAppiBucketName =', 'GoogleAppiBucketName = rulit' | Out-File -encoding ASCII "'%CURDIR%\ListenClosely.ini'""
 powershell -Command ^
-    "(gc '%CURDIR%\ListenClosely.ini') -replace 'GoogleAppiKeyPath =', 'GoogleAppiKeyPath = %CURDIR%\%GOOGLE_API_KEY_FILENAME%' | Out-File -encoding ASCII %CURDIR%\ListenClosely.ini"
+    "(gc "'%CURDIR%\ListenClosely.ini'") -replace 'GoogleAppiKeyPath =', 'GoogleAppiKeyPath = "%CURDIR%\%GOOGLE_API_KEY_FILENAME%"' | Out-File -encoding ASCII "'%CURDIR%\ListenClosely.ini'""
 
 rem move from _tmp for be able to delete it
 cd /D "%CURDIR%"
